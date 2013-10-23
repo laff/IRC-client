@@ -1,10 +1,10 @@
-package no.hig.okolloen.irc;
+package gruppe.irc;
 
 import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.util.logging.*;
-import no.hig.okolloen.irc.messageListeners.*;
+import gruppe.irc.messageListeners.*;
 
 /**
  * This class controlls the connection to a IRC server. 
@@ -227,7 +227,26 @@ public class IRCConnection implements Runnable {
    * @params args[] an array of command line arguments.
    */
   public static void main (String args[]) {
-    IRCConnection forbindelse = new IRCConnection ("irc.homelien.no", 6667, "d458", "Cyber439875", "okolloen@hig.no", "Øivind Kolloen");
+	  
+	  /*
+	      this.server     = server; 
+    this.port       = port;    
+    this.nick       = nick; 
+    this.altNick    = altNick; 
+    this.username   = username; 
+    this.fullname   = fullname;
+	   */
+	  
+	  
+    IRCConnection forbindelse = new IRCConnection (
+			"irc.homelien.no",		// server
+			6667,					// port
+			"ourtestnick",					// nick
+			"ourtestnick",			// altnick
+			"ourtest",		// username
+			"ourtest nick"		// fullname
+			);
+	
     forbindelse.addMessageListener (new GlobalMessageListener ());
     forbindelse.connect();
     forbindelse.addMessageListener (new PingListener ());
@@ -237,6 +256,8 @@ public class IRCConnection implements Runnable {
       } catch (Exception e) { }
     }
     forbindelse.writeln ("JOIN #norge");
+	
+	forbindelse.close();
   }
 
   // This class is used as a listener only to detect when an actual connection is established.

@@ -1,6 +1,6 @@
-package no.hig.okolloen.irc.messageListeners;
+package gruppe.irc.messageListeners;
 
-import no.hig.okolloen.irc.MessageEvent;
+import gruppe.irc.MessageEvent;
 
 /**
  * This interface must be implemented by all message listeners to be attached to an IRCConnection object.

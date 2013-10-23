@@ -1,4 +1,4 @@
-package no.hig.okolloen.irc;
+package gruppe.irc;
 
 /**
  * Class used to pass information about a message between the IRCConnection class and its listeners.

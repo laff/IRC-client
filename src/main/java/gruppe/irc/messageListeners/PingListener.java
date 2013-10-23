@@ -1,6 +1,6 @@
-package no.hig.okolloen.irc.messageListeners;
+package gruppe.irc.messageListeners;
 
-import no.hig.okolloen.irc.MessageEvent;
+import gruppe.irc.MessageEvent;
 
 /**
  * This class is used to listen for PING messages from the server and reply to them.
@@ -17,7 +17,7 @@ public class PingListener implements MessageListener {
    */
   public void messageReceived (MessageEvent me) {
     if (me.getCommand().toUpperCase().equals("PING")) {
-      ((no.hig.okolloen.irc.IRCConnection)me.getSource()).writeln ("PONG");
+      ((gruppe.irc.IRCConnection)me.getSource()).writeln ("PONG");
       me.consume ();
     }
   }

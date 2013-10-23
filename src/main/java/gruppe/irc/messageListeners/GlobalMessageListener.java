@@ -1,6 +1,6 @@
-package no.hig.okolloen.irc.messageListeners;
+package gruppe.irc.messageListeners;
 
-import no.hig.okolloen.irc.MessageEvent;
+import gruppe.irc.MessageEvent;
 
 /**
  * A very crude message listener, it takes all messages it receives and prints out
