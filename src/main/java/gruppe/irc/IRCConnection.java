@@ -5,6 +5,7 @@ import java.net.*;
 import java.util.*;
 import java.util.logging.*;
 import gruppe.irc.messageListeners.*;
+import java.util.prefs.*;
 
 /**
  * This class controlls the connection to a IRC server. 
@@ -42,7 +43,7 @@ public class IRCConnection implements Runnable {
   private BufferedReader        input;
   private DataOutputStream      output;
   private java.util.Vector      listeners = new Vector ();
-  private static Logger logging = Logger.getLogger (IRCConnection.class.getName());
+  private static final Logger logging = Logger.getLogger (IRCConnection.class.getName());
 
   /**
    * Constructor for setting up a new IRCConnection object.
@@ -64,7 +65,48 @@ public class IRCConnection implements Runnable {
     this.username   = username; 
     this.fullname   = fullname;
   }
+/*
+  /**
+   * Overloaded Constructor that sets up a new object, by getting the preferences
+   * from registry.
+   */
+ /* public IRCConnection() {
+      getPrefs();
+  } */
+  
+  /**
+   * Method that finds preferences saved to current user of the computers profile,
+   * from last time the program was used.
+   * The port number is set to 6667 as default, unless a value is saved earlier.
+   */
 
+/*  private void getPrefs() {
+    Preferences pref = Preferences.userNodeForPackage(this.getClass());
+      
+    this.server     = pref.get("server", "");
+    this.port       = pref.getInt("port", 6667);
+    this.nick       = pref.get("nick", "");
+    this.altNick    = pref.get("altNick", ""); 
+    this.username   = pref.get("username", "");
+    this.fullname   = pref.get("fullname", "");
+  } */
+ 
+  /**
+   * Saves all the user-preferences to registry under the CurrentUser-path.
+   */
+  
+  /*private void putPrefs() {
+    Preferences pref = Preferences.userNodeForPackage(this.getClass());
+      
+    pref.put("server", this.server);
+    pref.putInt("port", this.port);
+    pref.put("nick", this.nick);
+    pref.put("altNick", this.altNick); 
+    pref.put("username", this.username);
+    pref.put("fullname", this.fullname);
+  }*/
+
+ 
   /**
    * Method used to add a message listener.
    * The MessageListener object will be inserted into the list of listeners that will be traversed when trying to find 
@@ -227,37 +269,30 @@ public class IRCConnection implements Runnable {
    * @params args[] an array of command line arguments.
    */
   public static void main (String args[]) {
-	  
-	  /*
-	      this.server     = server; 
-    this.port       = port;    
-    this.nick       = nick; 
-    this.altNick    = altNick; 
-    this.username   = username; 
-    this.fullname   = fullname;
-	   */
-	  
-	  
+
     IRCConnection forbindelse = new IRCConnection (
-			"irc.homelien.no",		// server
-			6667,					// port
-			"ourtestnick",					// nick
-			"ourtestnick",			// altnick
+			"irc.homelien.no",         // server
+			6667,                   // port
+			"ourtestnick",		// nick
+			"ourtestnick",		// altnick
 			"ourtest",		// username
 			"ourtest nick"		// fullname
 			);
-	
+
+ //Preferences stuff:   IRCConnection forbindelse = new IRCConnection();
+    
     forbindelse.addMessageListener (new GlobalMessageListener ());
     forbindelse.connect();
     forbindelse.addMessageListener (new PingListener ());
-    while (forbindelse.state!=IRCConnection.CONNECTED) {
+
+    while (forbindelse.state != IRCConnection.CONNECTED) {
       try {
         Thread.currentThread().sleep (100);
       } catch (Exception e) { }
     }
-    forbindelse.writeln ("JOIN #norge");
-	
-	forbindelse.close();
+    forbindelse.writeln ("JOIN #IRC-clientTest");
+    //Preferences stuff forbindelse.putPrefs();
+    forbindelse.close();
   }
 
   // This class is used as a listener only to detect when an actual connection is established.
