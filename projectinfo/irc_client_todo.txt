@@ -1,0 +1,17 @@
+
+Brukergrensesnitt:
+MÅ ha:
+-I18N og Javadoc(OFC)
+-Liste over alle servere man kan koble til. (Import fra fil)
+-Hovedvindu/tabs med oversikt over alle kanaler man er tilkoblet.
+-Hver kanal skal ha sitt eget vindu.
+-Hvert vindu skal ha oversikt over brukere på kanalen. (/users)
+-Klikk på et vindu som ikke er i fokus, skal sette det i fokus.
+-Brukere på en kanal, skal være sortert slik at de med mest rettigheter vises øverst, deretter alfabetisk.
+-Høyreklikk på bruker(popup) -> Funksjonalitet mot den brukeren.
+-Brukernavn og inntastede verdier lagres som preferences. 
+-Skal gå ann å velge Color/Fonts/size/background for de forskjellige typene meldinger(private, status osv.)
+-I eget vindu: Vise liste over alle tilgjengelige(registrerte) kanaler. (/LIST)
+
+Bør ha:
+-Kunne lagre kanaler/sette hvilke som skal joines ved connect.
