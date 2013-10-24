@@ -31,6 +31,7 @@ public class ChatWindow extends JFrame implements ActionListener {
 	 * Overloaded constructor which creates a new chat window for IRC client
 	 * @param channel : Name of chat channel, displayed in top pane of window 
 	 */
+	//TODO: Connection to channel should be moved to this class
 	ChatWindow (String channel) {
 		
 		write = new JTextField();
@@ -69,15 +70,16 @@ public class ChatWindow extends JFrame implements ActionListener {
 	}
 
 
+	/**
+	 * Action listener for the write field and quit button.
+	 * Input in write field is published to channel and field is cleared.
+	 * Quit closes connection and shuts down thread.
+	 */
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == write) {
 			String temp = write.getText();
 			if (!temp.equals("")) {
 				text.append(temp + "\n");
-				text.setVisible(true);
-				System.out.println(temp);
-				System.out.print(text.getText());
-				
 				write.setText("");
 			}
 		}

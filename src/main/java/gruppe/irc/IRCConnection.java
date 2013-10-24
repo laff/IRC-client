@@ -235,7 +235,7 @@ public class IRCConnection implements Runnable {
     close();
   }
 
-  // Method used internaly to try to perform a clean shutdown of the client/server communication if something "bad" happens.
+  // Method used internally to try to perform a clean shutdown of the client/server communication if something "bad" happens.
   private void close() {
     logging.fine ("Closing connection to server");
     if (state == CONNECTED) {
@@ -269,6 +269,8 @@ public class IRCConnection implements Runnable {
    * @params args[] an array of command line arguments.
    */
   public static void main (String args[]) {
+	  
+	  ChatWindow window = new ChatWindow("Foo");
 
     IRCConnection forbindelse = new IRCConnection (
 			"irc.homelien.no",         // server
