@@ -236,7 +236,9 @@ public class IRCConnection implements Runnable {
   }
 
   // Method used internally to try to perform a clean shutdown of the client/server communication if something "bad" happens.
-  private void close() {
+  //
+  // Making this public so that I can play with it while developing - Olaf.
+  public void close() {
     logging.fine ("Closing connection to server");
     if (state == CONNECTED) {
       state = DISCONNECTING;
@@ -267,18 +269,18 @@ public class IRCConnection implements Runnable {
    * messages to the channel #norge to this connection.
    *
    * @params args[] an array of command line arguments.
-   */
+   
   public static void main (String args[]) {
 	  
 	  ChatWindow window = new ChatWindow("Foo");
 
     IRCConnection forbindelse = new IRCConnection (
-			"irc.homelien.no",         // server
+			"irc.homelien.no",      // server
 			6667,                   // port
-			"ourtestnick",		// nick
-			"ourtestnick",		// altnick
-			"ourtest",		// username
-			"ourtest nick"		// fullname
+			"ourtestnick",			// nick
+			"ourtestnick",			// altnick
+			"ourtest",				// username
+			"ourtest nick"			// fullname
 			);
 
  //Preferences stuff:   IRCConnection forbindelse = new IRCConnection();
@@ -296,7 +298,7 @@ public class IRCConnection implements Runnable {
     //Preferences stuff forbindelse.putPrefs();
     forbindelse.close();
   }
-
+*/
   // This class is used as a listener only to detect when an actual connection is established.
   private class LoggedOnDetector implements MessageListener {
     // If a message is received with the command 375 or 001 then we assume that the connection is established and alters the state to reflect
