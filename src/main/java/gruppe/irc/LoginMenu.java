@@ -9,6 +9,7 @@ import gruppe.irc.messageListeners.PingListener;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.prefs.Preferences;
 
 /**
  *
@@ -35,7 +36,7 @@ public class LoginMenu extends JFrame {
 	JLabel altnickL = new JLabel("Nick 2:");
 	JLabel usernameL = new JLabel("Username:");
 	JLabel fullnameL = new JLabel("Full Name:");
-	
+	JLabel autologL = new JLabel("Auto login:");
 	
 	// Input fields
 	JTextField server = new JTextField(32);
@@ -47,11 +48,15 @@ public class LoginMenu extends JFrame {
 	
 	// Buttons
 	JButton login = new JButton("Login");	// The login button.
-	JButton exit = new JButton("Exit");		// Button to exit program.
+	JButton clear = new JButton("Clear");		// Button to exit program.
+	
+	// Check box
+	JCheckBox autologin = new JCheckBox();
 
 
 	
 	LoginMenu(){
+		
 		super("A menu for login");
 		setSize(330,280);
 		setLocation(700,500);
@@ -64,6 +69,7 @@ public class LoginMenu extends JFrame {
 		altnickL.setBounds	(40,105,70,20);
 		usernameL.setBounds	(40,130,70,20);
 		fullnameL.setBounds	(40,155,70,20);
+		autologL.setBounds  (40,200,70,20);
 		
 		// Position input fields
 		server.setBounds	(110,30,160,20);
@@ -75,7 +81,10 @@ public class LoginMenu extends JFrame {
 		
 		// Position buttons
 		login.setBounds(40,180,115,20);
-		exit.setBounds(155,180,115,20);
+		clear.setBounds(155,180,115,20);
+		
+		// Position autologin
+		autologin.setBounds(110, 200, 20, 20);
 
 		// Adding elements
 		panel.add(serverL);
@@ -84,6 +93,7 @@ public class LoginMenu extends JFrame {
 		panel.add(altnickL);
 		panel.add(usernameL);
 		panel.add(fullnameL);
+		panel.add(autologL);
 		panel.add(server);
 		panel.add(port);
 		panel.add(nick);
@@ -91,14 +101,66 @@ public class LoginMenu extends JFrame {
 		panel.add(username);
 		panel.add(fullname);
 		panel.add(login);
-		panel.add(exit);
+		panel.add(clear);
+		panel.add(autologin);
 
 		getContentPane().add(panel);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setVisible(true);
+		
+		getPrefs();
 		actionlogin();
 	}
 
+	/**
+	* Method that finds preferences saved to current user of the computers profile,
+	* from last time the program was used.
+	* The port number is set to 6667 as default, unless a value is saved earlier.
+	*/
+
+	private void getPrefs() {
+		
+		Preferences pref = Preferences.userNodeForPackage(this.getClass());
+      
+		server.setText(pref.get("server", ""));
+		port.setText(Integer.toString(pref.getInt("port", 6667)));
+		nick.setText(pref.get("nick", ""));
+		altnick.setText(pref.get("altNick", ""));
+		username.setText(pref.get("username", ""));
+		fullname.setText(pref.get("fullname", ""));
+		
+	}
+ 
+	/**
+	 * Method that either (true) saves the current preferences, 
+	 * or (false) clears the preferences.
+	 */
+	private void putPrefs(Boolean choice) {
+		Preferences pref = Preferences.userNodeForPackage(this.getClass());
+
+		if (choice) {
+			
+			pref.put("server", serverVar);
+			pref.putInt("port", portVar);
+			pref.put("nick", nickVar);
+			pref.put("altNick", altnickVar); 
+			pref.put("username", usernameVar);
+			pref.put("fullname", fullnameVar);
+			
+		} else {
+			
+			pref.put("server", "");
+			pref.putInt("port", 6667);
+			pref.put("nick", "");
+			pref.put("altNick", ""); 
+			pref.put("username", "");
+			pref.put("fullname", "");
+			
+		}
+		
+
+	}
+	
 	
 	/*
 	 * Actions for our buttons.
@@ -109,47 +171,49 @@ public class LoginMenu extends JFrame {
 			public void actionPerformed(ActionEvent ae) {
 				
 				serverVar = server.getText();
+				
+				// Going to make a check for you little man.
 				portVar = Integer.parseInt(port.getText());
+				
 				nickVar = nick.getText();
 				altnickVar = altnick.getText();
 				usernameVar = username.getText();
 				fullnameVar = fullname.getText();
 				
-				// Checking if variables is empty.
+				// Checking if variables are empty.
 				// A silly way of doing it. Make it better someone!
 				if (serverVar.length() != 0 && portVar != 0 && nickVar.length() != 0 && altnickVar.length() != 0 && usernameVar.length() != 0 && fullnameVar.length() != 0) {
 					
 					login();
 				
+				// Add a feature where the textfield(s) not accepted either gets focuesd or marked in some way?
 				} else {
 					
 					JOptionPane.showMessageDialog(null,"You left out some information there stud.");
 				}
-				
-				/*if() {
-
-				// else if perhaps shit is going to hell or jesus walks.
-				} else {
-				
-					JOptionPane.showMessageDialog(null,"Yes I got your message, what do you want?");
-					
-					// Clear textfields or get saved info from file?
-					server.setText("");
-					port.setText("");
-					nick.setText("");
-					altnick.setText("");
-					username.setText("");
-					fullname.setText("");
-				
-					// focus the first inputfield
-					server.requestFocus();
-				}
-				*/
 			}
 		});
 	
-		// add actionlistener for exit button?
-		/*****CODE*****/
+		// Action for Clear button. Add "remove last prefs" aswell?
+		clear.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent ae) {
+				
+				// Clear preferences
+				putPrefs(false);
+				
+				// Clear textfields.
+				server.setText("");
+				port.setText("");
+				nick.setText("");
+				altnick.setText("");
+				username.setText("");
+				fullname.setText("");
+
+				// focus the first inputfield
+				server.requestFocus();
+			}
+		});
 	}
 	
 	/*
@@ -157,6 +221,7 @@ public class LoginMenu extends JFrame {
 	 * No arguments given, uses the variables set in main.
 	 */
 	public void login () {
+		putPrefs(true);
 	  
 		IRCConnection connection = new IRCConnection (
 			  
@@ -168,7 +233,6 @@ public class LoginMenu extends JFrame {
 			  fullnameVar		// fullname
 			  
 			  );
-	//Preferences stuff:   IRCConnection forbindelse = new IRCConnection();
 
 	connection.addMessageListener (new GlobalMessageListener ());
 	connection.connect();
@@ -182,7 +246,6 @@ public class LoginMenu extends JFrame {
 	  } catch (Exception e) { }
 	}
 	connection.writeln ("JOIN #IRC-clientTest");
-	//Preferences stuff forbindelse.putPrefs();
 	connection.close();
 	
   }

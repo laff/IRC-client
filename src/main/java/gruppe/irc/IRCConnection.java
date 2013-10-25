@@ -65,48 +65,7 @@ public class IRCConnection implements Runnable {
     this.username   = username; 
     this.fullname   = fullname;
   }
-/*
-  /**
-   * Overloaded Constructor that sets up a new object, by getting the preferences
-   * from registry.
-   */
- /* public IRCConnection() {
-      getPrefs();
-  } */
-  
-  /**
-   * Method that finds preferences saved to current user of the computers profile,
-   * from last time the program was used.
-   * The port number is set to 6667 as default, unless a value is saved earlier.
-   */
 
-/*  private void getPrefs() {
-    Preferences pref = Preferences.userNodeForPackage(this.getClass());
-      
-    this.server     = pref.get("server", "");
-    this.port       = pref.getInt("port", 6667);
-    this.nick       = pref.get("nick", "");
-    this.altNick    = pref.get("altNick", ""); 
-    this.username   = pref.get("username", "");
-    this.fullname   = pref.get("fullname", "");
-  } */
- 
-  /**
-   * Saves all the user-preferences to registry under the CurrentUser-path.
-   */
-  
-  /*private void putPrefs() {
-    Preferences pref = Preferences.userNodeForPackage(this.getClass());
-      
-    pref.put("server", this.server);
-    pref.putInt("port", this.port);
-    pref.put("nick", this.nick);
-    pref.put("altNick", this.altNick); 
-    pref.put("username", this.username);
-    pref.put("fullname", this.fullname);
-  }*/
-
- 
   /**
    * Method used to add a message listener.
    * The MessageListener object will be inserted into the list of listeners that will be traversed when trying to find 
@@ -282,8 +241,6 @@ public class IRCConnection implements Runnable {
 			"ourtest",				// username
 			"ourtest nick"			// fullname
 			);
-
- //Preferences stuff:   IRCConnection forbindelse = new IRCConnection();
     
     forbindelse.addMessageListener (new GlobalMessageListener ());
     forbindelse.connect();
@@ -295,7 +252,6 @@ public class IRCConnection implements Runnable {
       } catch (Exception e) { }
     }
     forbindelse.writeln ("JOIN #IRC-clientTest");
-    //Preferences stuff forbindelse.putPrefs();
     forbindelse.close();
   }
 */
