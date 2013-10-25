@@ -23,7 +23,7 @@ public class LoginMenu extends JFrame {
 	
 	// Main initiates the login menu "A menu for login".
 	public static void main(String[] args) {
-		LoginMenu loginFrame = new LoginMenu();
+		LoginMenu loginFrame = new LoginMenu(null);
 	}
 	
 	// The panel
@@ -54,12 +54,27 @@ public class LoginMenu extends JFrame {
 	JCheckBox autologin = new JCheckBox();
 
 
-	
-	LoginMenu(){
+	/**
+	 * Constructor for our initial login window.
+	 * Currently receives an object that is either null or the point of a window.
+	 * That is probably not a good idea though. Suggestions?
+	 */
+	LoginMenu(Object location){
 		
 		super("A menu for login");
 		setSize(330,280);
-		setLocation(700,500);
+		
+		// Sets location based on passed variable.
+		try {
+			
+			setLocation((Point) location);
+			
+		} catch (NullPointerException npel) {
+			
+			setLocation(700,500);
+			
+		}
+		
 		panel.setLayout (null); 
 		
 		// Position Labels
@@ -157,8 +172,6 @@ public class LoginMenu extends JFrame {
 			pref.put("fullname", "");
 			
 		}
-		
-
 	}
 	
 	
@@ -248,5 +261,22 @@ public class LoginMenu extends JFrame {
 	connection.writeln ("JOIN #IRC-clientTest");
 	connection.close();
 	
+	// This is what I want to do if login is successfull.	
+	// The window then should contain everything after the initial "hostname found" etc.
+	connectedDialog();
+	
   }
+	
+	
+	/**
+	 * Method that replaces the login menu with the initial chat window.
+	 */
+	public void connectedDialog() {
+		
+		ChatWindow connected = new ChatWindow(serverVar, getLocation());
+		
+		
+		dispose();
+		
+	}
 }

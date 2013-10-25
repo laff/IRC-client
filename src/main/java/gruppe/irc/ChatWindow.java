@@ -5,6 +5,7 @@ package gruppe.irc;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -29,10 +30,11 @@ public class ChatWindow extends JFrame implements ActionListener {
 	
 	/**
 	 * Overloaded constructor which creates a new chat window for IRC client
-	 * @param channel : Name of chat channel, displayed in top pane of window 
+	 * @param channel : Name of chat channel, displayed in top pane of window.
+	 * @param location : The point of a window, now passed as the location of the last.
 	 */
 	//TODO: Connection to channel should be moved to this class
-	ChatWindow (String channel) {
+	ChatWindow (String channel, Object location) {
 		
 		write = new JTextField();
 		write.addActionListener(this);
@@ -58,6 +60,10 @@ public class ChatWindow extends JFrame implements ActionListener {
 		final int xDim = 300;
 		final int yDim = 400;
 		setSize(xDim, yDim);
+		
+		// Sets location based on passed variable.
+		setLocation((Point) location);
+		
 		setDefaultCloseOperation(this.EXIT_ON_CLOSE);
 		
 		add(new JScrollPane(text));
@@ -74,6 +80,9 @@ public class ChatWindow extends JFrame implements ActionListener {
 	 * Action listener for the write field and quit button.
 	 * Input in write field is published to channel and field is cleared.
 	 * Quit closes connection and shuts down thread.
+	 * 
+	 * At the moment closing a chat window will close the window and open the login menu.
+	 * Should either disconnect from channel or server.
 	 */
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == write) {
@@ -84,6 +93,10 @@ public class ChatWindow extends JFrame implements ActionListener {
 			}
 		}
 		else if (e.getSource() == quit) {
+			
+			// opening a new login menu.
+			LoginMenu loginFrame = new LoginMenu(getLocation());
+			
 			dispose();
 		}
 	}

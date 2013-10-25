@@ -219,42 +219,6 @@ public class IRCConnection implements Runnable {
       state = DISCONNECTED;
     }
   }
-
-  /**
-   * The main method, implemented for testing purposes.
-   * A new IRCConnection object is initiated and a connection towards irc.homelien.no is attempted. A object of the GlobalMessageListener
-   * class is added, this object outputs everything from the server to standard output. A ping listener is also attached to automatically 
-   * reply to ping requests from the server. After a connection is established a command is sent to the server that tells the server to send
-   * messages to the channel #norge to this connection.
-   *
-   * @params args[] an array of command line arguments.
-   
-  public static void main (String args[]) {
-	  
-	  ChatWindow window = new ChatWindow("Foo");
-
-    IRCConnection forbindelse = new IRCConnection (
-			"irc.homelien.no",      // server
-			6667,                   // port
-			"ourtestnick",			// nick
-			"ourtestnick",			// altnick
-			"ourtest",				// username
-			"ourtest nick"			// fullname
-			);
-    
-    forbindelse.addMessageListener (new GlobalMessageListener ());
-    forbindelse.connect();
-    forbindelse.addMessageListener (new PingListener ());
-
-    while (forbindelse.state != IRCConnection.CONNECTED) {
-      try {
-        Thread.currentThread().sleep (100);
-      } catch (Exception e) { }
-    }
-    forbindelse.writeln ("JOIN #IRC-clientTest");
-    forbindelse.close();
-  }
-*/
   // This class is used as a listener only to detect when an actual connection is established.
   private class LoggedOnDetector implements MessageListener {
     // If a message is received with the command 375 or 001 then we assume that the connection is established and alters the state to reflect
