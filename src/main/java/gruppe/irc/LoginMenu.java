@@ -23,6 +23,7 @@ public class LoginMenu extends JFrame {
 	
 	// Main initiates the login menu "A menu for login".
 	public static void main(String[] args) {
+		ChatWindow window = new ChatWindow("test", new Point(100, 100));
 		LoginMenu loginFrame = new LoginMenu(null);
 	}
 	
