@@ -44,6 +44,7 @@ public class IRCConnection implements Runnable {
   private DataOutputStream      output;
   private java.util.Vector      listeners = new Vector ();
   private static final Logger logging = Logger.getLogger (IRCConnection.class.getName());
+  private ChatWindow serverDialogue;
 
   /**
    * Constructor for setting up a new IRCConnection object.
@@ -100,15 +101,6 @@ public class IRCConnection implements Runnable {
   }
 
   /**
-   * Method used to get the state of this connection.
-   *
-   * @returns an integer telling the state of this connection object. IRCConection.CONNECTED, IRCConnection.CONNECTING, IRCCOnnection.DISCONNECTING, IRCConnection.DISCONNECTED.
-   */
-  public int getState () {
-    return state;
-  }
-
-  /**
    * Method used to send a message to the server.
    * All the method does is append a carriage return and newline to the given string and send that to the server.
    *
@@ -133,18 +125,35 @@ public class IRCConnection implements Runnable {
     message = message.substring (message.indexOf(" ")+1);
 
     logging.finest ("New message arriver : "+command+"|"+message);
+	
+	// Trying to send these messages to our window of server dialogue.
+	if (serverDialogue != null) {
+		serverDialogue.addText(message);
+	}
+	
 
     MessageEvent me = new MessageEvent (prefix, command, message, this);
     for (Enumeration e = listeners.elements(); e.hasMoreElements(); ) {
-      MessageListener listener = ((MessageListener)e.nextElement());
-      listener.messageReceived(me);
-      if (me.isConsumed()) {
-        logging.finest ("Message handled by "+listener.getClass().getName());
-        break;
-      }
+		MessageListener listener = ((MessageListener)e.nextElement());
+		listener.messageReceived(me);
+		
+		if (me.isConsumed()) {
+			logging.finest ("Message handled by "+listener.getClass().getName());
+			break;
+		}
     }
   }
 
+  /**
+   * Method that creates a dialogue window.
+   * 
+   * It is run once the the IRCConnection in LoginMenu is equal to "CONNECTED".
+   * @param location - The location of the login menu window is passed
+   */
+  public void connectedDialogue(Object location) {
+	  serverDialogue = new ChatWindow(server, location, this);
+  }
+  
   /**
    * Method not to be called directly. 
    * This method contains the code that actually connects to the server and handles the client server interaction. Contains a loop
@@ -198,27 +207,46 @@ public class IRCConnection implements Runnable {
   //
   // Making this public so that I can play with it while developing - Olaf.
   public void close() {
+	  System.out.println("close function ran once.");
     logging.fine ("Closing connection to server");
     if (state == CONNECTED) {
-      state = DISCONNECTING;
+		System.out.println("close function ran once while connected");
+		state = DISCONNECTING;
 
-      try { 
-        output.writeBytes("QUIT"); 
-			} catch (Exception e) {}
+		try { 
+		  output.writeBytes("QUIT"); 
+			  } catch (Exception e) {}
 
-      try { 
-        socket.close(); 
-      } catch (Exception e) {}
-      socket = null;
+		try { 
+		  socket.close(); 
+		} catch (Exception e) {}
+		socket = null;
 
-      try {
-        messageThread.join();
-      } catch (InterruptedException e) {
-      }
+		try {
+		  messageThread.join();
+		} catch (InterruptedException e) {
+		}
 
-      state = DISCONNECTED;
+		state = DISCONNECTED;
     }
   }
+
+  /**
+   * Method that checks if connected.
+   */
+  public boolean connectionStatus () {
+	  
+	while (state != CONNECTED) {
+	  try {
+			System.out.println("Please wait...");
+			Thread.currentThread().sleep (100);
+
+	  } catch (Exception e) { }
+	}
+	
+	return (state == CONNECTED) ? true : false;
+  }
+  
   // This class is used as a listener only to detect when an actual connection is established.
   private class LoggedOnDetector implements MessageListener {
     // If a message is received with the command 375 or 001 then we assume that the connection is established and alters the state to reflect

@@ -26,23 +26,32 @@ public class ChatWindow extends JFrame implements ActionListener {
 	JTextField write;
 	JButton quit;
 	JTextArea text;
+	JScrollPane scrollPane;
 	BorderLayout layout;
+	IRCConnection thisConnection;
 	
 	/**
 	 * Overloaded constructor which creates a new chat window for IRC client
 	 * @param channel : Name of chat channel, displayed in top pane of window.
 	 * @param location : The point of a window, now passed as the location of the last.
+	 * @param connection : This is the connection ment for this window. Not sure what to do when each window gets a channel...
 	 */
 	//TODO: Connection to channel should be moved to this class
-	ChatWindow (String channel, Object location) {
+	ChatWindow (String channel, Object location, IRCConnection connection) {
 		
 		write = new JTextField();
 		write.addActionListener(this);
 		text = new JTextArea();
 		text.setBackground(Color.LIGHT_GRAY);
 		text.setEditable(false);
+		text.setLineWrap(true);
+		text.setWrapStyleWord(true);
 		quit = new JButton("Close connection");
 		quit.addActionListener(this);
+		
+		// Sets the connection relevant for this window.
+		thisConnection = connection;
+		
 		
 		/*
 		//Frame for the text input and output area
@@ -69,12 +78,28 @@ public class ChatWindow extends JFrame implements ActionListener {
 		add(new JScrollPane(text));
 		
 		
-		add(text, BorderLayout.CENTER);
+		
+		add(new JScrollPane(text, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
+            JScrollPane.HORIZONTAL_SCROLLBAR_NEVER));
 		add(write, BorderLayout.SOUTH);
 		add(quit, BorderLayout.NORTH);
 		setVisible(true);	
 	}
 
+	/**
+	 * Method for adding text to the text area.
+	 * This is used both by actionperformed and when adding text from messagelistener.
+	 */
+	public void addText(String nuText) {
+		
+		String temp = nuText;
+		
+		if (!temp.equals("")) {
+			
+			text.append(temp + nuText);
+			
+		}
+	}
 
 	/**
 	 * Action listener for the write field and quit button.
@@ -82,17 +107,26 @@ public class ChatWindow extends JFrame implements ActionListener {
 	 * Quit closes connection and shuts down thread.
 	 * 
 	 * At the moment closing a chat window will close the window and open the login menu.
-	 * Should either disconnect from channel or server.
+	 * It also closes the connection. however, when there is channels in these windows, a simple /quit should be executed.
 	 */
 	public void actionPerformed(ActionEvent e) {
+		
 		if (e.getSource() == write) {
-			String temp = write.getText();
-			if (!temp.equals("")) {
-				text.append(temp + "\n");
-				write.setText("");
-			}
+			
+			// First our request is added to the textArea.
+			addText(write.getText()+"\n");
+			
+			// Then the request is sent to the server. 
+			// The answers are then put into the textarea by the message() function in IRCConnection.
+			thisConnection.writeln(write.getText());
+			
+			
+			write.setText("");
 		}
+		
 		else if (e.getSource() == quit) {
+			
+			thisConnection.close();
 			
 			// opening a new login menu.
 			LoginMenu loginFrame = new LoginMenu(getLocation());

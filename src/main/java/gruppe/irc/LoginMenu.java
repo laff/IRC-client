@@ -193,17 +193,16 @@ public class LoginMenu extends JFrame {
 				usernameVar = username.getText();
 				fullnameVar = fullname.getText();
 				
-				// Checking if variables are empty.
-				// A silly way of doing it. Make it better someone!
-				if (serverVar.length() != 0 && portVar != 0 && nickVar.length() != 0 && altnickVar.length() != 0 && usernameVar.length() != 0 && fullnameVar.length() != 0) {
+				// Checking if obligatory variables are empty
+			//	if () {
 					
 					login();
 				
 				// Add a feature where the textfield(s) not accepted either gets focuesd or marked in some way?
-				} else {
+				//} else {
 					
-					JOptionPane.showMessageDialog(null,"You left out some information there stud.");
-				}
+					//JOptionPane.showMessageDialog(null,"You left out some information there stud.");
+				//}
 			}
 		});
 	
@@ -232,6 +231,15 @@ public class LoginMenu extends JFrame {
 	/*
 	 * The magnificent function that logs in.
 	 * No arguments given, uses the variables set in main.
+	 * 
+	 * Variables that work like a charm:
+			"irc.homelien.no",      // server
+			6667,                   // port
+			"ourtestnick",			// nick
+			"ourtestnick",			// altnick
+			"ourtest",				// username
+			"ourtest nick"			// fullname
+	 * 
 	 */
 	public void login () {
 		putPrefs(true);
@@ -247,36 +255,18 @@ public class LoginMenu extends JFrame {
 			  
 			  );
 
-	connection.addMessageListener (new GlobalMessageListener ());
-	connection.connect();
-	connection.addMessageListener (new PingListener ());
-
-	while (connection.getState() != IRCConnection.CONNECTED) {
-	  try {
-			System.out.println("Please wait...");
-			Thread.currentThread().sleep (100);
-		  
-	  } catch (Exception e) { }
-	}
-	connection.writeln ("JOIN #IRC-clientTest");
-	connection.close();
-	
-	// This is what I want to do if login is successfull.	
-	// The window then should contain everything after the initial "hostname found" etc.
-	connectedDialog();
-	
-  }
-	
-	
-	/**
-	 * Method that replaces the login menu with the initial chat window.
-	 */
-	public void connectedDialog() {
+		connection.addMessageListener (new GlobalMessageListener ());
+		connection.connect();
 		
-		ChatWindow connected = new ChatWindow(serverVar, getLocation());
+		// Opens the server dialogue window, sends the location of loginmenu.
+		connection.connectedDialogue(getLocation());
 		
+		connection.addMessageListener (new PingListener ());
 		
-		dispose();
-		
+		// Closes the loginMenu window once a connection is established.
+		if (connection.connectionStatus()) {
+			dispose();
+		}
+	
 	}
 }
