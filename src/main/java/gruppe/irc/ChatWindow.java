@@ -44,15 +44,15 @@ public class ChatWindow extends JFrame implements ActionListener {
 		quit = new JButton("Close connection");
 		quit.addActionListener(this);
 		
-	/*	
+		/*
 		//Frame for the text input and output area
 		JPanel frame = new JPanel();
-		//JLabel txtPanel = new JLabel();
-		//txtPanel.add(text);
+		JLabel txtPanel = new JLabel();
+		txtPanel.add(text);
 		frame.setLayout(new BorderLayout());
-		frame.add(text, BorderLayout.NORTH);
-		//frame.add(write, BorderLayout.SOUTH);
-	*/	
+		frame.add(txtPanel, BorderLayout.NORTH);
+		frame.add(write, BorderLayout.SOUTH);
+		*/
 		layout = new BorderLayout();
 		setLayout(layout);
 		
