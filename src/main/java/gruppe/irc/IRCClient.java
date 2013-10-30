@@ -46,9 +46,10 @@ public class IRCClient {
 				createAndShowGUI();
 			}
 		});
-		
-		LoginMenu loginMenu = new LoginMenu(null);
-		
+
+		//LoginMenu loginMenu = new LoginMenu(null);
+
+
 		
     }
 		

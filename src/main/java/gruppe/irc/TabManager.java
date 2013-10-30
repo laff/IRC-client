@@ -50,6 +50,7 @@ public class TabManager extends JPanel implements ActionListener {
 	private static IRCConnection connection;
 	
 	public static JTabbedPane tabbedPane;
+	public static LoginMenu loginMenu;
 	public JButton testButton;
 	
 	public TabManager () {
@@ -73,7 +74,14 @@ public class TabManager extends JPanel implements ActionListener {
         add(tabbedPane);
         
         //The following line enables to use scrolling tabs.
-        tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);	
+        tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+		
+		// Creates loginmenu, which defaults to not visible.
+		//loginMenu = new LoginMenu(null);
+		
+		// Initial logincheck
+		loginCheck();
+		
 	}
 	
 	public static void setConnection (IRCConnection ourConnection) {
@@ -121,8 +129,6 @@ public class TabManager extends JPanel implements ActionListener {
 	 */
 	public static void sendMessage (String message) {
 		
-		String messageLine = message+"/n";
-		
 		// The amount of tabs:
 		int channelCount = channelTabs.size();
 		int personalCount = personalTabs.size();
@@ -152,11 +158,30 @@ public class TabManager extends JPanel implements ActionListener {
 
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == testButton) {
-			sendMessage("SUP NIGGAS");
+			connection.close();
 		}
 	}
+	/**
+	 * Static function that takes the string parameter and sends to connection and its writeln function.
+	 * @param msg 
+	 */
+	public static void writeToLn(String msg) {
+		connection.writeln(msg);
+	}
 	
-
+	public static void loginCheck() {
+		if (connection != null) {
+			
+			if (connection.getState() == IRCConnection.DISCONNECTED) {
+				loginMenu.setVisible(true);
+			} else if (connection.getState() == IRCConnection.CONNECTED) {
+				loginMenu.setVisible(false);
+			}
+			
+		} else {
+			loginMenu = new LoginMenu(null);
+		}
+	}
     
     /** Returns an ImageIcon, or null if the path was invalid. */
 	/*

@@ -263,10 +263,16 @@ public class LoginMenu extends JFrame {
 		
 		connection.addMessageListener (new PingListener ());
 		
-		// Closes the loginMenu window once a connection is established.
-		if (connection.connectionStatus()) {
-			dispose();
+		
+		while (connection.getState() != IRCConnection.CONNECTED) {
+		  try {
+				System.out.println("Please wait...");
+				Thread.currentThread().sleep (100);
+
+		  } catch (Exception e) { }
 		}
-	
+
+		//TabManager.setConnection(connection);
+		
 	}
 }

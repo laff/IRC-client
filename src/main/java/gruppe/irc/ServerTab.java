@@ -44,7 +44,6 @@ public class ServerTab extends JPanel {
 	public void addText(String msg) {
 		
 		text.append(msg);
-		
+
 	}
-	
 }

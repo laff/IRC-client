@@ -65,6 +65,9 @@ public class IRCConnection implements Runnable {
     this.altNick    = altNick; 
     this.username   = username; 
     this.fullname   = fullname;
+	
+	TabManager.setConnection(this);
+	
   }
 
   /**
@@ -99,7 +102,7 @@ public class IRCConnection implements Runnable {
     messageThread.start ();
     logging.fine ("Started new IRCConnection thread, attempting connection");
   }
-
+  
   /**
    * Method used to send a message to the server.
    * All the method does is append a carriage return and newline to the given string and send that to the server.
@@ -147,6 +150,8 @@ public class IRCConnection implements Runnable {
    * 
    * It is run once the the IRCConnection in LoginMenu is equal to "CONNECTED".
    * @param location - The location of the login menu window is passed
+   * 
+   * THIS FUNCTION IS NOT IN USE!?
    */
   public void connectedDialogue(Object location) {
 	  serverDialogue = new ChatWindow(server, location, this);
@@ -226,12 +231,16 @@ public class IRCConnection implements Runnable {
 		}
 
 		state = DISCONNECTED;
+		
+		// Trying to call a logincheck each time Disconnected is set.
+		TabManager.loginCheck();
     }
   }
 
   /**
    * Method that checks if connected.
    */
+  /*
   public boolean connectionStatus () {
 	  
 	while (state != CONNECTED) {
@@ -244,6 +253,16 @@ public class IRCConnection implements Runnable {
 	TabManager.setConnection(this);
 	return (state == CONNECTED) ? true : false;
   }
+  */
+  
+  /**
+   * Method that returns the state of the connection
+   * @returns an integer telling the state of this connection object. IRCConection.CONNECTED, IRCConnection.CONNECTING, IRCCOnnection.DISCONNECTING, IRCConnection.DISCONNECTED.
+   */
+  public int getState() {
+	  return state;
+  }
+  
   
   // This class is used as a listener only to detect when an actual connection is established.
   private class LoggedOnDetector implements MessageListener {
@@ -253,6 +272,7 @@ public class IRCConnection implements Runnable {
       logging.fine ("Message arrived from server, we have a connection");
       if (me.getCommand().equals ("375")||me.getCommand().equals("001")) {
         state = CONNECTED;
+		TabManager.loginCheck();
         removeMessageListener (this);
       }
     }
