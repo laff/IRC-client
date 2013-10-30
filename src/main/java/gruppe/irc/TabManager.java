@@ -52,28 +52,45 @@ public class TabManager extends JPanel implements ActionListener {
 	public static JTabbedPane tabbedPane;
 	public static LoginMenu loginMenu;
 	public JButton testButton;
+    
+    JInternalFrame serverFrame;
+
 	
 	public TabManager () {
 	
-        super(new GridLayout(1, 1));
+        setLayout(new BorderLayout());
+		setVisible(true);	
         
+        serverTab = new ServerTab();
+        add(serverTab);
+       
         tabbedPane = new JTabbedPane();
+        tabbedPane.addTab("Server tab", null, serverTab.getPanel(), "no action");
+        tabbedPane.addTab("Server tab 2", null, serverTab.getPanel(), "no action either");
+        add(tabbedPane, BorderLayout.NORTH);
 		
-		testButton = new JButton();
-		testButton.addActionListener(this);
-		
-     //   ImageIcon icon = null;
+	//	testButton = new JButton();
+	//	testButton.addActionListener(this);
+	
         
-		addPanel(1);
-		addPanel(2);
-		addPanel(2);
+        
+        //tabbedPane.addTab("Server tab", null, serverTab.getPanel(),
+        //        "Does nothing");
+        //serverFrame.getContentPane().add(serverTab);
+        //desktop.add(serverTab);
+        
+		
+       // addPanel(1);
+	//	addPanel(2);
+	//	addPanel(2);
 		
         //Add the tabbed pane to this panel.
 		
-		tabbedPane.add(testButton);
-        add(tabbedPane);
+		//tabbedPane.addTab(serverTab.getName(),null, serverTab.getPanel());
+        //add(tabbedPane);
         
         //The following line enables to use scrolling tabs.
+
         tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 		
 		// Creates loginmenu, which defaults to not visible.
@@ -82,11 +99,18 @@ public class TabManager extends JPanel implements ActionListener {
 		// Initial logincheck
 		loginCheck();
 		
+
+        //tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);	
+
 	}
 	
 	public static void setConnection (IRCConnection ourConnection) {
 		connection = ourConnection;
 	}
+    
+    public static IRCConnection getConnection () {
+        return connection;
+    }
 	
 	private void addPanel (Integer type) {
 		
@@ -94,8 +118,7 @@ public class TabManager extends JPanel implements ActionListener {
 			
 			case 1 : 
 				// The inital server dialogue tab.
-				serverTab = new ServerTab();
-				
+
 				tabbedPane.addTab("Server tab", null, serverTab.getPanel(),
                 "Does nothing");
 				
