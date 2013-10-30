@@ -40,6 +40,9 @@ import javax.swing.*;
 /**
  *
  * @author HS Vikar
+ * 
+ * TODO: When we click a tab, the focus should be set to the InternalFrame that 
+ * tab belongs to.
  */
 public class TabManager extends JPanel implements ActionListener {
 	
@@ -53,41 +56,39 @@ public class TabManager extends JPanel implements ActionListener {
 	public static LoginMenu loginMenu;
 	public JButton testButton;
     
-    JInternalFrame serverFrame;
-
+    JDesktopPane desktop;
 	
 	public TabManager () {
 	
         setLayout(new BorderLayout());
 		setVisible(true);	
-        
+        desktop = new JDesktopPane();
+        //This one should always be made.
         serverTab = new ServerTab();
-        add(serverTab);
-       
+        
+        //TEMP:
+        channelTabs.add(new ChannelTab());
+        
+        desktop.add(serverTab);
+        
+        //TEMP: Creating the tabs in the vector, for now, just for easy testing:
+        for (int i = 0; i < channelTabs.size(); i++) {
+            desktop.add(channelTabs.elementAt(i));
+        }
+        
+        
+        
+        add(desktop);
+        
+        // TODO: Hardcoded adding of the tabs, this must be automated!
         tabbedPane = new JTabbedPane();
-        tabbedPane.addTab("Server tab", null, serverTab.getPanel(), "no action");
-        tabbedPane.addTab("Server tab 2", null, serverTab.getPanel(), "no action either");
+        tabbedPane.addTab("ServerTab", null, serverTab.getPanel(), "no action");
+        tabbedPane.addTab("ChannelTab", null, channelTabs.elementAt(0).getPanel(), "no action either");
         add(tabbedPane, BorderLayout.NORTH);
 		
-	//	testButton = new JButton();
-	//	testButton.addActionListener(this);
-	
-        
-        
-        //tabbedPane.addTab("Server tab", null, serverTab.getPanel(),
-        //        "Does nothing");
-        //serverFrame.getContentPane().add(serverTab);
-        //desktop.add(serverTab);
         
 		
-       // addPanel(1);
-	//	addPanel(2);
-	//	addPanel(2);
-		
-        //Add the tabbed pane to this panel.
-		
-		//tabbedPane.addTab(serverTab.getName(),null, serverTab.getPanel());
-        //add(tabbedPane);
+    
         
         //The following line enables to use scrolling tabs.
 
@@ -98,10 +99,6 @@ public class TabManager extends JPanel implements ActionListener {
 		
 		// Initial logincheck
 		loginCheck();
-		
-
-        //tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);	
-
 	}
 	
 	public static void setConnection (IRCConnection ourConnection) {
@@ -112,6 +109,8 @@ public class TabManager extends JPanel implements ActionListener {
         return connection;
     }
 	
+    
+    //Not in use, just for testing:
 	private void addPanel (Integer type) {
 		
 		switch (type) {

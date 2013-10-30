@@ -125,11 +125,11 @@ public class IRCConnection implements Runnable {
 	TabManager.sendMessage(message+"\n");
 	
     if (message.startsWith (":")) {
-      prefix = message.substring (1, message.indexOf(" "));
-      message = message.substring (message.indexOf(" ")+1);
+        prefix = message.substring (1, message.indexOf(" "));
+        message = message.substring (message.indexOf(" ")+1);
     }
-    command = message.substring (0, message.indexOf(" "));
-    message = message.substring (message.indexOf(" ")+1);
+        command = message.substring (0, message.indexOf(" "));
+        message = message.substring (message.indexOf(" ")+1);
 
     logging.finest ("New message arriver : "+command+"|"+message);
 
@@ -262,7 +262,6 @@ public class IRCConnection implements Runnable {
   public int getState() {
 	  return state;
   }
-  
   
   // This class is used as a listener only to detect when an actual connection is established.
   private class LoggedOnDetector implements MessageListener {

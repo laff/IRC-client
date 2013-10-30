@@ -16,10 +16,12 @@ import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
+import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;
 
 /**
@@ -29,9 +31,8 @@ import javax.swing.text.BadLocationException;
 public class ServerTab extends JInternalFrame implements ActionListener {
 	
 	public JPanel panel;
-	//public JTextArea text;
     
-    String name;
+    String serverName;
 	JTextField write;
 	JButton quit;
 	JTextPane text;
@@ -40,10 +41,10 @@ public class ServerTab extends JInternalFrame implements ActionListener {
     
 	
 	public ServerTab () {
-        
-        super("Server"); //, true, true, true, true);
-        setClosable(true);
-        setResizable(true);
+        //Creates the servertab, and sets it resizeable, non-closable, maximizable
+        // and minimizable.
+        super("Server", true, false, true, true);
+        setSize(300, 300);
         
         setLayout(new BorderLayout());
         add(scrollPane = new JScrollPane(text = new JTextPane()), BorderLayout.CENTER);
@@ -75,10 +76,25 @@ public class ServerTab extends JInternalFrame implements ActionListener {
 	
 	public void addText(String msg) {
         int pos = text.getStyledDocument().getEndPosition().getOffset();
-	try {	
-		text.getStyledDocument().insertString(pos, msg, null);;
-    } catch (BadLocationException ble) {};
+        
+        try {	
+            text.getStyledDocument().insertString(pos, msg, null);
+        } catch (BadLocationException ble) {};
+        
+        //When new messages appears in the window, it scrolls down automagically.
+        //Borrowed from Oyvind`s example.
+        SwingUtilities.invokeLater(new Thread() {
+	        public void run() {
+	        	// Get the scrollbar from the scroll pane
+	        	JScrollBar scrollbar = scrollPane.getVerticalScrollBar();
+	        	// Set the scrollbar to its maximum value
+	        	scrollbar.setValue(scrollbar.getMaximum());
+	        }
+	    });
 	}
+    
+    
+    	    
 
   	public void actionPerformed(ActionEvent e) {
 
@@ -91,15 +107,17 @@ public class ServerTab extends JInternalFrame implements ActionListener {
 			// The answers are then put into the textarea by the message() function in IRCConnection.
 			TabManager.getConnection().writeln(write.getText());
 			
-			
 			write.setText("");
 		}
 		
 		else if (e.getSource() == quit) {
-			
-			TabManager.getConnection().close();
-			
-			// opening a new login menu.
+            //Will throw an exception if not connected to a server.
+			try {
+                TabManager.getConnection().close();
+            } catch (NullPointerException npe) {
+                
+            }
+			// Opening a new login menu.
 			//LoginMenu loginFrame = new LoginMenu(getLocation());
 			
 			dispose();
