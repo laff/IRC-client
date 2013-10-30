@@ -43,13 +43,13 @@ import javax.swing.*;
  */
 public class TabManager extends JPanel implements ActionListener {
 	
-	private ServerTab serverTab;
-	private Vector<ChannelTab> channelTabs = new Vector<ChannelTab>();
-	private Vector<PersonalTab> personalTabs = new Vector<PersonalTab>();
+	private static ServerTab serverTab;
+	private static Vector<ChannelTab> channelTabs = new Vector<ChannelTab>();
+	private static Vector<PersonalTab> personalTabs = new Vector<PersonalTab>();
 	
 	private static IRCConnection connection;
 	
-	public JTabbedPane tabbedPane;
+	public static JTabbedPane tabbedPane;
 	public JButton testButton;
 	
 	public TabManager () {
@@ -119,8 +119,10 @@ public class TabManager extends JPanel implements ActionListener {
 	 * Function that sends messages to all tabs.
 	 * @param : message containing a message.
 	 */
-	public void sendMessage (String message) {
-	
+	public static void sendMessage (String message) {
+		
+		String messageLine = message+"/n";
+		
 		// The amount of tabs:
 		int channelCount = channelTabs.size();
 		int personalCount = personalTabs.size();

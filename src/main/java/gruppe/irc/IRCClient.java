@@ -38,7 +38,7 @@ public class IRCClient {
 
 		//Schedule a job for the event dispatch thread:
 		//creating and showing this application's GUI.
-		/*
+		
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				//Turn off metal's use of bold fonts
@@ -46,7 +46,7 @@ public class IRCClient {
 				createAndShowGUI();
 			}
 		});
-		*/
+		
 		LoginMenu loginMenu = new LoginMenu(null);
 		
 		

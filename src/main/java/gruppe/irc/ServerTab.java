@@ -25,7 +25,10 @@ public class ServerTab extends JPanel {
 
 		panel = new JPanel(false);
 		
-		text = new JTextArea("HELLALEO");
+		text = new JTextArea();
+		text.setEditable(false);
+		text.setLineWrap(true);
+		text.setWrapStyleWord(true);
 		
 
         panel.setLayout(new GridLayout(1, 1));

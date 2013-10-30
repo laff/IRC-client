@@ -22,8 +22,10 @@ public class ChannelTab extends JPanel {
 	
 		panel = new JPanel(false);
 		
-		text = new JTextArea("HELLALE1111O");
-		
+		text = new JTextArea();
+		text.setEditable(false);
+		text.setLineWrap(true);
+		text.setWrapStyleWord(true);
 
         panel.setLayout(new GridLayout(1, 1));
         panel.add(text);

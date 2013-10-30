@@ -116,7 +116,11 @@ public class IRCConnection implements Runnable {
   // This method is used internaly to parse an incoming message into its separate parts.
   private void message (String message) {
     String prefix="", command="";
-    
+  
+	
+	// Sending all messages to Tabmanager.
+	TabManager.sendMessage(message+"\n");
+	
     if (message.startsWith (":")) {
       prefix = message.substring (1, message.indexOf(" "));
       message = message.substring (message.indexOf(" ")+1);
@@ -125,12 +129,6 @@ public class IRCConnection implements Runnable {
     message = message.substring (message.indexOf(" ")+1);
 
     logging.finest ("New message arriver : "+command+"|"+message);
-	
-	// Trying to send these messages to our window of server dialogue.
-	if (serverDialogue != null) {
-		serverDialogue.addText(message);
-	}
-	
 
     MessageEvent me = new MessageEvent (prefix, command, message, this);
     for (Enumeration e = listeners.elements(); e.hasMoreElements(); ) {
@@ -243,7 +241,7 @@ public class IRCConnection implements Runnable {
 
 	  } catch (Exception e) { }
 	}
-	
+	TabManager.setConnection(this);
 	return (state == CONNECTED) ? true : false;
   }
   

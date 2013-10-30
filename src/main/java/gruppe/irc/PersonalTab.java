@@ -20,7 +20,10 @@ public class PersonalTab extends TabManager {
 	
 		panel = new JPanel(false);
 		
-		text = new JTextArea("HELLALE1111oooooO");
+		text = new JTextArea();
+		text.setEditable(false);
+		text.setLineWrap(true);
+		text.setWrapStyleWord(true);
 		
 
         panel.setLayout(new GridLayout(1, 1));

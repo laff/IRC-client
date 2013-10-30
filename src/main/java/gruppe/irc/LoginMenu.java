@@ -20,12 +20,12 @@ public class LoginMenu extends JFrame {
 	// The variables for logging in.
 	private String serverVar, nickVar, altnickVar, usernameVar, fullnameVar;
 	private Integer	portVar;
-	
+	/*
 	// Main initiates the login menu "A menu for login".
 	public static void main(String[] args) {
 		LoginMenu loginFrame = new LoginMenu(null);
 	}
-	
+	*/
 	// The panel
 	JPanel panel = new JPanel();		
 
@@ -259,7 +259,7 @@ public class LoginMenu extends JFrame {
 		connection.connect();
 		
 		// Opens the server dialogue window, sends the location of loginmenu.
-		connection.connectedDialogue(getLocation());
+		//connection.connectedDialogue(getLocation());
 		
 		connection.addMessageListener (new PingListener ());
 		
