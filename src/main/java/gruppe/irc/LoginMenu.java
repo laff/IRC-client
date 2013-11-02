@@ -71,7 +71,7 @@ public class LoginMenu extends JFrame {
 			
 		} catch (NullPointerException npel) {
 			
-			setLocation(700,500);
+			setLocationRelativeTo(null);
 			
 		}
 		
@@ -120,7 +120,6 @@ public class LoginMenu extends JFrame {
 		panel.add(autologin);
 
 		getContentPane().add(panel);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setVisible(true);
 		
 		getPrefs();
@@ -174,6 +173,13 @@ public class LoginMenu extends JFrame {
 		}
 	}
 	
+	/**
+	 * Method that sets visible to false or most definately
+	 * @param really : Boolean.
+	 */
+	public void showem(Boolean really) {
+		setVisible(really);
+	}
 	
 	/*
 	 * Actions for our buttons.
@@ -193,16 +199,13 @@ public class LoginMenu extends JFrame {
 				usernameVar = username.getText();
 				fullnameVar = fullname.getText();
 				
-				// Checking if obligatory variables are empty
-			//	if () {
-					
-					login();
 				
-				// Add a feature where the textfield(s) not accepted either gets focuesd or marked in some way?
-				//} else {
-					
-					//JOptionPane.showMessageDialog(null,"You left out some information there stud.");
-				//}
+				//**********//
+				//*CREATE*A*//
+				//*FAILSAFE*//
+				//**********//
+				login();
+
 			}
 		});
 	

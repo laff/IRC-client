@@ -105,11 +105,13 @@ public class ServerTab extends JInternalFrame implements ActionListener {
 			
 			// Then the request is sent to the server. 
 			// The answers are then put into the textarea by the message() function in IRCConnection.
-			TabManager.getConnection().writeln(write.getText());
+			//TabManager.getConnection().writeln(write.getText());
+			
+			IRCClient.writeInfo(write.getText());
 			
 			write.setText("");
 		}
-		
+		/*
 		else if (e.getSource() == quit) {
             //Will throw an exception if not connected to a server.
 			try {
@@ -122,5 +124,6 @@ public class ServerTab extends JInternalFrame implements ActionListener {
 			
 			dispose();
 		}
+		*/
 	}
 }

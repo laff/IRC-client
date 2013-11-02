@@ -46,14 +46,17 @@ import javax.swing.*;
  */
 public class TabManager extends JPanel implements ActionListener {
 	
-	private static ServerTab serverTab;
-	private static Vector<ChannelTab> channelTabs = new Vector<ChannelTab>();
-	private static Vector<PersonalTab> personalTabs = new Vector<PersonalTab>();
+	private ServerTab serverTab;
+	private Vector<ChannelTab> channelTabs = new Vector<ChannelTab>();
+	private Vector<PersonalTab> personalTabs = new Vector<PersonalTab>();
 	
-	private static IRCConnection connection;
+	// This TabManager's IRCConnection
+	private IRCConnection connection;
 	
-	public static JTabbedPane tabbedPane;
-	public static LoginMenu loginMenu;
+	// The server name this TabManager is connected to.
+	public String serverName;
+	
+	public JTabbedPane tabbedPane;
 	public JButton testButton;
     
     JDesktopPane desktop;
@@ -67,23 +70,24 @@ public class TabManager extends JPanel implements ActionListener {
         serverTab = new ServerTab();
         
         //TEMP:
-        channelTabs.add(new ChannelTab());
+        //channelTabs.add(new ChannelTab());
         
         desktop.add(serverTab);
         
         //TEMP: Creating the tabs in the vector, for now, just for easy testing:
-        for (int i = 0; i < channelTabs.size(); i++) {
-            desktop.add(channelTabs.elementAt(i));
-        }
+        //for (int i = 0; i < channelTabs.size(); i++) {
+        //    desktop.add(channelTabs.elementAt(i));
+        //}
         
         
         
         add(desktop);
-        
+		
         // TODO: Hardcoded adding of the tabs, this must be automated!
         tabbedPane = new JTabbedPane();
         tabbedPane.addTab("ServerTab", null, serverTab.getPanel(), "no action");
-        tabbedPane.addTab("ChannelTab", null, channelTabs.elementAt(0).getPanel(), "no action either");
+		
+        //tabbedPane.addTab("ChannelTab", null, channelTabs.elementAt(0).getPanel(), "no action either");
         add(tabbedPane, BorderLayout.NORTH);
 		
         
@@ -98,14 +102,19 @@ public class TabManager extends JPanel implements ActionListener {
 		//loginMenu = new LoginMenu(null);
 		
 		// Initial logincheck
-		loginCheck();
+		// !!!
+		// This function no longer works, but should be replaced in some way.
+		// content of loginCheck moved to IRCClient.java.
+		// !!!
+		//loginCheck();
 	}
 	
-	public static void setConnection (IRCConnection ourConnection) {
+	
+	public void setConnection (IRCConnection ourConnection) {
 		connection = ourConnection;
 	}
     
-    public static IRCConnection getConnection () {
+    public IRCConnection getConnection () {
         return connection;
     }
 	
@@ -143,13 +152,19 @@ public class TabManager extends JPanel implements ActionListener {
 
 		//tabbedPane.add(freshTab);
 	}
-	
-	
+		
 	/**
 	 * Function that sends messages to all tabs.
 	 * @param : message containing a message.
+	 * @param : command conatining a code.
+	 * @param : prefix containing the servername
 	 */
-	public static void sendMessage (String message) {
+	public void sendMessage (String prefix, String command, String message) {
+		
+		// sets ServerName
+		if (serverName == null) {
+			serverName = prefix;
+		}
 		
 		// The amount of tabs:
 		int channelCount = channelTabs.size();
@@ -187,24 +202,10 @@ public class TabManager extends JPanel implements ActionListener {
 	 * Static function that takes the string parameter and sends to connection and its writeln function.
 	 * @param msg 
 	 */
-	public static void writeToLn(String msg) {
+	public void writeToLn(String msg) {
 		connection.writeln(msg);
 	}
 	
-	public static void loginCheck() {
-		if (connection != null) {
-			
-			if (connection.getState() == IRCConnection.DISCONNECTED) {
-				loginMenu.setVisible(true);
-			} else if (connection.getState() == IRCConnection.CONNECTED) {
-				loginMenu.setVisible(false);
-			}
-			
-		} else {
-			loginMenu = new LoginMenu(null);
-		}
-	}
-    
     /** Returns an ImageIcon, or null if the path was invalid. */
 	/*
     protected static ImageIcon createImageIcon(String path) {

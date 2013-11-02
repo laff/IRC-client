@@ -4,10 +4,7 @@
  */
 package gruppe.irc;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-
-import javax.swing.JFrame;
+import java.util.Vector;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -17,6 +14,12 @@ import javax.swing.UnsupportedLookAndFeelException;
  * @author HS Vikar
  */
 public class IRCClient {
+	
+	// Vector to store the tab managers.
+	private static Vector<IRCClientFrame> ircFrames =  new Vector<IRCClientFrame>();
+	
+	// The loginmenu!
+	public static LoginMenu loginMenu;
 	
 	public static void main(String[] args) {
 		
@@ -36,41 +39,106 @@ public class IRCClient {
 			System.out.println("Unsupported look and feel. Error: ");
 			f.printStackTrace();
 		}
-
-		//Schedule a job for the event dispatch thread:
-		//creating and showing this application's GUI.
 		
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				//Turn off metal's use of bold fonts
-				UIManager.put("swing.boldMetal", Boolean.FALSE);
-				createAndShowGUI();
+		
+		// Initiate the first server.
+		newServer();
+		
+		// Initiate the g'old loginMenu.
+		loginMenu = new LoginMenu(null);
+		
+    }
+	
+	public static void newServer() {
+		try {
+			System.out.println("newserver called once");
+			ircFrames.add(new IRCClientFrame());
+		} catch (NullPointerException ohno) {
+			System.out.println("newserver called once more i guess");
+		}
+	}
+	/**
+	 * Method that receives all info from the IRCConnections. 
+	 * Then sends it to all the TabManagers via their frames.
+	 * @param prefix
+	 * @param command
+	 * @param message
+	 */
+	public void sendInfo(String prefix, String command, String message) {
+		for (int i = 0; i < ircFrames.size(); i++) {
+			((IRCClientFrame)ircFrames.elementAt (i)).thisTab.sendMessage(prefix, command, message);
+		}
+	}
+	
+	/**
+	 * Method that sends stuff to the servers?
+	 * @param prefix : NOT IMPLEMENTED.
+	 * @param command : NOT IMPLEMENTED.
+	 * @param message : raw message atm.
+	 */
+	public static void writeInfo(String message) {
+		for (int i = 0; i < ircFrames.size(); i++) {
+			((IRCClientFrame)ircFrames.elementAt (i)).thisTab.writeToLn(message);
+		}
+	}
+	/**
+	 * Method that recieves connections from IRCConnection,
+	 * and gives them to TabManagers.. ?
+	 */
+	public void newConnection(IRCConnection newConnection, String serverName) {
+	
+		try {
+			// count up how many frames in the ircFrames vector.
+			Integer frameCount = ircFrames.size();
+
+			// define local variables
+			IRCClientFrame tmpFrame, changeFrame = null;
+			Boolean needsServerName;
+
+			// Go through vector to find a frame with no servername (meaning no connection).
+			for (int i = 0; i < frameCount; i++) {
+
+				tmpFrame = ((IRCClientFrame)ircFrames.elementAt (i));
+				needsServerName = tmpFrame.noServerName();
+
+				// Set the "empty frame" variable with the index of the
+				// ircFrame with no title.
+				if (needsServerName) {
+					changeFrame = ((IRCClientFrame)ircFrames.elementAt (i));
+				}
 			}
-		});
 
-		//LoginMenu loginMenu = new LoginMenu(null);
+			// If an "empty frame" was not found, create a new frame.
+			// Then set the "empty frame" index to the last one created.
+			if (changeFrame == null) {
+				newServer();
+				changeFrame = ((IRCClientFrame)ircFrames.elementAt (frameCount));
+			}
 
+			// Give connection to the tab inside the frame
+			// And give the servername to the frame.
+			changeFrame.thisTab.setConnection(newConnection);
+			changeFrame.updateTitle(serverName);
+			System.out.println("newframes function sucess!");
 
-		
-    }
-		
-    /**
-     * Create the GUI for the TabManager and show it.  For thread safety,
-     * this method should be invoked from
-     * the event dispatch thread.
-     */
-    private static void createAndShowGUI() {
-        //Create and set up the window.
-        JFrame frame = new JFrame("IRC Client");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
-        //Add content to the window.
-		
-        frame.add(new TabManager(), BorderLayout.CENTER);
-        
-        //Display the window.
-        //frame.pack();
-		frame.setSize(500, 500);
-        frame.setVisible(true);
-    }
+		} catch (NullPointerException npe) {
+			System.out.println("New frames function didnt get to run properly it seems");
+		}
+	}
+	
+/* THIS IS PRETTY LOGIC MADE BY OLAF. Used to work in TabManager, but has now emigrated over the seas.
+	public static void loginCheck() {
+		if (connection != null) {
+			
+			if (connection.getState() == IRCConnection.DISCONNECTED) {
+				loginMenu.setVisible(true);
+			} else if (connection.getState() == IRCConnection.CONNECTED) {
+				loginMenu.setVisible(false);
+			}
+			
+		} else {
+			loginMenu = new LoginMenu(null);
+		}
+	}
+*/
 }

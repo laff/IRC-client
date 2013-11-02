@@ -5,14 +5,13 @@ import java.net.*;
 import java.util.*;
 import java.util.logging.*;
 import gruppe.irc.messageListeners.*;
-import java.util.prefs.*;
 
 /**
  * This class controlls the connection to a IRC server. 
  * Use this class to represent the connection, then add the listeners needed to receive those events you feel you should receive
  * from this connection. Use the classes writeln method to send commands back to the server. 
  */
-public class IRCConnection implements Runnable {
+public class IRCConnection extends IRCClient implements Runnable {
   /**
    * Indicates that there is an active connection
    */
@@ -66,8 +65,7 @@ public class IRCConnection implements Runnable {
     this.username   = username; 
     this.fullname   = fullname;
 	
-	TabManager.setConnection(this);
-	
+	newConnection(this, server);
   }
 
   /**
@@ -121,8 +119,8 @@ public class IRCConnection implements Runnable {
     String prefix="", command="";
   
 	
-	// Sending all messages to Tabmanager.
-	TabManager.sendMessage(message+"\n");
+	// Sending prefix, command and message to IRCClient.java
+	sendInfo(prefix, command, message);
 	
     if (message.startsWith (":")) {
         prefix = message.substring (1, message.indexOf(" "));
@@ -145,18 +143,6 @@ public class IRCConnection implements Runnable {
     }
   }
 
-  /**
-   * Method that creates a dialogue window.
-   * 
-   * It is run once the the IRCConnection in LoginMenu is equal to "CONNECTED".
-   * @param location - The location of the login menu window is passed
-   * 
-   * THIS FUNCTION IS NOT IN USE!?
-   */
-  public void connectedDialogue(Object location) {
-	  serverDialogue = new ChatWindow(server, location, this);
-  }
-  
   /**
    * Method not to be called directly. 
    * This method contains the code that actually connects to the server and handles the client server interaction. Contains a loop
@@ -233,7 +219,12 @@ public class IRCConnection implements Runnable {
 		state = DISCONNECTED;
 		
 		// Trying to call a logincheck each time Disconnected is set.
-		TabManager.loginCheck();
+		// !!!
+		// This function no longer works, but should be replaced in some way.
+		// content of loginCheck moved to IRCClient.java.
+		// !!!
+		//TabManager.loginCheck();
+		
     }
   }
 
@@ -271,10 +262,12 @@ public class IRCConnection implements Runnable {
       logging.fine ("Message arrived from server, we have a connection");
       if (me.getCommand().equals ("375")||me.getCommand().equals("001")) {
         state = CONNECTED;
-		TabManager.loginCheck();
+		
+		// letting the loginmenu know it should be shown.
+		loginMenu.showem(false);
+		
         removeMessageListener (this);
       }
     }
   }
 }
-

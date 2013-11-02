@@ -104,7 +104,7 @@ public class ChannelTab extends JInternalFrame implements ActionListener {
 	}
     
       	public void actionPerformed(ActionEvent e) {
-
+/*
 		if (e.getSource() == write) {
 			
 			// First our request is added to the textArea.
@@ -129,6 +129,8 @@ public class ChannelTab extends JInternalFrame implements ActionListener {
 			
 			dispose();
 		}
-	}
+
+*/
+		}
 	
 }
