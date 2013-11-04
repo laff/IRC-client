@@ -5,6 +5,7 @@
 package gruppe.irc;
 
 import java.awt.GridLayout;
+import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
@@ -12,7 +13,7 @@ import javax.swing.JTextArea;
  *
  * @author HS Vikar
  */
-public class PersonalTab extends TabManager {
+public class PersonalTab extends JInternalFrame {
 	public JPanel panel;
 	public JTextArea text;
 	

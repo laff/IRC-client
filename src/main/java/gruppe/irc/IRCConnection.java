@@ -120,15 +120,17 @@ public class IRCConnection extends IRCClient implements Runnable {
   
 	
 	// Sending prefix, command and message to IRCClient.java
-	sendInfo(prefix, command, message);
+	
 	
     if (message.startsWith (":")) {
         prefix = message.substring (1, message.indexOf(" "));
         message = message.substring (message.indexOf(" ")+1);
     }
         command = message.substring (0, message.indexOf(" "));
+		
         message = message.substring (message.indexOf(" ")+1);
 
+		sendInfo(prefix, command, nick, message+"\n");
     logging.finest ("New message arriver : "+command+"|"+message);
 
     MessageEvent me = new MessageEvent (prefix, command, message, this);
@@ -253,6 +255,18 @@ public class IRCConnection extends IRCClient implements Runnable {
   public int getState() {
 	  return state;
   }
+
+	String getNick() {
+		return nick;
+	}
+
+	String getAltNick() {
+		return altNick;
+	}
+
+	String getServerName() {
+		return server;
+	}
   
   // This class is used as a listener only to detect when an actual connection is established.
   private class LoggedOnDetector implements MessageListener {

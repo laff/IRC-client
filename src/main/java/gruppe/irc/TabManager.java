@@ -34,8 +34,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.beans.PropertyVetoException;
 import java.util.Vector;
 import javax.swing.*;
+import javax.swing.text.BadLocationException;
 
 /**
  *
@@ -44,22 +46,41 @@ import javax.swing.*;
  * TODO: When we click a tab, the focus should be set to the InternalFrame that 
  * tab belongs to.
  */
+
+
 public class TabManager extends JPanel implements ActionListener {
 	
-	private ServerTab serverTab;
-	private Vector<ChannelTab> channelTabs = new Vector<ChannelTab>();
-	private Vector<PersonalTab> personalTabs = new Vector<PersonalTab>();
+	private JInternalFrame serverTab;
+	private Vector<JInternalFrame> channelTabs = new Vector<JInternalFrame>();
+	private Vector<JInternalFrame> personalTabs = new Vector<JInternalFrame>();
 	
 	// This TabManager's IRCConnection
 	private IRCConnection connection;
 	
+	/*
+	 * Each user is distinguished from other users by a unique nickname
+	 * having a maximum length of nine (9) characters.  See the protocol
+	 * grammar rules (section 2.3.1) for what may and may not be used in a
+	 * nickname.
+	 * While the maximum length is limited to nine characters, clients
+	 * SHOULD accept longer strings as they may become used in future
+	 * evolutions of the protocol.
+	 */
+	private final int maxNickLength = 9;
 	// The server name this TabManager is connected to.
-	public String serverName;
+	private String serverName, nick, altNick;
 	
 	public JTabbedPane tabbedPane;
 	public JButton testButton;
     
     JDesktopPane desktop;
+	
+
+	JTextField write;
+	JButton quit;
+	JTextPane text;
+	JScrollPane scrollPane;
+	BorderLayout layout;
 	
 	public TabManager () {
 	
@@ -67,8 +88,8 @@ public class TabManager extends JPanel implements ActionListener {
 		setVisible(true);	
         desktop = new JDesktopPane();
         //This one should always be made.
-        serverTab = new ServerTab();
-        
+        serverTab = createServerTab();
+   
         //TEMP:
         //channelTabs.add(new ChannelTab());
         
@@ -85,7 +106,7 @@ public class TabManager extends JPanel implements ActionListener {
 		
         // TODO: Hardcoded adding of the tabs, this must be automated!
         tabbedPane = new JTabbedPane();
-        tabbedPane.addTab("ServerTab", null, serverTab.getPanel(), "no action");
+        tabbedPane.addTab("ServerTab", null, new JPanel(), "no action");
 		
         //tabbedPane.addTab("ChannelTab", null, channelTabs.elementAt(0).getPanel(), "no action either");
         add(tabbedPane, BorderLayout.NORTH);
@@ -112,46 +133,40 @@ public class TabManager extends JPanel implements ActionListener {
 	
 	public void setConnection (IRCConnection ourConnection) {
 		connection = ourConnection;
+		serverName = connection.getServerName();
+		nick = connection.getNick();
+		altNick = connection.getAltNick();
 	}
     
     public IRCConnection getConnection () {
         return connection;
     }
 	
-    
-    //Not in use, just for testing:
-	private void addPanel (Integer type) {
+	public JInternalFrame createServerTab() {
+		JInternalFrame intFrame = new JInternalFrame("ServerTab", true, false, true, true);
 		
-		switch (type) {
-			
-			case 1 : 
-				// The inital server dialogue tab.
+		//Set maximum
+        intFrame.setSize(300, 300);
+		
+        intFrame.setLayout(new BorderLayout());
+        intFrame.add(scrollPane = new JScrollPane(text = new JTextPane()), BorderLayout.CENTER);
+        write = new JTextField();
+        intFrame.add(write, BorderLayout.SOUTH);
+ 
+		write.addActionListener(this);
 
-				tabbedPane.addTab("Server tab", null, serverTab.getPanel(),
-                "Does nothing");
-				
-				break;
-				
-			case 2 : 
-				
-				channelTabs.add(new ChannelTab());
-				
-				tabbedPane.addTab("channel tab", null, ((ChannelTab)channelTabs.elementAt (channelTabs.size()-1)).getPanel(), "channel tab this");
-				
-				break;
-				
-			case 3 : 
-				// The inital server dialogue tab.
-				//PersonalTab personalTab = new PersonalTab();
-				
-				personalTabs.add(new PersonalTab());
-				tabbedPane.addTab("channel tab", null, ((PersonalTab)personalTabs.elementAt (personalTabs.size()-1)).getPanel(), "personal tab this");
-				break;
-			
-		}
-
-		//tabbedPane.add(freshTab);
+		text.setBackground(Color.LIGHT_GRAY);
+		text.setEditable(false);
+     
+		quit = new JButton("Close connection");
+		quit.addActionListener(this);
+        
+        intFrame.add(quit, BorderLayout.NORTH);
+        intFrame.setVisible(true);
+		
+		return intFrame;
 	}
+	
 		
 	/**
 	 * Function that sends messages to all tabs.
@@ -159,12 +174,8 @@ public class TabManager extends JPanel implements ActionListener {
 	 * @param : command conatining a code.
 	 * @param : prefix containing the servername
 	 */
-	public void sendMessage (String prefix, String command, String message) {
+	public void sendMessage (String prefix, String command, String alias, String message) {
 		
-		// sets ServerName
-		if (serverName == null) {
-			serverName = prefix;
-		}
 		
 		// The amount of tabs:
 		int channelCount = channelTabs.size();
@@ -181,7 +192,7 @@ public class TabManager extends JPanel implements ActionListener {
 			((PersonalTab)personalTabs.elementAt (i)).addText(message);
 			tabbedPane.getComponentAt(i);
 		}
-		serverTab.addText(message);
+		addText(prefix, command, alias, message);
 	}
 	
     protected JComponent makeTextPanel(String text) {
@@ -194,7 +205,21 @@ public class TabManager extends JPanel implements ActionListener {
     }
 
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == testButton) {
+		
+				if (e.getSource() == write) {
+			
+			// First our request is added to the textArea.
+			//addText(write.getText()+"\n");
+			
+			// Then the request is sent to the server. 
+			// The answers are then put into the textarea by the message() function in IRCConnection.
+			//TabManager.getConnection().writeln(write.getText());
+			
+			writeToLn(write.getText());
+			
+			write.setText("");
+		}
+				else if (e.getSource() == testButton) {
 			connection.close();
 		}
 	}
@@ -218,4 +243,29 @@ public class TabManager extends JPanel implements ActionListener {
         }
     }
 	*/
+	
+		public void addText(String prefix, String command, String alias, String msg) {
+        int pos = text.getStyledDocument().getEndPosition().getOffset();
+		
+		
+		// Logic that checks if the messages from IRC-client (IRCConnection) is ment for this tabmanager.
+		if (prefix.equals(serverName) && alias.equals(nick)) { 
+
+			try {	
+				text.getStyledDocument().insertString(pos, msg, null);
+			} catch (BadLocationException ble) {};					
+			
+		}
+
+        //When new messages appears in the window, it scrolls down automagically.
+        //Borrowed from Oyvind`s example.
+        SwingUtilities.invokeLater(new Thread() {
+	        public void run() {
+	        	// Get the scrollbar from the scroll pane
+	        	JScrollBar scrollbar = scrollPane.getVerticalScrollBar();
+	        	// Set the scrollbar to its maximum value
+	        	scrollbar.setValue(scrollbar.getMaximum());
+	        }
+	    });
+	}
 }
