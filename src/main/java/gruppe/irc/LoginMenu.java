@@ -9,6 +9,16 @@ import gruppe.irc.messageListeners.PingListener;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Vector;
 import java.util.prefs.Preferences;
 
 /**
@@ -26,6 +36,8 @@ public class LoginMenu extends JFrame {
 		LoginMenu loginFrame = new LoginMenu(null);
 	}
 	*/
+    
+    private Vector<String>networks = new Vector<String>();
 	// The panel
 	JPanel panel = new JPanel();		
 
@@ -59,7 +71,7 @@ public class LoginMenu extends JFrame {
 	 * Currently receives an object that is either null or the point of a window.
 	 * That is probably not a good idea though. Suggestions?
 	 */
-	LoginMenu(Object location){
+	LoginMenu(Object location) {
 		
 		super("A menu for login");
 		setSize(330,280);
@@ -68,11 +80,10 @@ public class LoginMenu extends JFrame {
 		try {
 			
 			setLocation((Point) location);
-			
+	
 		} catch (NullPointerException npel) {
 			
 			setLocationRelativeTo(null);
-			
 		}
 		
 		panel.setLayout (null); 
@@ -121,9 +132,13 @@ public class LoginMenu extends JFrame {
 
 		getContentPane().add(panel);
 		setVisible(true);
+        
+        //OBS: This might not be a good solution.
+        try {initiateServerlist();} catch (MalformedURLException mue) {};
 		
 		getPrefs();
 		actionlogin();
+        
 	}
 
 	/**
@@ -142,7 +157,6 @@ public class LoginMenu extends JFrame {
 		altnick.setText(pref.get("altNick", ""));
 		username.setText(pref.get("username", ""));
 		fullname.setText(pref.get("fullname", ""));
-		
 	}
  
 	/**
@@ -278,4 +292,51 @@ public class LoginMenu extends JFrame {
 		//TabManager.setConnection(connection);
 		
 	}
+    
+    /*
+     * Function that reads the IRC 'servers.ini' file from an URL.
+     * 
+     * OBS: The function is called from the constructor. Don`t know the 'policy' of throwing
+     * exceptions and stuff in a constructor. 
+     * OBS2: Maybe we want to use a local file instead of the 'online' version, but this
+     * one is always up to date!
+     * 
+     * TODO: The networks and the servers should be added in two seperate lists/vectors, and
+     * then be displayed in JComboBoxes or something. We can find the list of networks after the
+     * heading [networks] in the file, the servers are located under the heading [servers] (belive it or not).
+     * 
+     */
+    private void initiateServerlist() throws MalformedURLException {
+        BufferedReader bReader;    
+        String temp, network;
+        URL servers;
+        
+        try {
+            servers = new URL("http://www.mirc.com/servers.ini");
+            bReader = new BufferedReader(new InputStreamReader(servers.openStream()));
+            while ((temp = bReader.readLine()) != null) {
+                if(temp.equals("[networks]")) {
+                    //Here we have found the [networks]-heading, then we can get the names,
+                    //and add the networks to our list.
+                    while(!(temp = bReader.readLine()).equals("")) {
+                        network = temp.substring(temp.indexOf("=")+1, temp.length());
+                        networks.add(network);  
+                    }
+                }
+                //TODO: Here we need some hardcore stuff to find the servernames and add
+                //them to the list.
+            }
+            bReader.close();
+        } catch (IOException ioe) {};
+
+    }
+    
+    //TEMP: Just to check the elements in the networks-list
+    public void displayNetworks() {
+        for(int i = 0; i < networks.size(); i++) {
+            System.out.println(networks.elementAt(i));
+            
+        }
+    }
+
 }
