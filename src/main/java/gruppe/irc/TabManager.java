@@ -36,6 +36,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyVetoException;
 import java.util.Vector;
+
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
 
@@ -145,9 +146,6 @@ public class TabManager extends JPanel implements ActionListener {
 	public JInternalFrame createServerTab() {
 		JInternalFrame intFrame = new JInternalFrame("ServerTab", true, false, true, true);
 		
-		//Set maximum
-        intFrame.setSize(300, 300);
-		
         intFrame.setLayout(new BorderLayout());
         intFrame.add(scrollPane = new JScrollPane(text = new JTextPane()), BorderLayout.CENTER);
         write = new JTextField();
@@ -163,6 +161,12 @@ public class TabManager extends JPanel implements ActionListener {
         
         intFrame.add(quit, BorderLayout.NORTH);
         intFrame.setVisible(true);
+        //Maximizes internal frame
+        try { 
+        	intFrame.setMaximum(true);
+        } catch (Exception e) {
+        	// TODO: Error logging
+        }
 		
 		return intFrame;
 	}
@@ -248,7 +252,7 @@ public class TabManager extends JPanel implements ActionListener {
         int pos = text.getStyledDocument().getEndPosition().getOffset();
 		
 		
-		// Logic that checks if the messages from IRC-client (IRCConnection) is ment for this tabmanager.
+		// Logic that checks if the messages from IRC-client (IRCConnection) is meant for this tabmanager.
 		if (prefix.equals(serverName) && alias.equals(nick)) { 
 
 			try {	
