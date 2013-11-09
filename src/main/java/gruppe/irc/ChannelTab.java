@@ -38,6 +38,8 @@ public class ChannelTab extends GenericTab implements ActionListener {
     //AND MORE: Maybe some minimum-values should be set for the components in the splitpane?
     
 	public ChannelTab () {
+		//TODO: Must receive a proper filter
+		super("STATIC TEST MESSAGE");
         
 		//super("Server", true, true, true, true);
         setSize(300, 300);

@@ -107,7 +107,7 @@ public class ServerTab extends JInternalFrame implements ActionListener {
 			// The answers are then put into the textarea by the message() function in IRCConnection.
 			//TabManager.getConnection().writeln(write.getText());
 			
-			IRCClient.writeInfo(write.getText());
+			//IRCClient.writeInfo(write.getText());
 			
 			write.setText("");
 		}

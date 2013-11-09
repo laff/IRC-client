@@ -144,7 +144,7 @@ public class TabManager extends JPanel implements ActionListener {
     }
 	
 	public JInternalFrame createServerTab() {
-		JInternalFrame intFrame = new JInternalFrame("ServerTab", true, false, true, true);
+		JInternalFrame intFrame = new JInternalFrame();
 		
         intFrame.setLayout(new BorderLayout());
         intFrame.add(scrollPane = new JScrollPane(text = new JTextPane()), BorderLayout.CENTER);
