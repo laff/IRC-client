@@ -66,7 +66,7 @@ public class IRCClient {
 	 */
 	public void sendInfo(String prefix, String command, String alias, String serverName, String message) {
 		for (int i = 0; i < ircFrames.size(); i++) {
-			((IRCClientFrame)ircFrames.elementAt (i)).thisTab.sendMessage(prefix, command, alias, serverName, message);
+			((IRCClientFrame)ircFrames.elementAt (i)).thisTab.distributeMessage(prefix, command, alias, serverName, message);
 		}
 	}
 

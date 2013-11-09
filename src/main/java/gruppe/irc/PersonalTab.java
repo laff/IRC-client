@@ -13,12 +13,14 @@ import javax.swing.JTextArea;
  *
  * @author HS Vikar
  */
-public class PersonalTab extends JInternalFrame {
+public class PersonalTab extends GenericTab {
 	public JPanel panel;
 	public JTextArea text;
 	
-	public PersonalTab () {
+	public PersonalTab (String stringF) {
 	
+		super(stringF);
+		
 		panel = new JPanel(false);
 		
 		text = new JTextArea();

@@ -26,8 +26,17 @@ import java.util.prefs.Preferences;
  * @author John
  */
 public class LoginMenu extends JFrame {
-
+	
+	/**
+	 * Overrides the overlying default close operation to 
+	 * EXIT_ON_CLOSE
+	 */
 	@Override
+	public void setDefaultCloseOperation(int operation) {
+		
+		super.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
+	
 	// The variables for logging in.
 	private String serverVar, nickVar, altnickVar, usernameVar, fullnameVar;
 	private Integer	portVar;
@@ -189,7 +198,7 @@ public class LoginMenu extends JFrame {
 	}
 	
 	/**
-	 * Method that sets visible to false or most definately
+	 * Method that sets visible to false or most definitely
 	 * @param really : Boolean.
 	 */
 	public void showem(Boolean really) {

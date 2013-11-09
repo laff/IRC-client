@@ -12,10 +12,10 @@ import javax.swing.JInternalFrame;
 public class GenericTab extends JInternalFrame {
 	
 	private String filter;
-	
-	
-	public void GenericTab (String tabFilter) {
-		String filter = tabFilter;
+		
+
+	public GenericTab (String tabFilter) {
+		filter = tabFilter;
 	}
 	
 	/**

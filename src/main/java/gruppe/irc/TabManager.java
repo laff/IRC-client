@@ -173,13 +173,42 @@ public class TabManager extends JPanel implements ActionListener {
 	
 		
 	/**
-	 * Function that sends messages to all tabs.
+	 * Function that distributes messages to appropriate tabs.
 	 * @param : message containing a message.
 	 * @param : command conatining a code.
 	 * @param : prefix containing the servername
 	 * @param : server The servername as received by the message
 	 */
-	public void sendMessage (String prefix, String command, String alias, String server, String message) {
+	public void distributeMessage (String prefix, String command, String alias, String server, String message) {
+		
+		if ( command.equals("PRIVMSG") ) {
+			int personalCount = personalTabs.size();
+			boolean noFoundTab = true;
+			for (int i = 0; i < personalCount; ++i) {
+			
+				PersonalTab pTab = (PersonalTab)personalTabs.elementAt (i);
+				if ( pTab.getFilter().equals(prefix) ) {
+					pTab.addText(message);
+					noFoundTab = false;
+				}
+			}
+			
+			if (noFoundTab) {
+				
+				PersonalTab newPersonalTab = new PersonalTab (prefix);
+				personalTabs.add(newPersonalTab);
+				
+				String tabName = "Private " + prefix.substring( 0, prefix.indexOf("!") );
+				// update function adding stuff to the tabbedpane?
+			    tabbedPane.addTab(tabName, null, newPersonalTab, "no action");
+				try {
+					newPersonalTab.setMaximum(true);
+				} catch (Exception e) {
+					System.out.println( "TabManager::distributeMessage: Error setting tab size " + e.getMessage() ); 
+				}
+				
+			}
+		}
 		
 		
 		// The amount of tabs:
@@ -275,7 +304,11 @@ public class TabManager extends JPanel implements ActionListener {
 	}
 		
 		public void closeConnection() {
-			connection.close();
+			try {
+				connection.close();
+			} catch (NullPointerException npe) {
+				System.out.println("TabManager::closeConnection: Error closing connection " + npe.getMessage());
+			}
 		}
 		
 		/**

@@ -19,7 +19,7 @@ import javax.swing.text.BadLocationException;
  *
  * @author Christian
  */
-public class ChannelTab extends JInternalFrame implements ActionListener {
+public class ChannelTab extends GenericTab implements ActionListener {
 	
     String channelName;
 	JTextField write;
@@ -39,7 +39,7 @@ public class ChannelTab extends JInternalFrame implements ActionListener {
     
 	public ChannelTab () {
         
-		super("Server", true, true, true, true);
+		//super("Server", true, true, true, true);
         setSize(300, 300);
         
         setLayout(new BorderLayout());
