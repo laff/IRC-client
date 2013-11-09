@@ -26,7 +26,8 @@ import java.util.prefs.Preferences;
  * @author John
  */
 public class LoginMenu extends JFrame {
-	
+
+	@Override
 	// The variables for logging in.
 	private String serverVar, nickVar, altnickVar, usernameVar, fullnameVar;
 	private Integer	portVar;
@@ -280,13 +281,19 @@ public class LoginMenu extends JFrame {
 		
 		connection.addMessageListener (new PingListener ());
 		
-		
-		while (connection.getState() != IRCConnection.CONNECTED) {
+		long timeStart = System.currentTimeMillis();
+		long timeUsed = 0;
+		while (connection.getState() != IRCConnection.CONNECTED && timeUsed < 50000) {
 		  try {
 				System.out.println("Please wait...");
 				Thread.currentThread().sleep (100);
+				timeUsed = System.currentTimeMillis() - timeStart;
 
 		  } catch (Exception e) { }
+		}
+		//In case connection failed
+		if (connection.getState() != IRCConnection.CONNECTED) {
+			connection.abortLogin();
 		}
 
 		//TabManager.setConnection(connection);
@@ -338,5 +345,5 @@ public class LoginMenu extends JFrame {
             
         }
     }
-
+    
 }

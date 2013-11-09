@@ -136,7 +136,7 @@ public class TabManager extends JPanel implements ActionListener {
 		connection = ourConnection;
 		serverName = connection.getServerName();
 		nick = connection.getNick();
-		altNick = connection.getAltNick();
+		//altNick = connection.getAltNick();
 	}
     
     public IRCConnection getConnection () {
@@ -177,8 +177,9 @@ public class TabManager extends JPanel implements ActionListener {
 	 * @param : message containing a message.
 	 * @param : command conatining a code.
 	 * @param : prefix containing the servername
+	 * @param : server The servername as received by the message
 	 */
-	public void sendMessage (String prefix, String command, String alias, String message) {
+	public void sendMessage (String prefix, String command, String alias, String server, String message) {
 		
 		
 		// The amount of tabs:
@@ -186,17 +187,18 @@ public class TabManager extends JPanel implements ActionListener {
 		int personalCount = personalTabs.size();
 		
 		
-		
-		for (int i = 0; i < channelCount; i++) {
-			((ChannelTab)channelTabs.elementAt (i)).addText(message);
-			tabbedPane.getComponentAt(i);
+		if (server.equals(serverName) && alias.equals(nick)) {
+			for (int i = 0; i < channelCount; i++) {
+				((ChannelTab)channelTabs.elementAt (i)).addText(message);
+				tabbedPane.getComponentAt(i);
+			}
+			
+			for (int i = 0; i < personalCount; i++) {
+				((PersonalTab)personalTabs.elementAt (i)).addText(message);
+				tabbedPane.getComponentAt(i);
+			}
+			addText(prefix, command, message);
 		}
-		
-		for (int i = 0; i < personalCount; i++) {
-			((PersonalTab)personalTabs.elementAt (i)).addText(message);
-			tabbedPane.getComponentAt(i);
-		}
-		addText(prefix, command, alias, message);
 	}
 	
     protected JComponent makeTextPanel(String text) {
@@ -223,7 +225,7 @@ public class TabManager extends JPanel implements ActionListener {
 			
 			write.setText("");
 		}
-				else if (e.getSource() == testButton) {
+				else if (e.getSource() == quit) {
 			connection.close();
 		}
 	}
@@ -248,18 +250,17 @@ public class TabManager extends JPanel implements ActionListener {
     }
 	*/
 	
-		public void addText(String prefix, String command, String alias, String msg) {
+		public void addText(String prefix, String command, String msg) {
         int pos = text.getStyledDocument().getEndPosition().getOffset();
+        
+        String test = "\nPrefix: " + prefix + "\nCommand: " + command + "\nMessage: " + msg + "\n";
 		
 		
-		// Logic that checks if the messages from IRC-client (IRCConnection) is meant for this tabmanager.
-		if (prefix.equals(serverName) && alias.equals(nick)) { 
-
-			try {	
-				text.getStyledDocument().insertString(pos, msg, null);
-			} catch (BadLocationException ble) {};					
-			
-		}
+		// Logic that checks if the messages from IRC-client (IRCConnection) is meant for this tabmanager. 
+		try {	
+			text.getStyledDocument().insertString(pos, test, null);
+		} catch (BadLocationException ble) {};					
+		
 
         //When new messages appears in the window, it scrolls down automagically.
         //Borrowed from Oyvind`s example.
@@ -272,4 +273,16 @@ public class TabManager extends JPanel implements ActionListener {
 	        }
 	    });
 	}
+		
+		public void closeConnection() {
+			connection.close();
+		}
+		
+		/**
+		 * Return state variable of IRCConnection
+		 * @returns connection state
+		 */
+		public int getConnectionState() {
+			return connection.getState();
+		}
 }

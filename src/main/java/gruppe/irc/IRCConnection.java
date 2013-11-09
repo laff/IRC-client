@@ -7,7 +7,7 @@ import java.util.logging.*;
 import gruppe.irc.messageListeners.*;
 
 /**
- * This class controlls the connection to a IRC server. 
+ * This class controls the connection to a IRC server. 
  * Use this class to represent the connection, then add the listeners needed to receive those events you feel you should receive
  * from this connection. Use the classes writeln method to send commands back to the server. 
  */
@@ -28,6 +28,10 @@ public class IRCConnection extends IRCClient implements Runnable {
    * Indicates that there an existing connection is being brought down
    */ 
   public static final int DISCONNECTING =  3;
+  /**
+   * Indicates that connection has time out
+   */
+  public static final int ABORTED = 4;
 
   private int       state = DISCONNECTED;
   private String    server;
@@ -114,7 +118,7 @@ public class IRCConnection extends IRCClient implements Runnable {
     logging.fine ("Sent message to server : "+message);
   }
 
-  // This method is used internaly to parse an incoming message into its separate parts.
+  // This method is used internally to parse an incoming message into its separate parts.
   private void message (String message) {
     String prefix="", command="";
   
@@ -130,8 +134,8 @@ public class IRCConnection extends IRCClient implements Runnable {
 		
         message = message.substring (message.indexOf(" ")+1);
 
-		sendInfo(prefix, command, nick, message+"\n");
-    logging.finest ("New message arriver : "+command+"|"+message);
+		sendInfo(prefix, command, nick, server, message + "\n");
+    logging.finest ("New message arriver : "+command+" | "+message);
 
     MessageEvent me = new MessageEvent (prefix, command, message, this);
     for (Enumeration e = listeners.elements(); e.hasMoreElements(); ) {
@@ -284,4 +288,10 @@ public class IRCConnection extends IRCClient implements Runnable {
       }
     }
   }
+  
+  public void abortLogin() {
+	  state = ABORTED;
+	  checkAborted();
+  }
+  
 }

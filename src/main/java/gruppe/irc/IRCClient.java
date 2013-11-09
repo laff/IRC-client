@@ -64,25 +64,14 @@ public class IRCClient {
 	 * @param command
 	 * @param message
 	 */
-	public void sendInfo(String prefix, String command, String alias, String message) {
+	public void sendInfo(String prefix, String command, String alias, String serverName, String message) {
 		for (int i = 0; i < ircFrames.size(); i++) {
-			((IRCClientFrame)ircFrames.elementAt (i)).thisTab.sendMessage(prefix, command, alias, message);
+			((IRCClientFrame)ircFrames.elementAt (i)).thisTab.sendMessage(prefix, command, alias, serverName, message);
 		}
 	}
-	
+
 	/**
-	 * Method that sends stuff to the servers?
-	 * @param prefix : NOT IMPLEMENTED.
-	 * @param command : NOT IMPLEMENTED.
-	 * @param message : raw message atm.
-	 */
-	public static void writeInfo(String message) {
-		for (int i = 0; i < ircFrames.size(); i++) {
-			((IRCClientFrame)ircFrames.elementAt (i)).thisTab.writeToLn(message);
-		}
-	}
-	/**
-	 * Method that recieves connections from IRCConnection,
+	 * Method that receives connections from IRCConnection,
 	 * and gives them to TabManagers.. ?
 	 */
 	public void newConnection(IRCConnection newConnection, String serverName) {
@@ -141,4 +130,27 @@ public class IRCClient {
 		}
 	}
 */
+	/**
+	 * 
+	 */
+	protected void checkAborted() {
+		int count = 0;
+		IRCClientFrame thisFrame = null;
+		try {
+			count = ircFrames.size();
+		} catch (NullPointerException e) {
+			System.out.println("IRCClient::checkAborted:  Vector not initialized");
+		}
+		for (int i = 0; i < count; ++i) {
+			try {
+				thisFrame = ((IRCClientFrame) ircFrames.elementAt(i));
+			} catch (Exception e) {
+				System.out.println("IRCClient::checkAborted:  Could not retrieve vector member\n");
+			}
+			//If the IRCframe does exist and the connection is in aborted state -> close window
+			if (thisFrame != null && thisFrame.thisTab.getConnectionState() == IRCConnection.ABORTED) {
+				thisFrame.dispose();
+			}
+		}
+	}
 }

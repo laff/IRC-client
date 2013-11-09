@@ -7,6 +7,10 @@ package gruppe.irc;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -32,7 +36,7 @@ public class IRCClientFrame extends JFrame implements ActionListener {
 		setTitle("I was told this is the server");
 		// Exit button should only close the program if it is the last IRC-Frame.
 		// Perhaps a popup check should be sent?
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // ?
+		setDefaultCloseOperation( JFrame.DO_NOTHING_ON_CLOSE ); // ?
 		setSize(500, 500);
 		setVisible(true);
 		
@@ -48,6 +52,7 @@ public class IRCClientFrame extends JFrame implements ActionListener {
 		// Creating the TabManager panel.
 		thisTab = new TabManager();
         add(thisTab);
+        this.addWindowListener(exitListener);
         
 	}
 	/**
@@ -77,6 +82,13 @@ public class IRCClientFrame extends JFrame implements ActionListener {
 				System.out.println("couldnt even try to show");
 			}
 		}
-		
 	}
+	
+	WindowListener exitListener = new WindowAdapter() {
+		@Override
+		public void windowClosing(WindowEvent e) {
+			thisTab.closeConnection();
+			dispose();
+		}
+	};
 }
