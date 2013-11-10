@@ -66,69 +66,49 @@ public class TabManager extends JPanel implements ActionListener {
 	 * While the maximum length is limited to nine characters, clients
 	 * SHOULD accept longer strings as they may become used in future
 	 * evolutions of the protocol.
+	 * 
+	 * PS! Should rather have this inside the loginmenu logic.
 	 */
 	private final int maxNickLength = 9;
+	
+	
 	// The server name this TabManager is connected to.
 	private String serverName, nick, altNick;
 	
-	public JTabbedPane tabbedPane;
-	public JButton testButton;
-    
-    JDesktopPane desktop;
-	
+	// A Bunch of components
+	private JTabbedPane tabbedPane;
 
-	JTextField write;
-	JButton quit;
-	JTextPane text;
-	JScrollPane scrollPane;
-	BorderLayout layout;
+    private JDesktopPane desktop;
+
+	private JScrollPane scrollPane;
+	private BorderLayout layout;
+	
+	// These components are used wihtin the servertab
+	private JTextField write;
+	private JButton quit;
+	private JTextPane text;
 	
 	public TabManager () {
 	
         setLayout(new BorderLayout());
-		setVisible(true);	
+		setVisible(true);
+		
         desktop = new JDesktopPane();
-        //This one should always be made.
+		
         serverTab = createServerTab();
    
-        //TEMP:
-        //channelTabs.add(new ChannelTab());
-        
         desktop.add(serverTab);
         
-        //TEMP: Creating the tabs in the vector, for now, just for easy testing:
-        //for (int i = 0; i < channelTabs.size(); i++) {
-        //    desktop.add(channelTabs.elementAt(i));
-        //}
-        
-        
-        
         add(desktop);
-		
-        // TODO: Hardcoded adding of the tabs, this must be automated!
+
         tabbedPane = new JTabbedPane();
-        tabbedPane.addTab("ServerTab", null, new JPanel(), "no action");
 		
-        //tabbedPane.addTab("ChannelTab", null, channelTabs.elementAt(0).getPanel(), "no action either");
+        tabbedPane.addTab("ServerTab", null, new JPanel(), "Main window for server communication");
+		
         add(tabbedPane, BorderLayout.NORTH);
 		
-        
-		
-    
-        
-        //The following line enables to use scrolling tabs.
-
         tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 		
-		// Creates loginmenu, which defaults to not visible.
-		//loginMenu = new LoginMenu(null);
-		
-		// Initial logincheck
-		// !!!
-		// This function no longer works, but should be replaced in some way.
-		// content of loginCheck moved to IRCClient.java.
-		// !!!
-		//loginCheck();
 	}
 	
 	
@@ -161,12 +141,14 @@ public class TabManager extends JPanel implements ActionListener {
         
         intFrame.add(quit, BorderLayout.NORTH);
         intFrame.setVisible(true);
-        //Maximizes internal frame
+		
         try { 
         	intFrame.setMaximum(true);
         } catch (Exception e) {
         	// TODO: Error logging
         }
+		
+		
 		
 		return intFrame;
 	}
@@ -181,52 +163,78 @@ public class TabManager extends JPanel implements ActionListener {
 	 */
 	public void distributeMessage (String prefix, String command, String alias, String server, String message) {
 		
-		if ( command.equals("PRIVMSG") ) {
-			int personalCount = personalTabs.size();
-			boolean noFoundTab = true;
-			for (int i = 0; i < personalCount; ++i) {
+		if (server.equals(serverName) && alias.equals(nick)) {
 			
-				PersonalTab pTab = (PersonalTab)personalTabs.elementAt (i);
-				if ( pTab.getFilter().equals(prefix) ) {
-					pTab.addText(message);
-					noFoundTab = false;
-				}
+			// if the command matches "PRIVMSG" we have a personal message incoming.
+			if ( command.equals("PRIVMSG") ) {
+
+				distributePrivate(prefix, message);
+			
+			// else if the command incoming matches "POTATO MASH SO GOOD WHEN HUNGRY" we have a problem on our hands.
+			} else if ( command.equals("POTATO") ) {
+				
+				distributeChannel("tomato", "potato", "scissors");
+			
+			// else Add the rest to the local servertab.
+			} else {
+				
+				addText(prefix, command, message);
 			}
+		}
+	}
+	
+	/**
+	 * Function that takes care of distributing messages to the personaltabs.
+	 * 
+	 * Not yet implemented.
+	 * 
+	 * @param arg1
+	 * @param arg2
+	 * @param arg3 
+	 */
+	private void distributeChannel(String arg1, String arg2, String arg3) {
+		
+	}
+	
+	/**
+	 * Function that takes care of distributing messages to the personaltabs.
+	 * @param prefix 
+	 * @param message 
+	 */
+	private void distributePrivate(String prefix, String message) {
+		
+		int personalCount = personalTabs.size();
+		boolean noFoundTab = true;
+
+		// Goes through the personal tabs to find one that matches our description.
+		// Sets the noFoundTab variable to false if there was found a tab that match.
+		for (int i = 0; i < personalCount; ++i) {
+
+			PersonalTab pTab = (PersonalTab)personalTabs.elementAt (i);
 			
-			if (noFoundTab) {
+			if ( pTab.getFilter().equals(prefix) ) {
 				
-				PersonalTab newPersonalTab = new PersonalTab (prefix);
-				personalTabs.add(newPersonalTab);
-				
-				String tabName = "Private " + prefix.substring( 0, prefix.indexOf("!") );
-				// update function adding stuff to the tabbedpane?
-			    tabbedPane.addTab(tabName, null, newPersonalTab, "no action");
-				try {
-					newPersonalTab.setMaximum(true);
-				} catch (Exception e) {
-					System.out.println( "TabManager::distributeMessage: Error setting tab size " + e.getMessage() ); 
-				}
+				pTab.addText(message);
+				noFoundTab = false;
 				
 			}
 		}
-		
-		
-		// The amount of tabs:
-		int channelCount = channelTabs.size();
-		int personalCount = personalTabs.size();
-		
-		
-		if (server.equals(serverName) && alias.equals(nick)) {
-			for (int i = 0; i < channelCount; i++) {
-				((ChannelTab)channelTabs.elementAt (i)).addText(message);
-				tabbedPane.getComponentAt(i);
+
+		// Now, if there is not found a personal tab matching our description, a new one must be made.
+		if (noFoundTab) {
+
+			PersonalTab newPersonalTab = new PersonalTab (prefix);
+			personalTabs.add(newPersonalTab);
+
+			String tabName = "Private " + prefix.substring( 0, prefix.indexOf("!") );
+			// update function adding stuff to the tabbedpane?
+			tabbedPane.addTab(tabName, null, newPersonalTab, "no action");
+			try {
+				newPersonalTab.setMaximum(true);
+			} catch (Exception e) {
+				System.out.println( "TabManager::distributeMessage: Error setting tab size " + e.getMessage() ); 
 			}
-			
-			for (int i = 0; i < personalCount; i++) {
-				((PersonalTab)personalTabs.elementAt (i)).addText(message);
-				tabbedPane.getComponentAt(i);
-			}
-			addText(prefix, command, message);
+
 		}
 	}
 	
@@ -302,20 +310,23 @@ public class TabManager extends JPanel implements ActionListener {
 	        }
 	    });
 	}
-		
-		public void closeConnection() {
-			try {
-				connection.close();
-			} catch (NullPointerException npe) {
-				System.out.println("TabManager::closeConnection: Error closing connection " + npe.getMessage());
-			}
+	
+	/*
+	 * Function that calls the close function of this tabs connection.
+	 */
+	public void closeConnection() {
+		try {
+			connection.close();
+		} catch (NullPointerException npe) {
+			System.out.println("TabManager::closeConnection: Error closing connection " + npe.getMessage());
 		}
-		
-		/**
-		 * Return state variable of IRCConnection
-		 * @returns connection state
-		 */
-		public int getConnectionState() {
-			return connection.getState();
-		}
+	}
+
+	/**
+	 * Return state variable of IRCConnection
+	 * @returns connection state
+	 */
+	public int getConnectionState() {
+		return connection.getState();
+	}
 }
