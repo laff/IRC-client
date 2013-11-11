@@ -14,6 +14,7 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Vector;
 import java.util.prefs.Preferences;
 
@@ -21,7 +22,7 @@ import java.util.prefs.Preferences;
  *
  * @author John
  */
-public class LoginMenu extends JFrame {
+public class LoginMenu extends JFrame implements ItemListener {
 	
 	/**
 	 * Overrides the overlying default close operation to 
@@ -43,8 +44,12 @@ public class LoginMenu extends JFrame {
 	}
 	*/
     
-    private Vector<String>networks = new Vector<String>();
-    private Vector<String>serverList = new Vector<String>();
+    private Vector<String> networks = new Vector<String>();
+    private Vector<String> serverList = new Vector<String>(); 
+    private Vector<String> groups = new Vector<String>();
+    
+    Vector<ServerListItem> sli = new Vector<ServerListItem>();
+
 	// The panel
 	JPanel panel = new JPanel();		
 
@@ -65,7 +70,7 @@ public class LoginMenu extends JFrame {
 	JTextField username = new JTextField(32);
 	JTextField fullname = new JTextField(32);
     
-    JComboBox server;
+    JComboBox server, network;
 	
 	// Buttons
 	JButton login = new JButton("Login");	// The login button.
@@ -81,8 +86,7 @@ public class LoginMenu extends JFrame {
 	 * That is probably not a good idea though. Suggestions?
 	 */
 	LoginMenu(Object location) {
-		 super(IRCClient.messages.getString("loginMenu.header"));
-		//super(messages.getS"login");
+		super(IRCClient.messages.getString("loginMenu.header"));
 		setSize(330,280);
 		
 		// Sets location based on passed variable.
@@ -100,6 +104,11 @@ public class LoginMenu extends JFrame {
         //make it possible to insert a servername not on the list.
         server = new JComboBox(serverList);
         server.setEditable(true);
+        server.setMaximumRowCount(4);
+        server.addItemListener(this);
+        network = new JComboBox(networks);
+        network.addItemListener(this);
+        network.setMaximumRowCount(4);
 		
 		panel.setLayout (null); 
 		
@@ -113,6 +122,8 @@ public class LoginMenu extends JFrame {
 		autologL.setBounds  (40,200,70,20);
 		
 		// Position input fields
+        network.setBounds(110, 5, 160, 20);
+        
 		server.setBounds	(110,30,160,20);
 		port.setBounds		(110,55,160,20);
 		nick.setBounds		(110,80,160,20);
@@ -135,6 +146,7 @@ public class LoginMenu extends JFrame {
 		panel.add(usernameL);
 		panel.add(fullnameL);
 		panel.add(autologL);
+        panel.add(network);                 
 		panel.add(server);
 		panel.add(port);
 		panel.add(nick);
@@ -151,6 +163,27 @@ public class LoginMenu extends JFrame {
 		getPrefs();
 		actionlogin();      
 	}
+    /**
+     * Method that updates the Combobox with servers belonging to the network that
+     * is chosen in the network-combobox.
+     * @param e 
+     */
+    
+    public void itemStateChanged(ItemEvent e) {
+        if(e.getSource() == network) {
+            server.removeAllItems();
+            
+            for(int i = 0; i < sli.size(); i++) {
+                if(sli.elementAt(i).getGroup().equals(network.getSelectedItem())) {
+                    
+                    //TODO: Should display servername, instead of the server-address.
+                    server.addItem(sli.elementAt(i).getRelName());
+                }
+            }
+        }
+    }
+    
+    
 
 	/**
 	* Method that finds preferences saved to current user of the computers profile,
@@ -330,6 +363,9 @@ public class LoginMenu extends JFrame {
         String temp, network, srv;
         URL servers;
         
+        
+        
+        
         try {
             servers = new URL("http://www.mirc.com/servers.ini");
             bReader = new BufferedReader(new InputStreamReader(servers.openStream()));
@@ -346,6 +382,11 @@ public class LoginMenu extends JFrame {
                 if(temp.equals("[servers]")) {
                     while((temp = bReader.readLine()) != null) {
                         int start, end;
+                        String name, group;
+                        ServerListItem tmp;
+                        
+                        //Find the actual name of the server, not the address.
+                        name = temp.substring(temp.indexOf("=")+1, temp.indexOf("SERVER"));
                         //Finding the first occation of colon, and save the
                         //position of the characater after it.
                         start = temp.indexOf(":")+1;
@@ -353,11 +394,18 @@ public class LoginMenu extends JFrame {
                         end = temp.indexOf(":", start);
                         //Take out the string between the two colons.
                         srv = temp.substring(start, end);
-                       //Add the servername to the serverList.
+                        //Add the servername to the serverList.
                         serverList.add(srv);
-                        //TODO: Lage en 2dimensjonal vektor istedet for 2 forskjellige
-                        // gå gjennom første array, og legge til servere under riktig nettverk.
-                        // vha. for-løkke
+                        //Find which group(network) the server belongs to.
+                        group = temp.substring(temp.indexOf("GROUP")+6, temp.length());
+                        //Add the server to a list of server-objects.
+                        sli.add(tmp = new ServerListItem(name, group, srv));
+                        
+                        
+                        //If the group not already exists, create it!
+                        //if(!groups.contains(group)) {
+                        //    groups.addElement(group);
+                        //}
                     }
                 }
             }
@@ -368,11 +416,11 @@ public class LoginMenu extends JFrame {
     //TEMP: Just to check the elements in the networks-list
     public void displayNetworks() {
         for(int i = 0; i < networks.size(); i++) {
-            System.out.println(networks.elementAt(i));
+          //  System.out.println(networks.elementAt(i));
         }
-         for(int i = 0; i < serverList.size(); i++) {
-            System.out.println(serverList.elementAt(i));
-        }
+        // for(int i = 0; i < serverList.size(); i++) {
+           // System.out.println(serverList.elementAt(i));
+       // }
     }
     
 }
