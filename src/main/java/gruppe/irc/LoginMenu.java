@@ -325,7 +325,7 @@ public class LoginMenu extends JFrame {
      */
     private void initiateServerlist() throws MalformedURLException {
         BufferedReader bReader;    
-        String temp, network, server;
+        String temp, network, srv;
         URL servers;
         
         try {
@@ -341,28 +341,32 @@ public class LoginMenu extends JFrame {
                     }
                 }
                 
-             /*                   if(temp.equals("[servers]")) {
-                    //TODO: Here we need some hardcore stuff to find the servernames and add
-                    //them to the list.
-                    while(!(temp = bReader.readLine()).equals("")) {
-                        server = temp.substring(temp.indexOf(":")+1, temp.indexOf(":")-1);
-                        serverList.add(server);
+                if(temp.equals("[servers]")) {
+                    while((temp = bReader.readLine()) != null) {
+                        int start, end;
+                        //Finding the first occation of colon, and save the
+                        //position of the characater after it.
+                        start = temp.indexOf(":")+1;
+                        //Find the first occasion of colon after the first one.
+                        end = temp.indexOf(":", start);
+                        //Take out the string between the two colons.
+                        srv = temp.substring(start, end);
+                       //Add the servername to the serverList.
+                        serverList.add(srv);
                     }
                 }
-               */
-                //TODO: Here we need some hardcore stuff to find the servernames and add
-                //them to the list.
             }
             bReader.close();
         } catch (IOException ioe) {};
-
     }
     
     //TEMP: Just to check the elements in the networks-list
     public void displayNetworks() {
         for(int i = 0; i < networks.size(); i++) {
             System.out.println(networks.elementAt(i));
-            
+        }
+         for(int i = 0; i < serverList.size(); i++) {
+            System.out.println(serverList.elementAt(i));
         }
     }
     
