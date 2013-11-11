@@ -51,9 +51,9 @@ import javax.swing.text.BadLocationException;
 
 public class TabManager extends JPanel implements ActionListener {
 	
-	private JInternalFrame serverTab;
-	private Vector<JInternalFrame> channelTabs = new Vector<JInternalFrame>();
-	private Vector<JInternalFrame> personalTabs = new Vector<JInternalFrame>();
+	private JPanel serverTab;
+	private Vector<GenericTab> channelTabs = new Vector<GenericTab>();
+	private Vector<GenericTab> personalTabs = new Vector<GenericTab>();
 	
 	// This TabManager's IRCConnection
 	private IRCConnection connection;
@@ -83,7 +83,7 @@ public class TabManager extends JPanel implements ActionListener {
 	private JScrollPane scrollPane;
 	private BorderLayout layout;
 	
-	// These components are used wihtin the servertab
+	// These components are used within the servertab
 	private JTextField write;
 	private JButton quit;
 	private JTextPane text;
@@ -103,7 +103,7 @@ public class TabManager extends JPanel implements ActionListener {
 
         tabbedPane = new JTabbedPane();
 		
-        tabbedPane.addTab("ServerTab", null, new JPanel(), "Main window for server communication");
+        tabbedPane.addTab("Server", serverTab);//"ServerTab", null, new JPanel(), "Main window for server communication");
 		
         add(tabbedPane, BorderLayout.NORTH);
 		
@@ -123,8 +123,8 @@ public class TabManager extends JPanel implements ActionListener {
         return connection;
     }
 	
-	public JInternalFrame createServerTab() {
-		JInternalFrame intFrame = new JInternalFrame();
+	public JPanel createServerTab() {
+		JPanel intFrame = new JPanel();
 		
         intFrame.setLayout(new BorderLayout());
         intFrame.add(scrollPane = new JScrollPane(text = new JTextPane()), BorderLayout.CENTER);
@@ -141,14 +141,8 @@ public class TabManager extends JPanel implements ActionListener {
         
         intFrame.add(quit, BorderLayout.NORTH);
         intFrame.setVisible(true);
-		
-        try { 
-        	intFrame.setMaximum(true);
-        } catch (Exception e) {
-        	// TODO: Error logging
-        }
-		
-		
+        
+        intFrame.setPreferredSize(new Dimension(0, 420));
 		
 		return intFrame;
 	}
@@ -196,6 +190,8 @@ public class TabManager extends JPanel implements ActionListener {
 		
 	}
 	
+	
+	
 	/**
 	 * Function that takes care of distributing messages to the personaltabs.
 	 * @param prefix 
@@ -229,11 +225,7 @@ public class TabManager extends JPanel implements ActionListener {
 			String tabName = "Private " + prefix.substring( 0, prefix.indexOf("!") );
 			// update function adding stuff to the tabbedpane?
 			tabbedPane.addTab(tabName, null, newPersonalTab, "no action");
-			try {
-				newPersonalTab.setMaximum(true);
-			} catch (Exception e) {
-				System.out.println( "TabManager::distributeMessage: Error setting tab size " + e.getMessage() ); 
-			}
+			newPersonalTab.addText(message);
 
 		}
 	}
@@ -266,6 +258,7 @@ public class TabManager extends JPanel implements ActionListener {
 			connection.close();
 		}
 	}
+	
 	/**
 	 * Static function that takes the string parameter and sends to connection and its writeln function.
 	 * @param msg 

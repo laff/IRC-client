@@ -3,7 +3,19 @@
  */
 package gruppe.irc;
 
-import javax.swing.JInternalFrame;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JPanel;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.JTextPane;
+import javax.swing.SwingUtilities;
+import javax.swing.text.BadLocationException;
 
 /**
  * @author Anders
@@ -12,14 +24,39 @@ import javax.swing.JInternalFrame;
  * http://en.wikipedia.org/wiki/List_of_Internet_Relay_Chat_commands
  *
  */
-public class GenericTab extends JInternalFrame {
+public class GenericTab extends JPanel implements ActionListener {
 	
-	private String filter;
+	protected String filter;
+	protected BorderLayout layout;
+	protected JScrollPane scrollPane;
+	protected JScrollBar scrollBar;
+	protected JTextPane text;
+	protected JTextField write;
 		
 
 	public GenericTab (String tabFilter) {
 		filter = tabFilter;
+		
+		layout = new BorderLayout();		
+		setLayout(layout);
+		
+		text = new JTextPane();
+		text.setEditable(false);
+		text.setBackground(Color.LIGHT_GRAY);
+		
+		scrollPane = new JScrollPane(text);
+    	scrollBar = scrollPane.getVerticalScrollBar();
+		
+		write = new JTextField();
+		//write.addActionListener(this);
+		
+		add(scrollPane, BorderLayout.CENTER);
+		add(write, BorderLayout.SOUTH);
+		setVisible(true);
+		
+		setPreferredSize(new Dimension(0, 420));
 	}
+	
 	
 	/**
 	 * Function returns the filter text for the tab
@@ -29,12 +66,62 @@ public class GenericTab extends JInternalFrame {
 		return filter;
 	}
 	
+	
+	
 	/**
 	 * Function displays text to the text field
 	 */
-	public void addText() {
-		//TODO
+	public void addText(String msg) {
+
+        int pos = text.getStyledDocument().getEndPosition().getOffset();
+        
+        String test = "\nMessage: " + msg + "\n";
+		
+		
+		// Logic that checks if the messages from IRC-client (IRCConnection) is meant for this tabmanager. 
+		try {	
+			text.getStyledDocument().insertString(pos, test, null);
+		} catch (BadLocationException ble) {};					
+		
+
+        //When new messages appears in the window, it scrolls down automagically.
+        //Borrowed from Oyvind`s example.
+        SwingUtilities.invokeLater(new Thread() {
+	        public void run() {
+	        	// Set the scrollbar to its maximum value
+	        	scrollBar.setValue(scrollBar.getMaximum());
+	        }
+	    });
+
 	}
 	
+	
+	
+	/**
+	 * Static function that takes the string parameter and sends to connection and its writeln function.
+	 * @param msg 
+	 */
+	public void writeToLn(String msg) {
+		((TabManager)getParent()).getConnection().writeln(msg);
+	}
+	
+	
+	public void actionPerformed(ActionEvent e) {
+		
+		if (e.getSource() == write) {
+	
+		// First our request is added to the textArea.
+		//addText(write.getText()+"\n");
+		
+		// Then the request is sent to the server. 
+		// The answers are then put into the textarea by the message() function in IRCConnection.
+		//TabManager.getConnection().writeln(write.getText());
+		
+			System.out.println("\nTest fra GenericTab::actionPerformed\n");
+		//writeToLn(write.getText());
+		
+		write.setText("");
+		}
+	}
 	
 }
