@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package gruppe.irc;
 
 import gruppe.irc.messageListeners.GlobalMessageListener;
@@ -62,12 +58,14 @@ public class LoginMenu extends JFrame {
 	JLabel autologL = new JLabel("Auto login:");
 	
 	// Input fields
-	JTextField server = new JTextField(32);
+	//JTextField server = new JTextField(32);
 	JTextField port = new JTextField(4);
 	JTextField nick = new JTextField(32);
 	JTextField altnick = new JTextField(32);
 	JTextField username = new JTextField(32);
 	JTextField fullname = new JTextField(32);
+    
+    JComboBox server;
 	
 	// Buttons
 	JButton login = new JButton("Login");	// The login button.
@@ -83,19 +81,25 @@ public class LoginMenu extends JFrame {
 	 * That is probably not a good idea though. Suggestions?
 	 */
 	LoginMenu(Object location) {
-		
-		super("A menu for login");
+		 super(IRCClient.messages.getString("loginMenu.header"));
+		//super(messages.getS"login");
 		setSize(330,280);
 		
 		// Sets location based on passed variable.
-		try {
-			
+		try {	
 			setLocation((Point) location);
-	
 		} catch (NullPointerException npel) {
-			
 			setLocationRelativeTo(null);
 		}
+        
+        //Initiate the server-list
+        try {
+            initiateServerlist();
+        } catch (MalformedURLException mue) {};
+        //Create a ComboBox, and add the server-names to it. And
+        //make it possible to insert a servername not on the list.
+        server = new JComboBox(serverList);
+        server.setEditable(true);
 		
 		panel.setLayout (null); 
 		
@@ -143,13 +147,9 @@ public class LoginMenu extends JFrame {
 
 		getContentPane().add(panel);
 		setVisible(true);
-        
-        //OBS: This might not be a good solution.
-        try {initiateServerlist();} catch (MalformedURLException mue) {};
-		
+
 		getPrefs();
-		actionlogin();
-        
+		actionlogin();      
 	}
 
 	/**
@@ -162,7 +162,7 @@ public class LoginMenu extends JFrame {
 		
 		Preferences pref = Preferences.userNodeForPackage(this.getClass());
       
-		server.setText(pref.get("server", ""));
+        server.setSelectedItem(pref.get("server", ""));
 		port.setText(Integer.toString(pref.getInt("port", 6667)));
 		nick.setText(pref.get("nick", ""));
 		altnick.setText(pref.get("altNick", ""));
@@ -214,7 +214,9 @@ public class LoginMenu extends JFrame {
 			
 			public void actionPerformed(ActionEvent ae) {
 				
-				serverVar = server.getText();
+				//serverVar = server.getText();
+                
+                serverVar = (String)server.getSelectedItem();
 				
 				// Going to make a check for you little man.
 				portVar = Integer.parseInt(port.getText());
@@ -243,7 +245,7 @@ public class LoginMenu extends JFrame {
 				putPrefs(false);
 				
 				// Clear textfields.
-				server.setText("");
+//				server.setText("");
 				port.setText("");
 				nick.setText("");
 				altnick.setText("");
@@ -353,6 +355,9 @@ public class LoginMenu extends JFrame {
                         srv = temp.substring(start, end);
                        //Add the servername to the serverList.
                         serverList.add(srv);
+                        //TODO: Lage en 2dimensjonal vektor istedet for 2 forskjellige
+                        // gå gjennom første array, og legge til servere under riktig nettverk.
+                        // vha. for-løkke
                     }
                 }
             }
