@@ -48,6 +48,7 @@ public class LoginMenu extends JFrame {
 	*/
     
     private Vector<String>networks = new Vector<String>();
+    private Vector<String>serverList = new Vector<String>();
 	// The panel
 	JPanel panel = new JPanel();		
 
@@ -324,7 +325,7 @@ public class LoginMenu extends JFrame {
      */
     private void initiateServerlist() throws MalformedURLException {
         BufferedReader bReader;    
-        String temp, network;
+        String temp, network, server;
         URL servers;
         
         try {
@@ -339,6 +340,16 @@ public class LoginMenu extends JFrame {
                         networks.add(network);  
                     }
                 }
+                
+             /*                   if(temp.equals("[servers]")) {
+                    //TODO: Here we need some hardcore stuff to find the servernames and add
+                    //them to the list.
+                    while(!(temp = bReader.readLine()).equals("")) {
+                        server = temp.substring(temp.indexOf(":")+1, temp.indexOf(":")-1);
+                        serverList.add(server);
+                    }
+                }
+               */
                 //TODO: Here we need some hardcore stuff to find the servernames and add
                 //them to the list.
             }

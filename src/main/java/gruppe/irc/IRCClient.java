@@ -4,6 +4,7 @@
  */
 package gruppe.irc;
 
+import java.util.ResourceBundle;
 import java.util.Vector;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -17,11 +18,14 @@ public class IRCClient {
 	
 	// Vector to store the tab managers.
 	private static Vector<IRCClientFrame> ircFrames =  new Vector<IRCClientFrame>();
+    private static ResourceBundle messages;
 	
 	// The loginmenu!
 	public static LoginMenu loginMenu;
 	
 	public static void main(String[] args) {
+        
+        messages = ResourceBundle.getBundle("I18N");
 		
 		//Sets look and feel to system default
 		try {
