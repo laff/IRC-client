@@ -17,12 +17,12 @@ import javax.swing.JTextField;
  * @author HS Vikar
  */
 public class PersonalTab extends GenericTab {
-	private JTextArea text;
-	private JTextField write;
+
 	
 	public PersonalTab (String stringF) {
 	
 		super(stringF);
+		/*
 		setLayout(new BorderLayout());
 		
 		write = new JTextField();
@@ -38,14 +38,14 @@ public class PersonalTab extends GenericTab {
         //panel.setVisible(true);
 		setVisible(true);
 		
- 
+ */
 	}
 	
-		
+		/*
 	public void addText(String msg) {
 		
 		text.append(msg);
 		
 	}
-	
+*/	
 }
