@@ -4,6 +4,7 @@
  */
 package gruppe.irc;
 
+import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Vector;
 import javax.swing.SwingUtilities;
@@ -18,20 +19,22 @@ public class IRCClient {
 	
 	// Vector to store the tab managers.
 	private static Vector<IRCClientFrame> ircFrames =  new Vector<IRCClientFrame>();
-    private static ResourceBundle messages;
+    public static ResourceBundle messages;
+    public static Locale currentLocale;
 	
 	// The loginmenu!
 	public static LoginMenu loginMenu;
 	
 	public static void main(String[] args) {
         
-        messages = ResourceBundle.getBundle("I18N");
+        currentLocale = new Locale("en", "US");
+        messages = ResourceBundle.getBundle("MessagesBundle", currentLocale);
 		
 		//Sets look and feel to system default
 		try {
 			UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
 		} catch (ClassNotFoundException f) {
-			System.out.println("Could not find system look and feel. Error: ");
+			System.out.println(messages.getString("ircClient.lookAndFeelError "));
 			f.printStackTrace();
 		} catch (InstantiationException f) {
 			System.out.println("Could not use system look and feel. Error: ");
