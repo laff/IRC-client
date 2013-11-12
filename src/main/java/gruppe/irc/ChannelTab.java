@@ -37,9 +37,9 @@ public class ChannelTab extends GenericTab implements ActionListener {
     //that channel (LEAVE or PART #channelname)
     //AND MORE: Maybe some minimum-values should be set for the components in the splitpane?
     
-	public ChannelTab () {
+	public ChannelTab (String chanName, TabManager mng) {
 		//TODO: Must receive a proper filter
-		super("STATIC TEST MESSAGE");
+		super(chanName, mng);
         
 		//super("Server", true, true, true, true);
         setSize(300, 300);

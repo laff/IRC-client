@@ -156,38 +156,50 @@ public class TabManager extends JPanel implements ActionListener {
 	 * @param : server The servername as received by the message
 	 */
 	public void distributeMessage (String prefix, String command, String alias, String server, String message) {
-		
+		String chanName, restMessage;
 		if (server.equals(serverName) && alias.equals(nick)) {
 			
-			// if the command matches "PRIVMSG" we have a personal message incoming.
-			if ( command.equals("PRIVMSG") ) {
-
+			// If the command matches "PRIVMSG" we have a personal message incoming,
+            // unless the message starts with a '#', then it is a channel-message.
+			if ( command.equals("PRIVMSG") && !message.startsWith("#")) {
 				distributePrivate(prefix, message);
 			
-			// else if the command incoming matches "POTATO MASH SO GOOD WHEN HUNGRY" we have a problem on our hands.
-			} else if ( command.equals("POTATO") ) {
-				
-				distributeChannel("tomato", "potato", "scissors");
+            // If we get a PRIVMSG command, and a channelname specified with a '#', then
+            // this message is meant for a specific tab that already exists, because
+            // a user cannot receive messages from a channel he has not joined.
+			} else if (command.equals("PRIVMSG") && message.startsWith("#")) {
+				chanName = message.substring(message.indexOf("#"), message.indexOf(" "));
+                restMessage = message.substring(message.indexOf(":")+1, message.length());
+				distributeChannel(chanName, restMessage);
 			
 			// else Add the rest to the local servertab.
 			} else {
-				
-				addText(prefix, command, message);
+				addText(message);
 			}
 		}
 	}
 	
 	/**
-	 * Function that takes care of distributing messages to the personaltabs.
-	 * 
-	 * Not yet implemented.
-	 * 
-	 * @param arg1
-	 * @param arg2
-	 * @param arg3 
-	 */
-	private void distributeChannel(String arg1, String arg2, String arg3) {
-		
+     * Function that takes care of distributing messages to the right channeltab.
+     * Goes through all the channelTabs to find the channel with the name that
+     * this message is meant for.
+     * At this point, the channel will always exist in the Vector.
+     * @param chanName Name of the channel where the message shall be displayed.
+     * @param message The message to display in a channelwindow.
+     */
+    
+	private void distributeChannel(String chanName, String message) {
+        int chans = channelTabs.size();
+        ChannelTab chanTab;
+        
+        for (int i = 0; i < chans; i++) {
+            chanTab = (ChannelTab)channelTabs.elementAt(i);
+            // If the current tab has the corresponding channelname,
+            // we can add the message to that channel.
+            if (chanTab.getFilter().equals(chanName)) {
+                chanTab.addText(message);
+            }
+        }
 	}
 	
 	
@@ -240,24 +252,43 @@ public class TabManager extends JPanel implements ActionListener {
     }
 
 	public void actionPerformed(ActionEvent e) {
-		
-				if (e.getSource() == write) {
-			
-			// First our request is added to the textArea.
-			//addText(write.getText()+"\n");
-			
-			// Then the request is sent to the server. 
-			// The answers are then put into the textarea by the message() function in IRCConnection.
-			//TabManager.getConnection().writeln(write.getText());
-			
-			writeToLn(write.getText());
-			
+		String fromText;
+        
+        if (e.getSource() == write) {
+			fromText = write.getText();
+            // If the text inserted in the write-field starts with JOIN #, 
+            // then we want to create a channeltab with that name.
+            if (fromText.startsWith("JOIN #")) {
+                createChannelTab(fromText);
+                
+           // If it`s just a 'regular' message, we add it to the textarea. 
+            } else addText(fromText+"\n");
+
+			writeToLn(fromText);
 			write.setText("");
-		}
-				else if (e.getSource() == quit) {
+            
+		} else if (e.getSource() == quit) {
 			connection.close();
 		}
 	}
+    
+    /**
+     * Method to create a new tab, for a channel that the user wants to join.
+     * The channel is added to the Vector with all the other channeltabs, and
+     * a tabbedPane is also created.
+     * @param fromText a text that include a channelname to join.
+     */
+    
+    private void createChannelTab(String fromText) {
+        String chanName, tabName;
+        ChannelTab chanTab;
+        
+        chanName = fromText.substring(fromText.indexOf("#"));
+        chanTab = new ChannelTab(chanName, this);
+        channelTabs.addElement(chanTab);
+        tabName = "Channel: "+chanName;
+        tabbedPane.addTab(tabName, null, chanTab);
+    }
 	
 	/**
 	 * Static function that takes the string parameter and sends to connection and its writeln function.
@@ -280,15 +311,15 @@ public class TabManager extends JPanel implements ActionListener {
     }
 	*/
 	
-		public void addText(String prefix, String command, String msg) {
+		public void addText (String msg) { //(String prefix, String command, String msg) {
         int pos = text.getStyledDocument().getEndPosition().getOffset();
         
-        String test = "\nPrefix: " + prefix + "\nCommand: " + command + "\nMessage: " + msg + "\n";
+      //  String test = "\nPrefix: " + prefix + "\nCommand: " + command + "\nMessage: " + msg + "\n";
 		
 		
 		// Logic that checks if the messages from IRC-client (IRCConnection) is meant for this tabmanager. 
 		try {	
-			text.getStyledDocument().insertString(pos, test, null);
+			text.getStyledDocument().insertString(pos, msg, null);
 		} catch (BadLocationException ble) {};					
 		
 
