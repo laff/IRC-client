@@ -6,7 +6,10 @@ package gruppe.irc;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
 import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
@@ -18,34 +21,44 @@ import javax.swing.JTextField;
  */
 public class PersonalTab extends GenericTab {
 
+	JButton close, attach;
+	JPanel panel;
 	
-	public PersonalTab (String stringF) {
+	public PersonalTab (String stringF, TabManager mng) {
 	
-		super(stringF);
-		/*
-		setLayout(new BorderLayout());
+		super(stringF, mng);
+		panel = new JPanel();
+		close = new JButton("Close private chat", null);
+		attach = new JButton("Attach/Detach window", null);
 		
-		write = new JTextField();
+		close.addActionListener(new ButtonListener());
+		attach.addActionListener(new ButtonListener());
+		
+		panel.add(attach);
+		panel.add(close);
+		add(panel, BorderLayout.NORTH);
+		
 
-		text = new JTextArea();
-		text.setEditable(false);
-		text.setLineWrap(true);
-		text.setWrapStyleWord(true);
-		
-		add(text, BorderLayout.CENTER);
-        //panel.setLayout(new GridLayout(1, 1));
-        //panel.add(text, BorderLayout.CENTER);
-        //panel.setVisible(true);
-		setVisible(true);
-		
- */
 	}
 	
-		/*
-	public void addText(String msg) {
-		
-		text.append(msg);
+	
+	/**
+	 * ButtonListener is an action listener for the buttons
+	 * associated with PersonalTab
+	 * @author Anders
+	 *
+	 */
+	class ButtonListener implements ActionListener {
+
+		public void actionPerformed(ActionEvent e) {
+			if (e.getSource() == close) {
+				manager.closeTab(filter);
+			} else {
+				addText("This does nothing right now");
+			}
+			
+		}
 		
 	}
-*/	
+	
 }

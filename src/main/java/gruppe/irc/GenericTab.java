@@ -26,6 +26,7 @@ import javax.swing.text.BadLocationException;
  */
 public class GenericTab extends JPanel implements ActionListener {
 	
+	protected TabManager manager;
 	protected String filter;
 	protected BorderLayout layout;
 	protected JScrollPane scrollPane;
@@ -34,8 +35,9 @@ public class GenericTab extends JPanel implements ActionListener {
 	protected JTextField write;
 		
 
-	public GenericTab (String tabFilter) {
+	public GenericTab (String tabFilter, TabManager mng) {
 		filter = tabFilter;
+		manager = mng;
 		
 		layout = new BorderLayout();		
 		setLayout(layout);
@@ -48,7 +50,7 @@ public class GenericTab extends JPanel implements ActionListener {
     	scrollBar = scrollPane.getVerticalScrollBar();
 		
 		write = new JTextField();
-		//write.addActionListener(this);
+		write.addActionListener(this);
 		
 		add(scrollPane, BorderLayout.CENTER);
 		add(write, BorderLayout.SOUTH);
@@ -75,7 +77,7 @@ public class GenericTab extends JPanel implements ActionListener {
 
         int pos = text.getStyledDocument().getEndPosition().getOffset();
         
-        String test = "\nMessage: " + msg + "\n";
+        String test = msg + "\n";
 		
 		
 		// Logic that checks if the messages from IRC-client (IRCConnection) is meant for this tabmanager. 
@@ -102,23 +104,15 @@ public class GenericTab extends JPanel implements ActionListener {
 	 * @param msg 
 	 */
 	public void writeToLn(String msg) {
-		((TabManager)getParent()).getConnection().writeln(msg);
+		manager.getConnection().writeln(msg);
 	}
 	
 	
 	public void actionPerformed(ActionEvent e) {
 		
 		if (e.getSource() == write) {
-	
-		// First our request is added to the textArea.
-		//addText(write.getText()+"\n");
-		
-		// Then the request is sent to the server. 
-		// The answers are then put into the textarea by the message() function in IRCConnection.
-		//TabManager.getConnection().writeln(write.getText());
-		
-			System.out.println("\nTest fra GenericTab::actionPerformed\n");
-		//writeToLn(write.getText());
+
+		writeToLn(write.getText());
 		
 		write.setText("");
 		}

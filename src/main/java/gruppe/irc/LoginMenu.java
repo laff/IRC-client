@@ -331,7 +331,7 @@ public class LoginMenu extends JFrame implements ItemListener {
 		while (connection.getState() != IRCConnection.CONNECTED && timeUsed < 50000) {
 		  try {
 				System.out.println("Please wait...");
-				Thread.currentThread().sleep (100);
+				Thread.currentThread().sleep (1000);
 				timeUsed = System.currentTimeMillis() - timeStart;
 
 		  } catch (Exception e) { }

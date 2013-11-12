@@ -219,7 +219,7 @@ public class TabManager extends JPanel implements ActionListener {
 		// Now, if there is not found a personal tab matching our description, a new one must be made.
 		if (noFoundTab) {
 
-			PersonalTab newPersonalTab = new PersonalTab (prefix);
+			PersonalTab newPersonalTab = new PersonalTab (prefix, this);
 			personalTabs.add(newPersonalTab);
 
 			String tabName = "Private " + prefix.substring( 0, prefix.indexOf("!") );
@@ -322,4 +322,28 @@ public class TabManager extends JPanel implements ActionListener {
 	public int getConnectionState() {
 		return connection.getState();
 	}
+	
+	public void closeTab(String filter) {
+		
+		int personalCount = personalTabs.size();
+		String tabName = "Private " + filter.substring( 0, filter.indexOf("!") ); 
+
+		// Goes through the personal tabs to find one that matches our description.
+		// Removes element from vector
+		for (int i = 0; i < personalCount; ++i) {
+
+			PersonalTab pTab = (PersonalTab)personalTabs.elementAt (i);
+			
+			if ( pTab.getFilter().equals(filter) ) {
+				personalTabs.remove(i);
+			}
+		}
+		tabbedPane.remove( tabbedPane.indexOfTab(tabName) );	
+	}
+	
+	public int getNoOfPersonalTabs() {
+		return personalTabs.size();
+	}
+	
+	
 }
