@@ -234,9 +234,8 @@ public class TabManager extends JPanel implements ActionListener {
 			PersonalTab newPersonalTab = new PersonalTab (prefix, this);
 			personalTabs.add(newPersonalTab);
 
-			String tabName = "Private " + prefix.substring( 0, prefix.indexOf("!") );
-			// update function adding stuff to the tabbedpane?
-			tabbedPane.addTab(tabName, null, newPersonalTab, "no action");
+			attachTab(prefix, newPersonalTab);
+
 			newPersonalTab.addText(message);
 
 		}
@@ -276,7 +275,7 @@ public class TabManager extends JPanel implements ActionListener {
      * Method to create a new tab, for a channel that the user wants to join.
      * The channel is added to the Vector with all the other channeltabs, and
      * a tabbedPane is also created.
-     * @param fromText a text that include a channelname to join.
+     * @param fromText a text that include a channel name to join.
      */
     
     private void createChannelTab(String fromText) {
@@ -354,10 +353,14 @@ public class TabManager extends JPanel implements ActionListener {
 		return connection.getState();
 	}
 	
+	/**
+	 * Method deletes the contents of tab and calls releaseTab to remove it from tabManager.
+	 * @param filter The filter text of the tab to be closed
+	 */
+	
 	public void closeTab(String filter) {
 		
 		int personalCount = personalTabs.size();
-		String tabName = "Private " + filter.substring( 0, filter.indexOf("!") ); 
 
 		// Goes through the personal tabs to find one that matches our description.
 		// Removes element from vector
@@ -369,12 +372,32 @@ public class TabManager extends JPanel implements ActionListener {
 				personalTabs.remove(i);
 			}
 		}
-		tabbedPane.remove( tabbedPane.indexOfTab(tabName) );	
-	}
-	
-	public int getNoOfPersonalTabs() {
-		return personalTabs.size();
+		releaseTab(filter);
 	}
 	
 	
+	/**
+	 * Removes tab from the tabManager. Does not delete content of tab.
+	 * @param filter: Filter text of tab to be removed.
+	 */
+	
+	public void releaseTab(String filter) {
+		int temp;
+		String tabName = "Private " + filter.substring( 0, filter.indexOf("!") );
+		temp = tabbedPane.indexOfTab(tabName);
+		if (temp != -1) {
+			tabbedPane.remove( temp );
+		}
+	}
+	
+	/**
+	 * Method attaches a tab to the tabManager
+	 * @param prefix Filter text for the new tab
+	 * @param newPersonalTab The tab to be attached to the tabManager
+	 */
+	public void attachTab(String prefix, PersonalTab newPersonalTab) {
+		String tabName = "Private " + prefix.substring( 0, prefix.indexOf("!") );
+		// update function adding stuff to the tabbedpane?
+		tabbedPane.addTab(tabName, null, newPersonalTab);
+	}
 }

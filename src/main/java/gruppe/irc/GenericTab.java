@@ -33,11 +33,14 @@ public class GenericTab extends JPanel implements ActionListener {
 	protected JScrollBar scrollBar;
 	protected JTextPane text;
 	protected JTextField write;
+	protected boolean isAttached;
 		
 
 	public GenericTab (String tabFilter, TabManager mng) {
 		filter = tabFilter;
 		manager = mng;
+		
+		isAttached = true;
 		
 		layout = new BorderLayout();		
 		setLayout(layout);
@@ -77,7 +80,7 @@ public class GenericTab extends JPanel implements ActionListener {
 
         int pos = text.getStyledDocument().getEndPosition().getOffset();
         
-        String test = msg + "\n";
+        String test = msg;
 		
 		
 		// Logic that checks if the messages from IRC-client (IRCConnection) is meant for this tabmanager. 

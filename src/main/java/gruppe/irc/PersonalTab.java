@@ -5,11 +5,13 @@
 package gruppe.irc;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
@@ -21,8 +23,10 @@ import javax.swing.JTextField;
  */
 public class PersonalTab extends GenericTab {
 
-	JButton close, attach;
-	JPanel panel;
+	private JButton close, attach;
+	private JPanel panel;
+	private PersonalTab self;
+	private JFrame newFrame;
 	
 	public PersonalTab (String stringF, TabManager mng) {
 	
@@ -37,7 +41,7 @@ public class PersonalTab extends GenericTab {
 		panel.add(attach);
 		panel.add(close);
 		add(panel, BorderLayout.NORTH);
-		
+		self = this;
 
 	}
 	
@@ -53,10 +57,25 @@ public class PersonalTab extends GenericTab {
 		public void actionPerformed(ActionEvent e) {
 			if (e.getSource() == close) {
 				manager.closeTab(filter);
-			} else {
-				addText("This does nothing right now");
-			}
-			
+			} else if (e.getSource() == attach) {
+				if (isAttached == true) {
+					newFrame = new JFrame();
+					newFrame.setPreferredSize(new Dimension(400, 500));
+					newFrame.setMinimumSize(new Dimension(300, 300));
+					newFrame.add(self);
+					newFrame.setVisible(true);
+					//Removes 
+					manager.releaseTab(filter);
+					
+					isAttached = false;
+				} else {
+					manager.attachTab(filter, self);
+					newFrame.remove(self);
+					newFrame.dispose();
+					
+					isAttached = true;
+				}
+			}		
 		}
 		
 	}

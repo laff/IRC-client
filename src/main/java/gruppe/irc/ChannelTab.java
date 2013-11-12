@@ -39,6 +39,9 @@ public class ChannelTab extends GenericTab implements ActionListener {
     
 	public ChannelTab (String chanName, TabManager mng) {
 		//TODO: Must receive a proper filter
+		
+		//COMMENT: Some of the stuff in the constructor is already done by GenericTab.
+		//You already have a field called "write" in SOUTH, and you could reassign the field "text" to "splitPane". Just saying...
 		super(chanName, mng);
         
 		//super("Server", true, true, true, true);
