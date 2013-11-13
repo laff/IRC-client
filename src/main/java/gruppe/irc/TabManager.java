@@ -150,7 +150,7 @@ public class TabManager extends JPanel implements ActionListener {
 		String chanName, restMessage;
         
 		if (server.equals(serverName) && alias.equals(nick)) {
-			
+			         System.out.println(prefix);
 			// If the command matches "PRIVMSG" we have a personal message incoming,
             // unless the message starts with a '#', then it is a channel-message.
 			if (command.equals("PRIVMSG") && !message.startsWith("#")) {
@@ -201,9 +201,12 @@ public class TabManager extends JPanel implements ActionListener {
 	 * @param message 
 	 */
 	private void distributePrivate(String prefix, String message) {
-		
 		int personalCount = personalTabs.size();
 		boolean noFoundTab = true;
+        
+        
+        //OKay, we know this is a private message, but who the f*** is the sender of it?
+
 
 		// Goes through the personal tabs to find one that matches our description.
 		// Sets the noFoundTab variable to false if there was found a tab that match.
@@ -390,4 +393,8 @@ public class TabManager extends JPanel implements ActionListener {
 		// update function adding stuff to the tabbedpane?
 		tabbedPane.addTab(tabName, null, newPersonalTab);
 	}
+    
+    public String getNick() {
+        return nick;
+    }
 }

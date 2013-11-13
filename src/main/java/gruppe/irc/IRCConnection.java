@@ -111,11 +111,8 @@ public class IRCConnection extends IRCClient implements Runnable {
    * @param message a string to be sendt as a command to the server.
    */
   public void writeln(String message) {
-      System.out.println(message);
-      System.out.println(message.length());
     try { 
      output.writeBytes(message+"\r\n");
-     output.flush();
     } catch (Exception e) { }
     logging.fine ("Sent message to server : "+message);
   }
@@ -133,7 +130,7 @@ public class IRCConnection extends IRCClient implements Runnable {
         message = message.substring (message.indexOf(" ")+1);
     }
         command = message.substring (0, message.indexOf(" "));
-		
+		    System.out.println("Command: "+command);
         message = message.substring (message.indexOf(" ")+1);
 
 		sendInfo(prefix, command, nick, server, message + "\n");

@@ -71,8 +71,7 @@ public class GenericTab extends JPanel implements ActionListener {
 		return filter;
 	}
 	
-	
-	
+
 	/**
 	 * Function displays text to the text field
 	 */
@@ -80,11 +79,26 @@ public class GenericTab extends JPanel implements ActionListener {
 
         int pos = text.getStyledDocument().getEndPosition().getOffset();
         String test = msg;
-		
-		
-		// Logic that checks if the messages from IRC-client (IRCConnection) is meant for this tabmanager. 
+		String sender;
+        String filtered;
+        
+        filtered = this.filter;
+        
+        //msg som kommer inn her, har nick!~asdasda.... PRIVMSG mottakernick :melding
+        //filter stopper før PRIVMSG.
+        //Prioriter å få det riktig med privatemessage først.
+        
+        //For en melding til kanal så er filter kanalnavnet, og meldingen er KUN det etter:
+        //Vi må altså ikke "kaste" avsendernicket FØR vi kommer inn hit.
+        
+        
+        System.out.println("Filtered: "+filtered);
+        //sender = filtered.substring(filtered.indexOf("!"));
+        
+        //System.out.println("Fant jeg avsender her?: "+sender);
+        System.out.println("melding: "+filter+":<-Here stops the filter "+msg);
 		try {	
-			text.getStyledDocument().insertString(pos, test, null);
+			text.getStyledDocument().insertString(pos, filter+": "+test, null);
 		} catch (BadLocationException ble) {};					
 		
 
@@ -119,7 +133,8 @@ public class GenericTab extends JPanel implements ActionListener {
 		if (e.getSource() == write) {
             //We fetch text from the field, and then add it to the textArea.
             fromText = write.getText();
-            addText(fromText+"\n");
+            addText(manager.getNick()+": "+fromText+"\n");
+           // addText(fromText+"\n");
             //Then we send the message to the server aswell.
             writeToLn("PRIVMSG "+filter+" :"+fromText);
             write.setText("");
