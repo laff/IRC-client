@@ -14,7 +14,7 @@ public class MessageEvent {
    * Constructor for creating new MessageEvent objects.
    *
    * @param prefix the prefix given for this command
-   * @param command the actuall command (what is this message trying to achieve)
+   * @param command the actual command (what is this message trying to achieve)
    * @param message the message attached to this command
    * @param source a reference to the IRCConnection object sending this messageEvent
    */
@@ -26,7 +26,7 @@ public class MessageEvent {
   }
 
   /**
-   * Methode called to let this MessageEvent object consume the event.
+   * Method called to let this MessageEvent object consume the event.
    * Consuming and event prevents it from being passed to the others listeners in que, ie. the event has performed its function
    * and there are no need to keep passing it around.
    */
