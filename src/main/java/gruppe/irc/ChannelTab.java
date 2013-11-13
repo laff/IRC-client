@@ -19,20 +19,17 @@ import javax.swing.text.BadLocationException;
  *
  * @author Christian
  */
-public class ChannelTab extends GenericTab implements ActionListener {
+public class ChannelTab extends GenericTab {//implements ActionListener {
 	
     String channelName;
-	JTextField write;
+	//JTextField write;
 	JButton quit;
-	JTextPane text, users;
+	JTextPane users;
 	JScrollPane textScrollPane, usersScrollPane;
-	BorderLayout layout;
+	//BorderLayout layout;
     JSplitPane splitPane;
     JPanel panel;
 	
-    
-    //TODO: We should get the name of the channel as an parameter, so that we
-    //can set the title of the tab/InternalFrame with that name.
     //MORE TODO: When we exit a channel(crossing it out), we also must leave
     //that channel (LEAVE or PART #channelname)
     //AND MORE: Maybe some minimum-values should be set for the components in the splitpane?
@@ -89,7 +86,7 @@ public class ChannelTab extends GenericTab implements ActionListener {
 	}
 	
 		
-	public void addText(String msg) {
+/*	public void addText(String msg) {
         int pos = text.getStyledDocument().getEndPosition().getOffset();
         
         try {	
@@ -107,8 +104,8 @@ public class ChannelTab extends GenericTab implements ActionListener {
 	        }
 	    });
 	}
-    
-      	public void actionPerformed(ActionEvent e) {
+  */  
+  //   	public void actionPerformed(ActionEvent e) {
 /*
 		if (e.getSource() == write) {
 			
@@ -136,6 +133,7 @@ public class ChannelTab extends GenericTab implements ActionListener {
 		}
 
 */
-		}
+	//	} 
+
 	
 }

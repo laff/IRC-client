@@ -111,8 +111,11 @@ public class IRCConnection extends IRCClient implements Runnable {
    * @param message a string to be sendt as a command to the server.
    */
   public void writeln(String message) {
-    try {
-      output.writeBytes(message+"\r\n");
+      System.out.println(message);
+      System.out.println(message.length());
+    try { 
+     output.writeBytes(message+"\r\n");
+     output.flush();
     } catch (Exception e) { }
     logging.fine ("Sent message to server : "+message);
   }
@@ -277,7 +280,7 @@ public class IRCConnection extends IRCClient implements Runnable {
     // that fact. When state is altered this listener is no longer needed so it is removed.
     public void messageReceived (MessageEvent me) {
       logging.fine ("Message arrived from server, we have a connection");
-      if (me.getCommand().equals ("375")||me.getCommand().equals("001")) {
+      if (me.getCommand().equals ("375") || me.getCommand().equals("001")) {
         state = CONNECTED;
 		
 		// letting the loginmenu know it should be shown.

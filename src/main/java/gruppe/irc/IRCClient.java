@@ -6,6 +6,7 @@ package gruppe.irc;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.PropertyResourceBundle;
 import java.util.Vector;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -27,14 +28,15 @@ public class IRCClient {
 	
 	public static void main(String[] args) {
         
-        currentLocale = new Locale("en", "US");
-        messages = ResourceBundle.getBundle("MessagesBundle", currentLocale);
+     //   currentLocale = new Locale("en", "US");
+     //   messages = ResourceBundle.getBundle("MessagesBundle", currentLocale);
 		
 		//Sets look and feel to system default
 		try {
 			UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
 		} catch (ClassNotFoundException f) {
-			System.out.println(messages.getString("ircClient.lookAndFeelError "));
+			//System.out.println(messages.getString("ircClient.lookAndFeelError "));
+            System.out.println("Could not find system look and feel. Error: ");
 			f.printStackTrace();
 		} catch (InstantiationException f) {
 			System.out.println("Could not use system look and feel. Error: ");

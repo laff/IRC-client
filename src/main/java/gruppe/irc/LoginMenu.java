@@ -42,6 +42,7 @@ public class LoginMenu extends JFrame implements ItemListener {
 	JPanel panel = new JPanel();		
 
 	// Labels
+    /*
     JLabel networkL = new JLabel(IRCClient.messages.getString("loginM.nwLabel"));
 	JLabel serverL = new JLabel(IRCClient.messages.getString("loginM.srvLabel"));
 	JLabel portL = new JLabel(IRCClient.messages.getString("loginM.portLabel"));
@@ -50,7 +51,17 @@ public class LoginMenu extends JFrame implements ItemListener {
 	JLabel usernameL = new JLabel(IRCClient.messages.getString("loginM.usNameLabel"));
 	JLabel fullnameL = new JLabel(IRCClient.messages.getString("loginM.fullNameLabel"));
 	JLabel autologL = new JLabel(IRCClient.messages.getString("loginM.autoLogLabel"));
-	
+	*/
+    
+    JLabel networkL = new JLabel("Network:");
+	JLabel serverL = new JLabel("Server:");
+	JLabel portL = new JLabel("Port:");
+	JLabel nickL = new JLabel("Nick");
+	JLabel altnickL = new JLabel("Nick 2");
+	JLabel usernameL = new JLabel("Username");
+	JLabel fullnameL = new JLabel("Full Name");
+	JLabel autologL = new JLabel("Auto Login:");
+    
 	// Input fields
 	JTextField port = new JTextField(4);
 	JTextField nick = new JTextField(32);
@@ -61,9 +72,13 @@ public class LoginMenu extends JFrame implements ItemListener {
     JComboBox server, network;
 	
 	// Buttons for login and clear all fields.
-	JButton login = new JButton(IRCClient.messages.getString("loginM.loginButton"));
+	/*
+    JButton login = new JButton(IRCClient.messages.getString("loginM.loginButton"));
 	JButton clear = new JButton(IRCClient.messages.getString("loginM.clearButton"));	
-	
+	*/
+    JButton login = new JButton("Login");
+	JButton clear = new JButton("Clear");
+    
 	// Check box
 	JCheckBox autologin = new JCheckBox();
 
@@ -74,7 +89,8 @@ public class LoginMenu extends JFrame implements ItemListener {
 	 * That is probably not a good idea though. Suggestions?
 	 */
 	LoginMenu(Object location) {
-		super(IRCClient.messages.getString("loginM.header"));
+		//super(IRCClient.messages.getString("loginM.header"));
+        super("Login Menu");
 		setSize(330,280);
 		
 		// Sets location based on passed variable.

@@ -107,18 +107,22 @@ public class GenericTab extends JPanel implements ActionListener {
 	 * @param msg 
 	 */
 	public void writeToLn(String msg) {
+        System.out.println(msg);
 		manager.getConnection().writeln(msg);
 	}
 	
 	
 	public void actionPerformed(ActionEvent e) {
-		
+		String fromText;
+        
 		if (e.getSource() == write) {
-
-		writeToLn(write.getText());
-		
-		write.setText("");
+            
+            fromText = write.getText();
+            addText(fromText+"\n");
+            
+            System.out.println(fromText);
+            writeToLn("PRIVMSG "+filter+" :"+fromText);
+            write.setText("");
 		}
 	}
-	
 }
