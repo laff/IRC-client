@@ -274,7 +274,7 @@ public class TabManager extends JPanel implements ActionListener {
         chanName = fromText.substring(fromText.indexOf("#"));
         chanTab = new ChannelTab(chanName, this);
         channelTabs.addElement(chanTab);
-        tabName = "Channel: "+chanName;
+        tabName = chanName;
         tabbedPane.addTab(tabName, null, chanTab);
     }
 	

@@ -79,7 +79,6 @@ public class GenericTab extends JPanel implements ActionListener {
 	public void addText(String msg) {
 
         int pos = text.getStyledDocument().getEndPosition().getOffset();
-        
         String test = msg;
 		
 		
@@ -97,30 +96,31 @@ public class GenericTab extends JPanel implements ActionListener {
 	        	scrollBar.setValue(scrollBar.getMaximum());
 	        }
 	    });
-
 	}
-	
-	
+
 	
 	/**
 	 * Static function that takes the string parameter and sends to connection and its writeln function.
 	 * @param msg 
 	 */
 	public void writeToLn(String msg) {
-        System.out.println(msg);
 		manager.getConnection().writeln(msg);
 	}
-	
+	/**
+     * Getting the text from the textfield, when the user push 'Enter'-button.
+     * @param e The actual event.
+     */
 	
 	public void actionPerformed(ActionEvent e) {
 		String fromText;
         
+        // If some text is added in the text-field, and the user
+        // push 'Enter'.
 		if (e.getSource() == write) {
-            
+            //We fetch text from the field, and then add it to the textArea.
             fromText = write.getText();
             addText(fromText+"\n");
-            
-            System.out.println(fromText);
+            //Then we send the message to the server aswell.
             writeToLn("PRIVMSG "+filter+" :"+fromText);
             write.setText("");
 		}
