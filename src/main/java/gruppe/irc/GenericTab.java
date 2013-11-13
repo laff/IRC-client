@@ -73,35 +73,31 @@ public class GenericTab extends JPanel implements ActionListener {
 	
 
 	/**
-	 * Function displays text to the text field
+	 * Function displays text to the text field.
 	 */
-	public void addText(String msg) {
+	public void addText(String prefix, String msg, Boolean incoming) {
 
         int pos = text.getStyledDocument().getEndPosition().getOffset();
-        String test = msg;
-		String sender;
-        String filtered;
+		String sender, message;
         
-        filtered = this.filter;
+        // If it`s an incoming message.
+        if(incoming) {
+        // We must find out who the sender of the message is, and then clean the 
+        // rest of the message, so only the actual text is left.
+            sender = prefix.substring(0, prefix.indexOf("!"));
+            message = msg.substring(msg.indexOf(":")+1);
+        }
+        // If the message is outgoing, we set the sender as the nick who comes
+        // in as 'prefix', and the message is the plain text from the textfield.
+        else {
+            sender = prefix;
+            message = msg;
+        }
         
-        //msg som kommer inn her, har nick!~asdasda.... PRIVMSG mottakernick :melding
-        //filter stopper før PRIVMSG.
-        //Prioriter å få det riktig med privatemessage først.
-        
-        //For en melding til kanal så er filter kanalnavnet, og meldingen er KUN det etter:
-        //Vi må altså ikke "kaste" avsendernicket FØR vi kommer inn hit.
-        
-        
-        System.out.println("Filtered: "+filtered);
-        //sender = filtered.substring(filtered.indexOf("!"));
-        
-        //System.out.println("Fant jeg avsender her?: "+sender);
-        System.out.println("melding: "+filter+":<-Here stops the filter "+msg);
 		try {	
-			text.getStyledDocument().insertString(pos, filter+": "+test, null);
+			text.getStyledDocument().insertString(pos, sender+": "+message, null);
 		} catch (BadLocationException ble) {};					
 		
-
         //When new messages appears in the window, it scrolls down automagically.
         //Borrowed from Oyvind`s example.
         SwingUtilities.invokeLater(new Thread() {
@@ -128,14 +124,13 @@ public class GenericTab extends JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		String fromText;
         
-        // If some text is added in the text-field, and the user
-        // push 'Enter'.
+        // If some text is added in the text-field, and the user push 'Enter'.
 		if (e.getSource() == write) {
-            //We fetch text from the field, and then add it to the textArea.
+            // We fetch text from the field, and then add it to the textArea.
             fromText = write.getText();
-            addText(manager.getNick()+": "+fromText+"\n");
-           // addText(fromText+"\n");
-            //Then we send the message to the server aswell.
+            // This is a outgoing message, therefore we send 'false'.
+            addText(manager.getNick(), fromText+"\n", false);
+            // Then we send the message to the server aswell.
             writeToLn("PRIVMSG "+filter+" :"+fromText);
             write.setText("");
 		}

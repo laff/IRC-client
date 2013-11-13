@@ -147,10 +147,14 @@ public class TabManager extends JPanel implements ActionListener {
 	 * @param : server The servername as received by the message
 	 */
 	public void distributeMessage (String prefix, String command, String alias, String server, String message) {
-		String chanName, restMessage;
+		String chanName, restMessage, sender;
         
 		if (server.equals(serverName) && alias.equals(nick)) {
-			         System.out.println(prefix);
+           // sender = prefix.substring(0, prefix.indexOf("!"));
+                     System.out.println("I distributeMessage er message lik: "+message);
+                     System.out.println("I distributeMessage er command lik: "+command);
+                     System.out.println("I distributeMessage er prefix lik: "+prefix);
+                    // System.out.println("I distributeMessage er sender lik: "+sender);
 			// If the command matches "PRIVMSG" we have a personal message incoming,
             // unless the message starts with a '#', then it is a channel-message.
 			if (command.equals("PRIVMSG") && !message.startsWith("#")) {
@@ -162,7 +166,7 @@ public class TabManager extends JPanel implements ActionListener {
 			} else if (command.equals("PRIVMSG") && message.startsWith("#")) {
 				chanName = message.substring(message.indexOf("#"), message.indexOf(" "));
                 restMessage = message.substring(message.indexOf(":")+1, message.length());
-				distributeChannel(chanName, restMessage);
+				distributeChannel(prefix, chanName, restMessage);
 			
 			// else Add the rest to the local servertab.
 			} else {
@@ -180,7 +184,7 @@ public class TabManager extends JPanel implements ActionListener {
      * @param message The message to display in a channelwindow.
      */
     
-	private void distributeChannel(String chanName, String message) {
+	private void distributeChannel(String prefix, String chanName, String message) {
         int chans = channelTabs.size();
         ChannelTab chanTab;
         
@@ -189,7 +193,7 @@ public class TabManager extends JPanel implements ActionListener {
             // If the current tab has the corresponding channelname,
             // we can add the message to that channel.
             if (chanTab.getFilter().equals(chanName)) {
-                chanTab.addText(message);
+                chanTab.addText(prefix, message, true);
             }
         }
 	}
@@ -216,7 +220,7 @@ public class TabManager extends JPanel implements ActionListener {
 			
 			if (pTab.getFilter().equals(prefix)) {
 				
-				pTab.addText(message);
+				pTab.addText(prefix, message, true);
 				noFoundTab = false;
 			}
 		}
@@ -224,12 +228,12 @@ public class TabManager extends JPanel implements ActionListener {
 		// Now, if there is not found a personal tab matching our description, a new one must be made.
 		if (noFoundTab) {
 
-			PersonalTab newPersonalTab = new PersonalTab (prefix, this);
+			PersonalTab newPersonalTab = new PersonalTab(prefix, this);
 			personalTabs.add(newPersonalTab);
 
 			attachTab(prefix, newPersonalTab);
 
-			newPersonalTab.addText(message);
+			newPersonalTab.addText(prefix, message, true);
 		}
 	}
 	
