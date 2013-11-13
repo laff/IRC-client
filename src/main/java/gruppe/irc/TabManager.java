@@ -77,11 +77,8 @@ public class TabManager extends JPanel implements ActionListener {
 	
 	// A Bunch of components
 	private JTabbedPane tabbedPane;
-
     private JDesktopPane desktop;
-
 	private JScrollPane scrollPane;
-	private BorderLayout layout;
 	
 	// These components are used within the servertab
 	private JTextField write;
@@ -94,19 +91,14 @@ public class TabManager extends JPanel implements ActionListener {
 		setVisible(true);
 		
         desktop = new JDesktopPane();
-		
         serverTab = createServerTab();
-   
         desktop.add(serverTab);
-        
+    
         add(desktop);
-
+        
         tabbedPane = new JTabbedPane();
-		
         tabbedPane.addTab("Server", serverTab);//"ServerTab", null, new JPanel(), "Main window for server communication");
-		
         add(tabbedPane, BorderLayout.NORTH);
-		
         tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 		
 	}
@@ -128,10 +120,10 @@ public class TabManager extends JPanel implements ActionListener {
 		
         intFrame.setLayout(new BorderLayout());
         intFrame.add(scrollPane = new JScrollPane(text = new JTextPane()), BorderLayout.CENTER);
+        
         write = new JTextField();
+        write.addActionListener(this);
         intFrame.add(write, BorderLayout.SOUTH);
- 
-		write.addActionListener(this);
 
 		text.setBackground(Color.LIGHT_GRAY);
 		text.setEditable(false);
@@ -141,7 +133,6 @@ public class TabManager extends JPanel implements ActionListener {
         
         intFrame.add(quit, BorderLayout.NORTH);
         intFrame.setVisible(true);
-        
         intFrame.setPreferredSize(new Dimension(0, 420));
 		
 		return intFrame;
@@ -157,11 +148,12 @@ public class TabManager extends JPanel implements ActionListener {
 	 */
 	public void distributeMessage (String prefix, String command, String alias, String server, String message) {
 		String chanName, restMessage;
+        
 		if (server.equals(serverName) && alias.equals(nick)) {
 			
 			// If the command matches "PRIVMSG" we have a personal message incoming,
             // unless the message starts with a '#', then it is a channel-message.
-			if ( command.equals("PRIVMSG") && !message.startsWith("#")) {
+			if (command.equals("PRIVMSG") && !message.startsWith("#")) {
 				distributePrivate(prefix, message);
 			
             // If we get a PRIVMSG command, and a channelname specified with a '#', then
@@ -201,9 +193,8 @@ public class TabManager extends JPanel implements ActionListener {
             }
         }
 	}
-	
-	
-	
+
+    
 	/**
 	 * Function that takes care of distributing messages to the personaltabs.
 	 * @param prefix 
@@ -220,11 +211,10 @@ public class TabManager extends JPanel implements ActionListener {
 
 			PersonalTab pTab = (PersonalTab)personalTabs.elementAt (i);
 			
-			if ( pTab.getFilter().equals(prefix) ) {
+			if (pTab.getFilter().equals(prefix)) {
 				
 				pTab.addText(message);
 				noFoundTab = false;
-				
 			}
 		}
 
@@ -237,7 +227,6 @@ public class TabManager extends JPanel implements ActionListener {
 			attachTab(prefix, newPersonalTab);
 
 			newPersonalTab.addText(message);
-
 		}
 	}
 	
@@ -310,29 +299,28 @@ public class TabManager extends JPanel implements ActionListener {
     }
 	*/
 	
-		public void addText (String msg) { //(String prefix, String command, String msg) {
+    public void addText (String msg) { //(String prefix, String command, String msg) {
         int pos = text.getStyledDocument().getEndPosition().getOffset();
-        
+
       //  String test = "\nPrefix: " + prefix + "\nCommand: " + command + "\nMessage: " + msg + "\n";
-		
-		
-		// Logic that checks if the messages from IRC-client (IRCConnection) is meant for this tabmanager. 
-		try {	
-			text.getStyledDocument().insertString(pos, msg, null);
-		} catch (BadLocationException ble) {};					
-		
+
+
+        // Logic that checks if the messages from IRC-client (IRCConnection) is meant for this tabmanager. 
+        try {	
+            text.getStyledDocument().insertString(pos, msg, null);
+        } catch (BadLocationException ble) {};					
 
         //When new messages appears in the window, it scrolls down automagically.
         //Borrowed from Oyvind`s example.
         SwingUtilities.invokeLater(new Thread() {
-	        public void run() {
-	        	// Get the scrollbar from the scroll pane
-	        	JScrollBar scrollbar = scrollPane.getVerticalScrollBar();
-	        	// Set the scrollbar to its maximum value
-	        	scrollbar.setValue(scrollbar.getMaximum());
-	        }
-	    });
-	}
+            public void run() {
+                // Get the scrollbar from the scroll pane
+                JScrollBar scrollbar = scrollPane.getVerticalScrollBar();
+                // Set the scrollbar to its maximum value
+                scrollbar.setValue(scrollbar.getMaximum());
+            }
+        });
+}
 	
 	/*
 	 * Function that calls the close function of this tabs connection.
@@ -361,14 +349,15 @@ public class TabManager extends JPanel implements ActionListener {
 	public void closeTab(String filter) {
 		
 		int personalCount = personalTabs.size();
+        PersonalTab pTab;
 
 		// Goes through the personal tabs to find one that matches our description.
 		// Removes element from vector
 		for (int i = 0; i < personalCount; ++i) {
 
-			PersonalTab pTab = (PersonalTab)personalTabs.elementAt (i);
+			pTab = (PersonalTab)personalTabs.elementAt(i);
 			
-			if ( pTab.getFilter().equals(filter) ) {
+			if (pTab.getFilter().equals(filter)) {
 				personalTabs.remove(i);
 			}
 		}
@@ -384,6 +373,7 @@ public class TabManager extends JPanel implements ActionListener {
 	public void releaseTab(String filter) {
 		int temp;
 		String tabName = "Private " + filter.substring( 0, filter.indexOf("!") );
+        
 		temp = tabbedPane.indexOfTab(tabName);
 		if (temp != -1) {
 			tabbedPane.remove( temp );

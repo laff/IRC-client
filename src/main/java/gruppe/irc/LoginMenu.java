@@ -6,15 +6,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Vector;
 import java.util.prefs.Preferences;
 
@@ -30,19 +25,12 @@ public class LoginMenu extends JFrame implements ItemListener {
 	 */
 	@Override
 	public void setDefaultCloseOperation(int operation) {
-		
 		super.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	
 	// The variables for logging in.
 	private String serverVar, nickVar, altnickVar, usernameVar, fullnameVar;
 	private Integer	portVar;
-	/*
-	// Main initiates the login menu "A menu for login".
-	public static void main(String[] args) {
-		LoginMenu loginFrame = new LoginMenu(null);
-	}
-	*/
     
     private Vector<String> networks = new Vector<String>();
     private Vector<String> serverList = new Vector<String>(); 
@@ -54,16 +42,16 @@ public class LoginMenu extends JFrame implements ItemListener {
 	JPanel panel = new JPanel();		
 
 	// Labels
-	JLabel serverL = new JLabel("Server:");
-	JLabel portL = new JLabel("Port:");
-	JLabel nickL = new JLabel("Nick 1:");
-	JLabel altnickL = new JLabel("Nick 2:");
-	JLabel usernameL = new JLabel("Username:");
-	JLabel fullnameL = new JLabel("Full Name:");
-	JLabel autologL = new JLabel("Auto login:");
+    JLabel networkL = new JLabel(IRCClient.messages.getString("loginM.nwLabel"));
+	JLabel serverL = new JLabel(IRCClient.messages.getString("loginM.srvLabel"));
+	JLabel portL = new JLabel(IRCClient.messages.getString("loginM.portLabel"));
+	JLabel nickL = new JLabel(IRCClient.messages.getString("loginM.nickLabel"));
+	JLabel altnickL = new JLabel(IRCClient.messages.getString("loginM.altNickLabel"));
+	JLabel usernameL = new JLabel(IRCClient.messages.getString("loginM.usNameLabel"));
+	JLabel fullnameL = new JLabel(IRCClient.messages.getString("loginM.fullNameLabel"));
+	JLabel autologL = new JLabel(IRCClient.messages.getString("loginM.autoLogLabel"));
 	
 	// Input fields
-	//JTextField server = new JTextField(32);
 	JTextField port = new JTextField(4);
 	JTextField nick = new JTextField(32);
 	JTextField altnick = new JTextField(32);
@@ -72,9 +60,9 @@ public class LoginMenu extends JFrame implements ItemListener {
     
     JComboBox server, network;
 	
-	// Buttons
-	JButton login = new JButton("Login");	// The login button.
-	JButton clear = new JButton("Clear");		// Button to exit program.
+	// Buttons for login and clear all fields.
+	JButton login = new JButton(IRCClient.messages.getString("loginM.loginButton"));
+	JButton clear = new JButton(IRCClient.messages.getString("loginM.clearButton"));	
 	
 	// Check box
 	JCheckBox autologin = new JCheckBox();
@@ -86,7 +74,7 @@ public class LoginMenu extends JFrame implements ItemListener {
 	 * That is probably not a good idea though. Suggestions?
 	 */
 	LoginMenu(Object location) {
-		super(IRCClient.messages.getString("loginMenu.header"));
+		super(IRCClient.messages.getString("loginM.header"));
 		setSize(330,280);
 		
 		// Sets location based on passed variable.
@@ -104,15 +92,16 @@ public class LoginMenu extends JFrame implements ItemListener {
         //make it possible to insert a servername not on the list.
         server = new JComboBox(serverList);
         server.setEditable(true);
-        server.setMaximumRowCount(4);
+        server.setMaximumRowCount(6);
         server.addItemListener(this);
-        network = new JComboBox(networks);
+        network = new JComboBox(groups);
         network.addItemListener(this);
-        network.setMaximumRowCount(4);
+        network.setMaximumRowCount(6);
 		
 		panel.setLayout (null); 
 		
 		// Position Labels
+        networkL.setBounds   (40,5,70,20);
 		serverL.setBounds	(40,30,70,20);
 		portL.setBounds		(40,55,70,20);
 		nickL.setBounds		(40,80,70,20);
@@ -139,6 +128,7 @@ public class LoginMenu extends JFrame implements ItemListener {
 		autologin.setBounds(110, 200, 20, 20);
 
 		// Adding elements
+        panel.add(networkL);
 		panel.add(serverL);
 		panel.add(portL);
 		panel.add(nickL);
@@ -244,51 +234,51 @@ public class LoginMenu extends JFrame implements ItemListener {
 	 */
 	public void actionlogin(){
 		login.addActionListener(new ActionListener() {
-			
-			public void actionPerformed(ActionEvent ae) {
-				
-				//serverVar = server.getText();
-                
-                serverVar = (String)server.getSelectedItem();
-				
-				// Going to make a check for you little man.
-				portVar = Integer.parseInt(port.getText());
-				
-				nickVar = nick.getText();
-				altnickVar = altnick.getText();
-				usernameVar = username.getText();
-				fullnameVar = fullname.getText();
-				
-				
-				//**********//
-				//*CREATE*A*//
-				//*FAILSAFE*//
-				//**********//
-				login();
 
-			}
-		});
+        public void actionPerformed(ActionEvent ae) {
+
+            //serverVar = server.getText();
+
+            serverVar = (String)server.getSelectedItem();
+
+            // Going to make a check for you little man.
+            portVar = Integer.parseInt(port.getText());
+
+            nickVar = nick.getText();
+            altnickVar = altnick.getText();
+            usernameVar = username.getText();
+            fullnameVar = fullname.getText();
+
+
+            //**********//
+            //*CREATE*A*//
+            //*FAILSAFE*//
+            //**********//
+            login();
+
+        }
+    });
 	
-		// Action for Clear button. Add "remove last prefs" aswell?
-		clear.addActionListener(new ActionListener() {
-			
-			public void actionPerformed(ActionEvent ae) {
-				
-				// Clear preferences
-				putPrefs(false);
-				
-				// Clear textfields.
-//				server.setText("");
-				port.setText("");
-				nick.setText("");
-				altnick.setText("");
-				username.setText("");
-				fullname.setText("");
+        // Action for Clear button. Add "remove last prefs" aswell?
+        clear.addActionListener(new ActionListener() {
 
-				// focus the first inputfield
-				server.requestFocus();
-			}
-		});
+            public void actionPerformed(ActionEvent ae) {
+
+                // Clear preferences
+                putPrefs(false);
+
+                // Clear textfields.
+    //			server.setText("");
+                port.setText("");
+                nick.setText("");
+                altnick.setText("");
+                username.setText("");
+                fullname.setText("");
+
+                // focus the first inputfield
+                server.requestFocus();
+            }
+        });
 	}
 	
 	/*
@@ -328,6 +318,7 @@ public class LoginMenu extends JFrame implements ItemListener {
 		
 		long timeStart = System.currentTimeMillis();
 		long timeUsed = 0;
+        
 		while (connection.getState() != IRCConnection.CONNECTED && timeUsed < 50000) {
 		  try {
 				System.out.println("Please wait...");
@@ -360,30 +351,29 @@ public class LoginMenu extends JFrame implements ItemListener {
      */
     private void initiateServerlist() throws MalformedURLException {
         BufferedReader bReader;    
-        String temp, network, srv;
+        String temp, srv;
         URL servers;
-        
-        
-        
         
         try {
             servers = new URL("http://www.mirc.com/servers.ini");
             bReader = new BufferedReader(new InputStreamReader(servers.openStream()));
             while ((temp = bReader.readLine()) != null) {
-                if(temp.equals("[networks]")) {
+                
+                //Fuck this!
+                
+           /*     if(temp.equals("[networks]")) {
                     //Here we have found the [networks]-heading, then we can get the names,
                     //and add the networks to our list.
                     while(!(temp = bReader.readLine()).equals("")) {
-                        network = temp.substring(temp.indexOf("=")+1, temp.length());
-                        networks.add(network);  
+                        nw = temp.substring(temp.indexOf("=")+1, temp.length());
+                        networks.add(nw);  
                     }
-                }
+                }*/
                 
                 if(temp.equals("[servers]")) {
                     while((temp = bReader.readLine()) != null) {
                         int start, end;
                         String name, group;
-                        ServerListItem tmp;
                         
                         //Find the actual name of the server, not the address.
                         name = temp.substring(temp.indexOf("=")+1, temp.indexOf("SERVER"));
@@ -399,13 +389,13 @@ public class LoginMenu extends JFrame implements ItemListener {
                         //Find which group(network) the server belongs to.
                         group = temp.substring(temp.indexOf("GROUP")+6, temp.length());
                         //Add the server to a list of server-objects.
-                        sli.add(tmp = new ServerListItem(name, group, srv));
+                        sli.add(new ServerListItem(name, group, srv));
                         
                         
                         //If the group not already exists, create it!
-                        //if(!groups.contains(group)) {
-                        //    groups.addElement(group);
-                        //}
+                        if(!groups.contains(group)) {
+                            groups.addElement(group);
+                        }
                     }
                 }
             }

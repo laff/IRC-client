@@ -47,7 +47,6 @@ public class IRCConnection extends IRCClient implements Runnable {
   private DataOutputStream      output;
   private java.util.Vector      listeners = new Vector ();
   private static final Logger logging = Logger.getLogger (IRCConnection.class.getName());
-  private ChatWindow serverDialogue;
 
   /**
    * Constructor for setting up a new IRCConnection object.
