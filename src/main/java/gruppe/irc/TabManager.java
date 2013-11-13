@@ -147,14 +147,12 @@ public class TabManager extends JPanel implements ActionListener {
 	 * @param : server The servername as received by the message
 	 */
 	public void distributeMessage (String prefix, String command, String alias, String server, String message) {
-		String chanName, restMessage, sender;
+		String chanName, restMessage;
         
 		if (server.equals(serverName) && alias.equals(nick)) {
-           // sender = prefix.substring(0, prefix.indexOf("!"));
                      System.out.println("I distributeMessage er message lik: "+message);
                      System.out.println("I distributeMessage er command lik: "+command);
                      System.out.println("I distributeMessage er prefix lik: "+prefix);
-                    // System.out.println("I distributeMessage er sender lik: "+sender);
 			// If the command matches "PRIVMSG" we have a personal message incoming,
             // unless the message starts with a '#', then it is a channel-message.
 			if (command.equals("PRIVMSG") && !message.startsWith("#")) {
@@ -168,8 +166,27 @@ public class TabManager extends JPanel implements ActionListener {
                 restMessage = message.substring(message.indexOf(":")+1, message.length());
 				distributeChannel(prefix, chanName, restMessage);
 			
-			// else Add the rest to the local servertab.
-			} else {
+			} else if (command.equals("JOIN") || command.equals("PART")) {
+            
+                // TODO: If a JOIN or PART command appears here, the list of
+                // users on the right side must be updated. Either did someone
+                // leave the chan, or someone joined it. (And it might be us that
+                // joined or leaved. If we leaved, we can just close the tab.
+                // If we joined, a NAMES-command is automatically executed, 
+                // (actually the command is: NAMES #channelname), this will list
+                // all the users. The 'command id' for this is 353.
+                // And the message looks like this: OurNick = #channelName :Ournick
+                // OtherUser1 OtherUser2 etc.
+                // The users with OP shall be listed first(says the project-text), 
+                // and they will be listed first when the NAMES-command is issued.
+                // If a user who joins AFTER us, is autopromoted OP, he also should be
+                // listed over the "normal" users. So maybe the best solution is to
+                // do the NAMES-command again for each JOIN/PART?
+                
+            
+                
+            // Else add the rest to the local servertab.
+            } else {
 				addText(message);
 			}
 		}
@@ -207,10 +224,6 @@ public class TabManager extends JPanel implements ActionListener {
 	private void distributePrivate(String prefix, String message) {
 		int personalCount = personalTabs.size();
 		boolean noFoundTab = true;
-        
-        
-        //OKay, we know this is a private message, but who the f*** is the sender of it?
-
 
 		// Goes through the personal tabs to find one that matches our description.
 		// Sets the noFoundTab variable to false if there was found a tab that match.
