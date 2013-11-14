@@ -199,6 +199,7 @@ public class TabManager extends JPanel implements ActionListener {
      * At this point, the channel will always exist in the Vector.
      * @param chanName Name of the channel where the message shall be displayed.
      * @param message The message to display in a channelwindow.
+     * @param prefix 
      */
     
 	private void distributeChannel(String prefix, String chanName, String message) {
@@ -225,7 +226,7 @@ public class TabManager extends JPanel implements ActionListener {
 		int personalCount = personalTabs.size();
 		boolean noFoundTab = true;
 		String tabName = prefix.substring( 0, prefix.indexOf("!") );
-
+        
 		// Goes through the personal tabs to find one that matches our description.
 		// Sets the noFoundTab variable to false if there was found a tab that match.
 		for (int i = 0; i < personalCount; ++i) {
@@ -267,6 +268,7 @@ public class TabManager extends JPanel implements ActionListener {
      * a tab with that name.
      * @param outText a message, starting with 'JOIN #'.
      */
+    
     private void checkForNewChannel(String outText) {
         String chanName = outText.substring(outText.indexOf("#"));
         ChannelTab cTab;
@@ -286,6 +288,26 @@ public class TabManager extends JPanel implements ActionListener {
             createChannelTab(chanName);
         }
     }
+    
+    
+    /**
+     * When a 'PART #'-message is issued, we end up here to see if the user
+     * has joined this channel at all. If the channelTab is open, we closes it,
+     * if not, the server sends a 'no such nick' message.
+     * @param outText The text the user entered in the write-field.
+     */
+    
+    private void checkToLeaveChannel(String outText) {
+        String chanName = outText.substring(outText.indexOf("#"));
+        ChannelTab cTab;
+        
+        for (int i = 0; i < channelTabs.size(); i++) {
+            cTab = (ChannelTab)channelTabs.elementAt(i);
+            if (cTab.getFilter().equals(chanName)) {
+                closeTab(chanName);
+            }
+        }
+    }
     /**
      * Takes care of sending the text the user enters to the appropriate place,
      * which is the textarea, and/or the server.
@@ -293,19 +315,24 @@ public class TabManager extends JPanel implements ActionListener {
      */
 
 	public void actionPerformed(ActionEvent e) {
-		String fromText;
+		String outText;
     
         if (e.getSource() == write) {
-			fromText = write.getText();
+			outText = write.getText();
             // If the text inserted in the write-field starts with JOIN #, 
             // then we want to create a channeltab with that name, unless
             // it already exists.
-            if (fromText.startsWith("JOIN #")) {
-                checkForNewChannel(fromText); 
-           // If it`s just a 'regular' message, we add it to the textarea. 
-            } else addText(fromText+"\n");
+            if (outText.startsWith("JOIN #")) {
+                checkForNewChannel(outText); 
+            
+            // Maybe the user wants to leave a channel:
+            } else if (outText.startsWith("PART #")) {
+                checkToLeaveChannel(outText);
+                
+            // If it`s just a 'regular' message, we add it to the textarea. 
+            } else addText(outText+"\n");
 
-			writeToLn(fromText);
+			writeToLn(outText);
 			write.setText("");
             
 		} else if (e.getSource() == quit) {
