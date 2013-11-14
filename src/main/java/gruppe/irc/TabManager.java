@@ -503,6 +503,7 @@ public class TabManager extends JPanel implements ActionListener {
 				cTab = (ChannelTab)channelTabs.elementAt(i);
 				
 				if (cTab.getFilter().equals(filter)) {
+                        writeToLn("PART "+filter);
 						channelTabs.remove(i);
 				}
 			}	
