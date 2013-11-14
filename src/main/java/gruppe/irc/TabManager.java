@@ -232,13 +232,15 @@ public class TabManager extends JPanel implements ActionListener {
 	 * @param message 
 	 */
 	private void distributePrivate(String prefix, String message) {
-		int personalCount = personalTabs.size();
-		boolean noFoundTab = true;
-		String tabName = prefix.substring( 0, prefix.indexOf("!") );
+		//int personalCount = personalTabs.size();
+		//boolean noFoundTab = true;
+		//String tabName = prefix.substring(0, prefix.indexOf("!"));
         
+        
+        checkPersonalTabs(prefix, message, true);
 		// Goes through the personal tabs to find one that matches our description.
 		// Sets the noFoundTab variable to false if there was found a tab that match.
-		for (int i = 0; i < personalCount; ++i) {
+	/*	for (int i = 0; i < personalCount; ++i) {
 
 			PersonalTab pTab = (PersonalTab)personalTabs.elementAt (i);
 			
@@ -258,7 +260,7 @@ public class TabManager extends JPanel implements ActionListener {
 			attachTab(tabName, newPersonalTab);
 
 			newPersonalTab.addText(prefix, message, true);
-		}
+		} */
 	}
 	
     protected JComponent makeTextPanel(String text) {
@@ -282,8 +284,9 @@ public class TabManager extends JPanel implements ActionListener {
         String chanName = outText.substring(outText.indexOf("#"));
         ChannelTab cTab;
         Boolean noFoundTab = true;
+        int tabs = channelTabs.size();
         
-        for (int i = 0; i < channelTabs.size(); i++) {
+        for (int i = 0; i < tabs; i++) {
             cTab = (ChannelTab)channelTabs.elementAt(i);
             if (cTab.getFilter().equals(chanName)) {
                 noFoundTab = false;
@@ -297,8 +300,7 @@ public class TabManager extends JPanel implements ActionListener {
             createChannelTab(chanName);
         }
     }
-    
-    
+   
     /**
      * When a 'PART #'-message is issued, we end up here to see if the user
      * has joined this channel at all. If the channelTab is open, we closes it,
@@ -308,15 +310,59 @@ public class TabManager extends JPanel implements ActionListener {
     
     private void checkToLeaveChannel(String outText) {
         String chanName = outText.substring(outText.indexOf("#"));
+        int tabs = channelTabs.size();
         ChannelTab cTab;
         
-        for (int i = 0; i < channelTabs.size(); i++) {
+        for (int i = 0; i < tabs; i++) {
             cTab = (ChannelTab)channelTabs.elementAt(i);
             if (cTab.getFilter().equals(chanName)) {
                 closeTab(chanName);
             }
         }
     }
+    
+    /**
+     * When an incoming or outgoing message appears here, we want to check
+     * if the personalTab already exists or not. If it doesn`t exist, we creates
+     * it, and sends the message to it.
+     * @param receiver This is the nick of the user communicating on the tab.
+     * @param message This is the message to be shown.
+     * @param incoming True if the message is incoming, false if it was sent
+     * from our write-field.
+     */
+    
+    private void checkPersonalTabs(String receiver, String message, Boolean incoming) {
+        int personalCount = personalTabs.size();
+        boolean noFoundTab = true;
+        PersonalTab pTab;
+        String tabName, sender;
+        
+        if (incoming) {
+            tabName = receiver.substring(0, receiver.indexOf("!"));
+            sender = receiver;
+        } else {
+            tabName = receiver;
+            sender = this.nick; 
+        }
+        
+        for (int i = 0; i < personalCount; ++i) {
+            pTab = (PersonalTab)personalTabs.elementAt(i);
+            if (pTab.getFilter().equals(tabName)) {
+                pTab.addText(receiver, message, incoming);
+                noFoundTab = false;
+            }
+        }
+        // Now, if there is not found a personal tab matching our description, a
+        // new one must be made. This is the case either if it`s a incoming or
+        // outgoing private-message.
+        if (noFoundTab) {
+            PersonalTab newPersonalTab = new PersonalTab(tabName, this, tabDimension);
+            personalTabs.add(newPersonalTab);
+            attachTab(tabName, newPersonalTab);
+            newPersonalTab.addText(sender, message, incoming);
+        }
+    }    
+    
     /**
      * Takes care of sending the text the user enters to the appropriate place,
      * which is the textarea, and/or the server.
@@ -337,6 +383,17 @@ public class TabManager extends JPanel implements ActionListener {
             // Maybe the user wants to leave a channel:
             } else if (outText.startsWith("PART #")) {
                 checkToLeaveChannel(outText);
+            // The user might initiate a conversation with a user.   
+                
+            } else if (outText.startsWith("PRIVMSG #")) {
+                // Just check if the channel is joined, if not, the server
+                // answers with an error.
+            } else if (outText.startsWith("PRIVMSG")) {
+                
+                String temp = outText.substring(outText.indexOf(" ")+1);
+                String nick = temp.substring(0, temp.indexOf(" "));
+                String message = temp.substring(temp.indexOf(" ")+1, temp.length());
+                checkPersonalTabs(nick, message+"\n", false);
                 
             // If it`s just a 'regular' message, we add it to the textarea. 
             } else addText(outText+"\n");
