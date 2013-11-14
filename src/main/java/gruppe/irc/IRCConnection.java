@@ -130,7 +130,6 @@ public class IRCConnection extends IRCClient implements Runnable {
         message = message.substring (message.indexOf(" ")+1);
     }
         command = message.substring (0, message.indexOf(" "));
-		    System.out.println("Command: "+command);
         message = message.substring (message.indexOf(" ")+1);
 
 		sendInfo(prefix, command, nick, server, message + "\n");

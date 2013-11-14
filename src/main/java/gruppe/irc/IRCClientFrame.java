@@ -36,7 +36,8 @@ public class IRCClientFrame extends JFrame implements ActionListener {
 		setTitle("I was told this is the server");
 		// Exit button should only close the program if it is the last IRC-Frame.
 		// Perhaps a popup check should be sent?
-		setDefaultCloseOperation( JFrame.DO_NOTHING_ON_CLOSE ); // ?
+		//setDefaultCloseOperation( JFrame.DO_NOTHING_ON_CLOSE ); // ?
+        setDefaultCloseOperation((EXIT_ON_CLOSE));
 		setSize(500, 500);
 		setVisible(true);
 		
