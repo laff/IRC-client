@@ -29,7 +29,7 @@ public class IRCClient {
 	public static void main(String[] args) {
         
         currentLocale = new Locale("en", "US");
-        messages = ResourceBundle.getBundle("resources/MessagesBundle", currentLocale);
+        messages = ResourceBundle.getBundle("mmmMessagesBundle", currentLocale);
 		
 		//Sets look and feel to system default
 		try {
