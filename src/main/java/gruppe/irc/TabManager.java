@@ -259,17 +259,49 @@ public class TabManager extends JPanel implements ActionListener {
         panel.add(filler);
         return panel;
     }
+    
+    /**
+     * When a message starting with 'JOIN' is written in the textfield, 
+     * we send the text to his place, to check if a tab with that channelname already
+     * exists. If it does, no action is made, if it doesn`t exists, we creates
+     * a tab with that name.
+     * @param outText a message, starting with 'JOIN #'.
+     */
+    private void checkForNewChannel(String outText) {
+        String chanName = outText.substring(outText.indexOf("#"));
+        ChannelTab cTab;
+        Boolean noFoundTab = true;
+        
+        for (int i = 0; i < channelTabs.size(); i++) {
+            cTab = (ChannelTab)channelTabs.elementAt(i);
+            if (cTab.getFilter().equals(chanName)) {
+                noFoundTab = false;
+                // If the user tries to join a channel that he already has joined
+                // this channel will be set as selected.
+                tabbedPane.setSelectedIndex(tabbedPane.indexOfTab(chanName));
+            }   
+        }
+        // The channelTab is not found, let`s create it!
+        if (noFoundTab) {
+            createChannelTab(chanName);
+        }
+    }
+    /**
+     * Takes care of sending the text the user enters to the appropriate place,
+     * which is the textarea, and/or the server.
+     * @param e 
+     */
 
 	public void actionPerformed(ActionEvent e) {
 		String fromText;
-        
+    
         if (e.getSource() == write) {
 			fromText = write.getText();
             // If the text inserted in the write-field starts with JOIN #, 
-            // then we want to create a channeltab with that name.
+            // then we want to create a channeltab with that name, unless
+            // it already exists.
             if (fromText.startsWith("JOIN #")) {
-                createChannelTab(fromText);
-                
+                checkForNewChannel(fromText); 
            // If it`s just a 'regular' message, we add it to the textarea. 
             } else addText(fromText+"\n");
 
@@ -284,19 +316,16 @@ public class TabManager extends JPanel implements ActionListener {
     /**
      * Method to create a new tab, for a channel that the user wants to join.
      * The channel is added to the Vector with all the other channeltabs, and
-     * a tabbedPane is also created.
-     * @param fromText a text that include a channel name to join.
+     * a tabbedPane is also created. At last the tab will be selected.
+     * @param chanName a text that include a channel name to join.
      */
     
-    private void createChannelTab(String fromText) {
-        String chanName, tabName;
+    private void createChannelTab(String chanName) {
         ChannelTab chanTab;
         
-        chanName = fromText.substring(fromText.indexOf("#"));
-        chanTab = new ChannelTab(chanName, this);
-        channelTabs.addElement(chanTab);
-        tabName = chanName;
-        tabbedPane.addTab(tabName, null, chanTab);
+        channelTabs.addElement(chanTab = new ChannelTab(chanName, this));
+        tabbedPane.addTab(chanName, null, chanTab);
+        tabbedPane.setSelectedIndex(tabbedPane.indexOfTab(chanName));
     }
 	
 	/**
