@@ -7,6 +7,9 @@ package gruppe.irc;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -29,6 +32,7 @@ public class IRCClientFrame extends JFrame implements ActionListener {
 	
 	public TabManager thisTab;
 	private String frameTitle;
+	private IRCClientFrame self;
 	
 	public IRCClientFrame() {
 	
@@ -36,8 +40,9 @@ public class IRCClientFrame extends JFrame implements ActionListener {
 		setTitle("I was told this is the server");
 		// Exit button should only close the program if it is the last IRC-Frame.
 		// Perhaps a popup check should be sent?
-		//setDefaultCloseOperation( JFrame.DO_NOTHING_ON_CLOSE ); // ?
-        setDefaultCloseOperation((EXIT_ON_CLOSE));
+		setDefaultCloseOperation( JFrame.DO_NOTHING_ON_CLOSE ); // ?
+        //setDefaultCloseOperation((EXIT_ON_CLOSE));
+		self = this;
 		setSize(500, 500);
 		setVisible(true);
 		
@@ -51,9 +56,10 @@ public class IRCClientFrame extends JFrame implements ActionListener {
 		add(menuBar, BorderLayout.NORTH);
 		
 		// Creating the TabManager panel.
-		thisTab = new TabManager();
+		thisTab = new TabManager(self);
         add(thisTab);
         this.addWindowListener(exitListener);
+        this.addComponentListener(resizeListener);
         
 	}
 	/**
@@ -89,7 +95,17 @@ public class IRCClientFrame extends JFrame implements ActionListener {
 		@Override
 		public void windowClosing(WindowEvent e) {
 			thisTab.closeConnection();
-			dispose();
+			self.dispose();
 		}
+	};
+	
+	ComponentAdapter resizeListener = new ComponentAdapter() {
+		
+		@Override
+		public void componentResized(ComponentEvent e) {
+			int newHeight = self.getHeight();
+			thisTab.resizeTabs(newHeight);
+		}
+
 	};
 }

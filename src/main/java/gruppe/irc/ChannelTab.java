@@ -38,9 +38,9 @@ public class ChannelTab extends GenericTab {
     //that channel (LEAVE or PART #channelname)
     //AND MORE: Maybe some minimum-values should be set for the components in the splitpane?
     
-	public ChannelTab (String chanName, TabManager mng) {
+	public ChannelTab (String chanName, TabManager mng, Dimension dim) {
 		//TODO: Must receive a proper filter
-		super(chanName, mng);
+		super(chanName, mng, dim);
           
         //add(textScrollPane = new JScrollPane(text = new JTextPane()), BorderLayout.WEST);
         add(scrollPane, BorderLayout.WEST);

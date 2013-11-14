@@ -28,9 +28,9 @@ public class PersonalTab extends GenericTab {
 	private PersonalTab self;
 	private JFrame newFrame;
 	
-	public PersonalTab (String stringF, TabManager mng) {
+	public PersonalTab (String stringF, TabManager mng, Dimension dim) {
 	
-		super(stringF, mng);
+		super(stringF, mng, dim);
 		panel = new JPanel();
 		close = new JButton("Close private chat", null);
 		attach = new JButton("Detach tab", null);

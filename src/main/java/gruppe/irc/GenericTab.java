@@ -37,7 +37,7 @@ public class GenericTab extends JPanel implements ActionListener {
 	protected JTextField write;
 	protected boolean isAttached;
 
-	public GenericTab (String tabFilter, TabManager mng) {
+	public GenericTab (String tabFilter, TabManager mng, Dimension dim) {
 		filter = tabFilter;
 		manager = mng;
 		
@@ -60,7 +60,7 @@ public class GenericTab extends JPanel implements ActionListener {
 		add(write, BorderLayout.SOUTH);
 		setVisible(true);
 		
-		setPreferredSize(new Dimension(0, 420));
+		setPreferredSize(dim);
 	}
 	
 	

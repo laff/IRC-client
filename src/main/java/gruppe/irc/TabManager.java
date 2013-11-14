@@ -57,6 +57,8 @@ public class TabManager extends JPanel implements ActionListener {
 	
 	// This TabManager's IRCConnection
 	private IRCConnection connection;
+	// This TabManagers IRCClientFrame parent
+	private IRCClientFrame parent;
 	
 	/*
 	 * Each user is distinguished from other users by a unique nickname
@@ -70,6 +72,9 @@ public class TabManager extends JPanel implements ActionListener {
 	 * PS! Should rather have this inside the loginmenu logic.
 	 */
 	private final int maxNickLength = 9;
+	//The height offset between the IRCClientFrame and the tabs
+	private final int heightOffset = 80;
+	private Dimension tabDimension;
 	
 	
 	// The server name this TabManager is connected to.
@@ -79,16 +84,20 @@ public class TabManager extends JPanel implements ActionListener {
 	private JTabbedPane tabbedPane;
     private JDesktopPane desktop;
 	private JScrollPane scrollPane;
+
 	
 	// These components are used within the servertab
 	private JTextField write;
 	private JButton quit;
 	private JTextPane text;
 	
-	public TabManager () {
+	public TabManager (IRCClientFrame prnt) {
 	
         setLayout(new BorderLayout());
 		setVisible(true);
+		
+		parent = prnt;
+		tabDimension = new Dimension(0, parent.getHeight() - heightOffset);
 		
         desktop = new JDesktopPane();
         serverTab = createServerTab();
@@ -97,7 +106,7 @@ public class TabManager extends JPanel implements ActionListener {
         add(desktop);
         
         tabbedPane = new JTabbedPane();
-        tabbedPane.addTab("Server", serverTab);//"ServerTab", null, new JPanel(), "Main window for server communication");
+        tabbedPane.addTab("Server", serverTab);
         add(tabbedPane, BorderLayout.NORTH);
         tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 		
@@ -133,7 +142,7 @@ public class TabManager extends JPanel implements ActionListener {
         
         intFrame.add(quit, BorderLayout.NORTH);
         intFrame.setVisible(true);
-        intFrame.setPreferredSize(new Dimension(0, 420));
+        intFrame.setPreferredSize(tabDimension);
 		
 		return intFrame;
 	}
@@ -243,7 +252,7 @@ public class TabManager extends JPanel implements ActionListener {
 		// Now, if there is not found a personal tab matching our description, a new one must be made.
 		if (noFoundTab) {
 			
-			PersonalTab newPersonalTab = new PersonalTab(tabName, this);
+			PersonalTab newPersonalTab = new PersonalTab(tabName, this,tabDimension);
 			personalTabs.add(newPersonalTab);
 
 			attachTab(tabName, newPersonalTab);
@@ -350,7 +359,7 @@ public class TabManager extends JPanel implements ActionListener {
     private void createChannelTab(String chanName) {
         ChannelTab chanTab;
         
-        channelTabs.addElement(chanTab = new ChannelTab(chanName, this));
+        channelTabs.addElement(chanTab = new ChannelTab(chanName, this, tabDimension));
         tabbedPane.addTab(chanName, null, chanTab);
         tabbedPane.setSelectedIndex(tabbedPane.indexOfTab(chanName));
     }
@@ -399,12 +408,13 @@ public class TabManager extends JPanel implements ActionListener {
         });
 }
 	
-	/*
-	 * Function that calls the close function of this tabs connection.
+	/**
+	 * Method closes connection and the parent window
 	 */
 	public void closeConnection() {
 		try {
 			connection.close();
+			parent.dispose();
 		} catch (NullPointerException npe) {
 			System.out.println("TabManager::closeConnection: Error closing connection " + npe.getMessage());
 		}
@@ -487,5 +497,19 @@ public class TabManager extends JPanel implements ActionListener {
     
     public String getNick() {
         return nick;
+    }
+    
+    public void resizeTabs(int newHeight) {
+    	tabDimension.setSize(0, newHeight - heightOffset);
+    	serverTab.setSize(tabDimension);
+    	int count = channelTabs.size();
+    	for (int i = 0; i < count; ++i) {
+    		channelTabs.get(i).setSize(tabDimension);
+    	}
+    	count = personalTabs.size();
+    	for (int i = 0; i < count; ++i) {
+    		personalTabs.get(i).setSize(tabDimension);
+    	}
+    	
     }
 }
