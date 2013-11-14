@@ -33,7 +33,7 @@ public class PersonalTab extends GenericTab {
 		super(stringF, mng);
 		panel = new JPanel();
 		close = new JButton("Close private chat", null);
-		attach = new JButton("Attach/Detach window", null);
+		attach = new JButton("Detach tab", null);
 		
 		close.addActionListener(new ButtonListener());
 		attach.addActionListener(new ButtonListener());
@@ -57,6 +57,9 @@ public class PersonalTab extends GenericTab {
 		public void actionPerformed(ActionEvent e) {
 			if (e.getSource() == close) {
 				manager.closeTab(filter);
+				if (isAttached == false) {
+					newFrame.dispose();
+				}
 			} else if (e.getSource() == attach) {
 				if (isAttached == true) {
 					newFrame = new JFrame();
@@ -64,7 +67,8 @@ public class PersonalTab extends GenericTab {
 					newFrame.setMinimumSize(new Dimension(300, 300));
 					newFrame.add(self);
 					newFrame.setVisible(true);
-					//Removes 
+					attach.setText("Attach window");
+					//Removes tab from tabManager
 					manager.releaseTab(filter);
 					
 					isAttached = false;
@@ -72,6 +76,7 @@ public class PersonalTab extends GenericTab {
 					manager.attachTab(filter, self);
 					newFrame.remove(self);
 					newFrame.dispose();
+					attach.setText("Detach tab");
 					
 					isAttached = true;
 				}

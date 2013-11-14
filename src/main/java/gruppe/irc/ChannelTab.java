@@ -1,10 +1,15 @@
 package gruppe.irc;
 
+import gruppe.irc.PersonalTab.ButtonListener;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
@@ -19,16 +24,15 @@ import javax.swing.text.BadLocationException;
  *
  * @author Christian
  */
-public class ChannelTab extends GenericTab {//implements ActionListener {
+public class ChannelTab extends GenericTab {
 	
-    String channelName;
-	//JTextField write;
-	JButton quit;
-	JTextPane users;
-	JScrollPane textScrollPane, usersScrollPane;
-	//BorderLayout layout;
-    JSplitPane splitPane;
-    JPanel panel;
+	private JTextPane users;
+	private JScrollPane usersScrollPane;
+	private JSplitPane splitPane;
+	private JButton close, attach;
+	private JPanel panel;
+	private ChannelTab self;
+	private JFrame newFrame;
 	
     //MORE TODO: When we exit a channel(crossing it out), we also must leave
     //that channel (LEAVE or PART #channelname)
@@ -36,34 +40,24 @@ public class ChannelTab extends GenericTab {//implements ActionListener {
     
 	public ChannelTab (String chanName, TabManager mng) {
 		//TODO: Must receive a proper filter
-		
-		//COMMENT: Some of the stuff in the constructor is already done by GenericTab.
-		//You already have a field called "write" in SOUTH, and you could reassign the field "text" to "splitPane". Just saying...
 		super(chanName, mng);
-        
-		//super("Server", true, true, true, true);
-        setSize(300, 300);
-        
-        setLayout(new BorderLayout());
-        
-        add(textScrollPane = new JScrollPane(text = new JTextPane()), BorderLayout.WEST);
+          
+        //add(textScrollPane = new JScrollPane(text = new JTextPane()), BorderLayout.WEST);
+        add(scrollPane, BorderLayout.WEST);
         //TODO: We want the list of users connected to the channel into this component:
         add(usersScrollPane = new JScrollPane(users = new JTextPane()), BorderLayout.EAST);
         
         //Splits the users and text components.
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-                    textScrollPane, usersScrollPane);
+                    scrollPane, usersScrollPane);
         
         //We want the textpane to be the left component, we also want the left
         //component to have the highest weighting when resizing the window.
-        splitPane.setLeftComponent(textScrollPane);
+        splitPane.setLeftComponent(scrollPane);
         splitPane.setRightComponent(usersScrollPane);
         splitPane.setResizeWeight(0.92);
-        
-        write = new JTextField();
-        add(write, BorderLayout.SOUTH);
+
         add(splitPane, BorderLayout.CENTER);
-		write.addActionListener(this);
         
         //TEMP: Background color set just to show the diff
         //TODO: We should not be able to edit the list of users, but right-click must
@@ -71,69 +65,60 @@ public class ChannelTab extends GenericTab {//implements ActionListener {
         users.setBackground(Color.red);
         users.setEditable(false);
         
-		text.setBackground(Color.LIGHT_GRAY);
-		text.setEditable(false);
-     
-		quit = new JButton("Close connection");
-		quit.addActionListener(this);
-        
-        add(quit, BorderLayout.NORTH);
-        setVisible(true);
-	}
-	
-	public JPanel getPanel() {
-		return panel;
-	}
-	
+		panel = new JPanel();
+		close = new JButton("Close channel", null);
+		attach = new JButton("Detach tab", null);
 		
-/*	public void addText(String msg) {
-        int pos = text.getStyledDocument().getEndPosition().getOffset();
-        
-        try {	
-            text.getStyledDocument().insertString(pos, msg, null);
-        } catch (BadLocationException ble) {};
-        
-        //When new messages appears in the window, it scrolls down automagically.
-        //Borrowed from Oyvind`s example.
-        SwingUtilities.invokeLater(new Thread() {
-	        public void run() {
-	        	// Get the scrollbar from the scroll pane
-	        	JScrollBar scrollbar = textScrollPane.getVerticalScrollBar();
-	        	// Set the scrollbar to its maximum value
-	        	scrollbar.setValue(scrollbar.getMaximum());
-	        }
-	    });
-	}
-  */  
-  //   	public void actionPerformed(ActionEvent e) {
-/*
-		if (e.getSource() == write) {
-			
-			// First our request is added to the textArea.
-			addText(write.getText()+"\n");
-			
-			// Then the request is sent to the server. 
-			// The answers are then put into the textarea by the message() function in IRCConnection.
-			TabManager.getConnection().writeln(write.getText());
-			
-			write.setText("");
-		}
+		close.addActionListener(new ButtonListener());
+		attach.addActionListener(new ButtonListener());
 		
-		else if (e.getSource() == quit) {
-            //Will throw an exception if not connected to a server.
-			try {
-                TabManager.getConnection().close();
-            } catch (NullPointerException npe) {
-                
-            }
-			// Opening a new login menu.
-			//LoginMenu loginFrame = new LoginMenu(getLocation());
-			
-			dispose();
-		}
+		panel.add(attach);
+		panel.add(close);
+		add(panel, BorderLayout.NORTH);
+		
+		
+		self = this;
+	}
 
-*/
-	//	} 
+	
+	/**
+	 * ButtonListener is an action listener for the buttons
+	 * associated with ChannelTab
+	 * @author Anders
+	 *
+	 */
+	class ButtonListener implements ActionListener {
+
+		public void actionPerformed(ActionEvent e) {
+			if (e.getSource() == close) {
+				manager.closeTab(filter);
+				if (isAttached == false) {
+					newFrame.dispose();
+				}
+			} else if (e.getSource() == attach) {
+				if (isAttached == true) {
+					newFrame = new JFrame();
+					newFrame.setPreferredSize(new Dimension(400, 500));
+					newFrame.setMinimumSize(new Dimension(300, 300));
+					newFrame.add(self);
+					newFrame.setVisible(true);
+					attach.setText("Attach window");
+					//Removes tab from tabManager
+					manager.releaseTab(filter);
+					
+					isAttached = false;
+				} else {
+					manager.attachTab(filter, self);
+					newFrame.remove(self);
+					newFrame.dispose();
+					attach.setText("Detach tab");
+					
+					isAttached = true;
+				}
+			}		
+		}
+		
+	} 
 
 	
 }

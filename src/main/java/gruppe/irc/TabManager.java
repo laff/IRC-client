@@ -154,7 +154,7 @@ public class TabManager extends JPanel implements ActionListener {
                      System.out.println("I distributeMessage er command lik: "+command);
                      System.out.println("I distributeMessage er prefix lik: "+prefix);
 			// If the command matches "PRIVMSG" we have a personal message incoming,
-            // unless the message starts with a '#', then it is a channel-message.
+            // unless the message starts with a '#', in which case it is a channel-message.
 			if (command.equals("PRIVMSG") && !message.startsWith("#")) {
 				distributePrivate(prefix, message);
 			
@@ -224,6 +224,7 @@ public class TabManager extends JPanel implements ActionListener {
 	private void distributePrivate(String prefix, String message) {
 		int personalCount = personalTabs.size();
 		boolean noFoundTab = true;
+		String tabName = prefix.substring( 0, prefix.indexOf("!") );
 
 		// Goes through the personal tabs to find one that matches our description.
 		// Sets the noFoundTab variable to false if there was found a tab that match.
@@ -231,7 +232,7 @@ public class TabManager extends JPanel implements ActionListener {
 
 			PersonalTab pTab = (PersonalTab)personalTabs.elementAt (i);
 			
-			if (pTab.getFilter().equals(prefix)) {
+			if (pTab.getFilter().equals(tabName)) {
 				
 				pTab.addText(prefix, message, true);
 				noFoundTab = false;
@@ -240,11 +241,11 @@ public class TabManager extends JPanel implements ActionListener {
 
 		// Now, if there is not found a personal tab matching our description, a new one must be made.
 		if (noFoundTab) {
-
-			PersonalTab newPersonalTab = new PersonalTab(prefix, this);
+			
+			PersonalTab newPersonalTab = new PersonalTab(tabName, this);
 			personalTabs.add(newPersonalTab);
 
-			attachTab(prefix, newPersonalTab);
+			attachTab(tabName, newPersonalTab);
 
 			newPersonalTab.addText(prefix, message, true);
 		}
@@ -367,18 +368,36 @@ public class TabManager extends JPanel implements ActionListener {
 	 */
 	
 	public void closeTab(String filter) {
-		
-		int personalCount = personalTabs.size();
-        PersonalTab pTab;
-
-		// Goes through the personal tabs to find one that matches our description.
-		// Removes element from vector
-		for (int i = 0; i < personalCount; ++i) {
-
-			pTab = (PersonalTab)personalTabs.elementAt(i);
-			
-			if (pTab.getFilter().equals(filter)) {
-				personalTabs.remove(i);
+		//Channel filters start with #
+		if ( filter.startsWith("#") ) {
+			int channelCount = channelTabs.size();
+	        ChannelTab cTab;
+	
+			// Goes through the channel tabs to find one that matches our description.
+			// Removes element from vector
+			for (int i = 0; i < channelCount; ++i) {
+	
+				cTab = (ChannelTab)channelTabs.elementAt(i);
+				
+				if (cTab.getFilter().equals(filter)) {
+						channelTabs.remove(i);
+				}
+			}	
+		}
+		//If not channel tab it must be a personal tab
+		else {	
+			int personalCount = personalTabs.size();
+	        PersonalTab pTab;
+	
+			// Goes through the personal tabs to find one that matches our description.
+			// Removes element from vector
+			for (int i = 0; i < personalCount; ++i) {
+	
+				pTab = (PersonalTab)personalTabs.elementAt(i);
+				
+				if (pTab.getFilter().equals(filter)) {
+					personalTabs.remove(i);
+				}
 			}
 		}
 		releaseTab(filter);
@@ -389,26 +408,25 @@ public class TabManager extends JPanel implements ActionListener {
 	 * Removes tab from the tabManager. Does not delete content of tab.
 	 * @param filter: Filter text of tab to be removed.
 	 */
-	
-	public void releaseTab(String filter) {
-		int temp;
-		String tabName = "Private " + filter.substring( 0, filter.indexOf("!") );
-        
-		temp = tabbedPane.indexOfTab(tabName);
-		if (temp != -1) {
-			tabbedPane.remove( temp );
+	public void releaseTab(String tabName) {
+		//This function might be called from different places, so we must
+		// check that the tab is actually in the tabbedPane
+		int tabIndex = tabbedPane.indexOfTab(tabName);
+		if (tabIndex != -1) {
+			tabbedPane.remove( tabIndex );
 		}
 	}
 	
 	/**
-	 * Method attaches a tab to the tabManager
+	 * Method attaches a tab to the tabManager and sets focus on 
+	 *  the added tab
 	 * @param prefix Filter text for the new tab
-	 * @param newPersonalTab The tab to be attached to the tabManager
+	 * @param newTab The tab to be attached to the tabManager
 	 */
-	public void attachTab(String prefix, PersonalTab newPersonalTab) {
-		String tabName = "Private " + prefix.substring( 0, prefix.indexOf("!") );
-		// update function adding stuff to the tabbedpane?
-		tabbedPane.addTab(tabName, null, newPersonalTab);
+	public void attachTab(String tabName, GenericTab newTab) {
+		
+		tabbedPane.addTab(tabName, null, newTab);
+		tabbedPane.setSelectedIndex(tabbedPane.indexOfTab(tabName));
 	}
     
     public String getNick() {
