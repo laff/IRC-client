@@ -130,7 +130,10 @@ public class GenericTab extends JPanel implements ActionListener {
             // We fetch text from the field, and then add it to the textArea.
             fromText = write.getText();
             // This is a outgoing message, therefore we send 'false'.
-            addText(manager.getNick(), fromText, false);
+            System.out.println("Enter i GenericTab(filter): "+filter);
+            System.out.println("Teksten i GenericTab: "+fromText);
+            
+            addText(manager.getNick(), fromText+"\n", false);
             // Then we send the message to the server aswell.
             writeToLn("PRIVMSG "+filter+" :"+fromText);
             write.setText("");

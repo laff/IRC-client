@@ -5,8 +5,13 @@ import gruppe.irc.PersonalTab.ButtonListener;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import javax.swing.DefaultListModel;
 
 import javax.swing.JButton;
@@ -15,6 +20,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.plaf.ListUI;
 
 /**
  *
@@ -52,8 +58,19 @@ public class ChannelTab extends GenericTab {
         // Setting some values for our list.
         list.setVisible(true);
         list.setBackground(Color.darkGray);
-
         
+        //MouseListener for our list of users. On doubleclick a PersonalTab with
+        // that user is opened.
+        MouseListener mouseListener = new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    manager.createPersonalTab(list.getSelectedValue().toString());
+                 }
+            }
+        };
+        
+        list.addMouseListener(mouseListener);
+
         //We want the textpane to be the left component, we also want the left
         //component to have the highest weighting when resizing the window.
         splitPane.setLeftComponent(scrollPane);

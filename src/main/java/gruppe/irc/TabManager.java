@@ -201,7 +201,7 @@ public class TabManager extends JPanel implements ActionListener {
             } else if (command.equals("353")) {
                 String temp = message.substring(message.indexOf("#"));
                 chanName = temp.substring(0, temp.indexOf(" "));
-                String names = message.substring(message.indexOf(":")+1, message.length());
+                String names = message.substring(message.indexOf(":")+1, message.length()-1);
                 System.out.println("kanalnavn i command 353: "+chanName);
                 System.out.println("Names i command 353: "+names);
                 
@@ -449,6 +449,33 @@ public class TabManager extends JPanel implements ActionListener {
         channelTabs.addElement(chanTab = new ChannelTab(chanName, this, tabDimension));
         tabbedPane.addTab(chanName, null, chanTab);
         tabbedPane.setSelectedIndex(tabbedPane.indexOfTab(chanName));
+    }
+    
+    /**
+     * Used when our user doubleclick a user on a channel. A personalTab with
+     * this user is made, or set to focus.
+     * @param tabName The username of the user we want to communicate with, and
+     * also used as tabName.
+     */
+    
+    public void createPersonalTab(String tabName) {
+        int personalCount = personalTabs.size();
+        PersonalTab pTab;
+        Boolean noFoundTab = true;
+        
+        for (int i = 0; i < personalCount; ++i) {
+            pTab = (PersonalTab)personalTabs.elementAt(i);
+            if (pTab.getFilter().equals(tabName)) {
+                
+                //MISSING: Focus this tab here.
+                noFoundTab = false;
+            }
+        }
+        if (noFoundTab) {
+            PersonalTab newPersonalTab = new PersonalTab(tabName, this, tabDimension);
+            personalTabs.add(newPersonalTab);
+            attachTab(tabName, newPersonalTab);
+        }
     }
 	
 	/**
