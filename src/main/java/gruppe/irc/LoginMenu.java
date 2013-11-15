@@ -42,7 +42,7 @@ public class LoginMenu extends JFrame implements ItemListener {
 	JPanel panel = new JPanel();		
 
 	// Labels
-    /*
+    
     JLabel networkL = new JLabel(IRCClient.messages.getString("loginM.nwLabel"));
 	JLabel serverL = new JLabel(IRCClient.messages.getString("loginM.srvLabel"));
 	JLabel portL = new JLabel(IRCClient.messages.getString("loginM.portLabel"));
@@ -51,8 +51,8 @@ public class LoginMenu extends JFrame implements ItemListener {
 	JLabel usernameL = new JLabel(IRCClient.messages.getString("loginM.usNameLabel"));
 	JLabel fullnameL = new JLabel(IRCClient.messages.getString("loginM.fullNameLabel"));
 	JLabel autologL = new JLabel(IRCClient.messages.getString("loginM.autoLogLabel"));
-	*/
-    
+	
+    /*
     JLabel networkL = new JLabel("Network:");
 	JLabel serverL = new JLabel("Server:");
 	JLabel portL = new JLabel("Port:");
@@ -61,7 +61,7 @@ public class LoginMenu extends JFrame implements ItemListener {
 	JLabel usernameL = new JLabel("Username");
 	JLabel fullnameL = new JLabel("Full Name");
 	JLabel autologL = new JLabel("Auto Login:");
-    
+    */
 	// Input fields
 	JTextField port = new JTextField(4);
 	JTextField nick = new JTextField(32);

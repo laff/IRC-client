@@ -6,7 +6,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -17,16 +16,18 @@ import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.plaf.ListUI;
+
 
 /**
  *
  * @author Christian
  */
-public class ChannelTab extends GenericTab {
+public class ChannelTab extends GenericTab  {
 	
 	private JScrollPane usersScrollPane;
 	private JSplitPane splitPane;
@@ -35,6 +36,8 @@ public class ChannelTab extends GenericTab {
 	private ChannelTab self;
 	private JFrame newFrame;
     private JList list;
+    private JMenuItem item;
+    private JPopupMenu popUp;
     private DefaultListModel listModel;
 	
 
@@ -57,19 +60,8 @@ public class ChannelTab extends GenericTab {
         
         // Setting some values for our list.
         list.setVisible(true);
-        list.setBackground(Color.darkGray);
-        
-        //MouseListener for our list of users. On doubleclick a PersonalTab with
-        // that user is opened.
-        MouseListener mouseListener = new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) {
-                    manager.createPersonalTab(list.getSelectedValue().toString());
-                 }
-            }
-        };
-        
-        list.addMouseListener(mouseListener);
+        list.setBackground(Color.LIGHT_GRAY);
+        list.addMouseListener(new MouseClick());
 
         //We want the textpane to be the left component, we also want the left
         //component to have the highest weighting when resizing the window.
@@ -92,7 +84,7 @@ public class ChannelTab extends GenericTab {
 		panel.add(close);
 		add(panel, BorderLayout.NORTH);
 		
-		self = this;
+		self = ChannelTab.this;
 	}
     
     /**
@@ -109,7 +101,61 @@ public class ChannelTab extends GenericTab {
             listModel.addElement(namesSplitted[i]);
         }
     }
+    
+    /**
+     * Future use will might be to remove the '@' or '+' before sending
+     * the username to the server.
+     */
+    
+    private void whois(String user) {
+        System.out.println("This is the selected user: "+user);
+        writeToLn("WHOIS "+user);
+    }
+    
+    /**
+     * Set up the different items in the popup-menu when rightclicking.
+     */
+    
+    private void setupItems() {    
+        popUp = new JPopupMenu();
+        popUp.add(item = new JMenuItem(IRCClient.messages.getString("chanTab.popUp.whois")));
 
+        item.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                try {
+                    String temp =  list.getSelectedValue().toString();
+                    whois(temp);
+                    System.out.println("ActionPerformed YES SIR! "+temp);
+                } catch (NullPointerException npe) {};
+            }
+        });
+    }
+    
+    /**
+     * MouseListener for our list of users. On doubleclick a PersonalTab with
+     * that user is opened. On right-click a popupmenu shows up on the mouseovered
+     * users.
+     * TOFIX: If the user we doubleclick is OP or Voiced,
+     * then the tab we creates will contain '@' or '+' before the nick.
+     */
+      
+   private class MouseClick extends MouseAdapter {
+        
+       @Override
+       public void mouseClicked(MouseEvent e) {
+            if (e.getClickCount() == 2) {
+                //We have a bug here, 
+                manager.createPersonalTab(list.getSelectedValue().toString());
+             }
+            else if (e.isMetaDown()) {
+                //And the same bug will happen here.
+                list.setSelectedIndex( list.locationToIndex(e.getPoint()) );
+                System.out.println(list.getSelectedValue() +" selected" );
+                setupItems();
+                popUp.show(list, e.getX(), e.getY());
+            }
+        }
+   };
 	
 	/**
 	 * ButtonListener is an action listener for the buttons
