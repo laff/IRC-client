@@ -175,8 +175,13 @@ public class TabManager extends JPanel implements ActionListener {
                 restMessage = message.substring(message.indexOf(":")+1, message.length());
 				distributeChannel(prefix, chanName, restMessage);
 			
-			} else if (command.equals("JOIN") || command.equals("PART")) {
-            
+			} else if (command.equals("JOIN")) {
+                checkForNewChannel(message); 
+                
+            } else if (command.equals("PART")) {
+                checkToLeaveChannel(message);
+                
+                
                 // TODO: If a JOIN or PART command appears here, the list of
                 // users on the right side must be updated. Either did someone
                 // leave the chan, or someone joined it. (And it might be us that
@@ -191,8 +196,17 @@ public class TabManager extends JPanel implements ActionListener {
                 // If a user who joins AFTER us, is autopromoted OP, he also should be
                 // listed over the "normal" users. So maybe the best solution is to
                 // do the NAMES-command again for each JOIN/PART?
-                
             
+            // Command: 353 means that the output of the NAMES-command comes now.
+            } else if (command.equals("353")) {
+                String temp = message.substring(message.indexOf("#"));
+                chanName = temp.substring(0, temp.indexOf(" "));
+                String names = message.substring(message.indexOf(":")+1, message.length());
+                System.out.println("kanalnavn i command 353: "+chanName);
+                System.out.println("Names i command 353: "+names);
+                
+                setChannelNames(chanName, names);
+
                 
             // Else add the rest to the local servertab.
             } else {
@@ -200,6 +214,20 @@ public class TabManager extends JPanel implements ActionListener {
 			}
 		}
 	}
+    
+    private void setChannelNames(String chanName, String names) {
+        int chans = channelTabs.size();
+        ChannelTab chanTab;
+        
+        for (int i = 0; i < chans; i++) {
+            chanTab = (ChannelTab)channelTabs.elementAt(i);
+            // If the current tab has the corresponding channelname,
+            // we can add the message to that channel.
+            if (chanTab.getFilter().equals(chanName)) {
+                chanTab.updateNames(names);
+            }
+        }
+    }
 	
 	/**
      * Function that takes care of distributing messages to the right channeltab.
@@ -280,8 +308,8 @@ public class TabManager extends JPanel implements ActionListener {
      * @param outText a message, starting with 'JOIN #'.
      */
     
-    private void checkForNewChannel(String outText) {
-        String chanName = outText.substring(outText.indexOf("#"));
+    private void checkForNewChannel(String message) {
+        String chanName = message.substring(message.indexOf("#"), message.length()-1);
         ChannelTab cTab;
         Boolean noFoundTab = true;
         int tabs = channelTabs.size();
@@ -377,11 +405,13 @@ public class TabManager extends JPanel implements ActionListener {
             // If the text inserted in the write-field starts with JOIN #, 
             // then we want to create a channeltab with that name, unless
             // it already exists.
-            if (outText.startsWith("JOIN #")) {
-                checkForNewChannel(outText); 
+            //if (outText.startsWith("JOIN #")) {
+             //   checkForNewChannel(outText); 
             
             // Maybe the user wants to leave a channel:
-            } else if (outText.startsWith("PART #")) {
+        //    } 
+       // else 
+            if (outText.startsWith("PART #")) {
                 checkToLeaveChannel(outText);
             // The user might initiate a conversation with a user.   
                 
@@ -503,8 +533,8 @@ public class TabManager extends JPanel implements ActionListener {
 				cTab = (ChannelTab)channelTabs.elementAt(i);
 				
 				if (cTab.getFilter().equals(filter)) {
-                        writeToLn("PART "+filter);
-						channelTabs.remove(i);
+                    writeToLn("PART "+filter);
+                    channelTabs.remove(i);
 				}
 			}	
 		}
@@ -548,7 +578,6 @@ public class TabManager extends JPanel implements ActionListener {
 	 * @param newTab The tab to be attached to the tabManager
 	 */
 	public void attachTab(String tabName, GenericTab newTab) {
-		
 		tabbedPane.addTab(tabName, null, newTab);
 		tabbedPane.setSelectedIndex(tabbedPane.indexOfTab(tabName));
 	}
@@ -568,6 +597,5 @@ public class TabManager extends JPanel implements ActionListener {
     	for (int i = 0; i < count; ++i) {
     		personalTabs.get(i).setSize(tabDimension);
     	}
-    	
     }
 }
