@@ -365,14 +365,15 @@ public class TabManager extends JPanel implements ActionListener {
      */
     
     private void checkToLeaveChannel(String outText) {
-        String chanName = outText.substring(outText.indexOf("#"));
+        String chanName = outText.substring(outText.indexOf("#"), outText.length()-1);
         int tabs = channelTabs.size();
         ChannelTab cTab;
         
         for (int i = 0; i < tabs; i++) {
             cTab = (ChannelTab)channelTabs.elementAt(i);
             if (cTab.getFilter().equals(chanName)) {
-                closeTab(chanName);
+                channelTabs.remove(i);
+                releaseTab(chanName);
             }
         }
     }
@@ -439,11 +440,12 @@ public class TabManager extends JPanel implements ActionListener {
             // Maybe the user wants to leave a channel:
         //    } 
        // else 
-            if (outText.startsWith("PART #")) {
-                checkToLeaveChannel(outText);
+            //if (outText.startsWith("PART #")) {
+              //  checkToLeaveChannel(outText);
             // The user might initiate a conversation with a user.   
                 
-            } else if (outText.startsWith("PRIVMSG #")) {
+            //} else 
+            if (outText.startsWith("PRIVMSG #")) {
                 // Just check if the channel is joined, if not, the server
                 // answers with an error.
             } else if (outText.startsWith("PRIVMSG")) {
@@ -454,7 +456,7 @@ public class TabManager extends JPanel implements ActionListener {
                 checkPersonalTabs(nickName, message+"\n", false);
                 
             // If it`s just a 'regular' message, we add it to the textarea. 
-            } else addText(outText+"\n");
+            } else addText(outText);
 
 			writeToLn(outText);
 			write.setText("");
@@ -572,7 +574,7 @@ public class TabManager extends JPanel implements ActionListener {
 	 * @param filter The filter text of the tab to be closed
 	 */
 	
-	public void closeTab(String filter) {
+	public void closeTab (String filter) {
 		//Channel filters start with #
 		if (filter.startsWith("#")) {
 			int channelCount = channelTabs.size();
