@@ -11,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.Arrays;
 import javax.swing.DefaultListModel;
 
 import javax.swing.JButton;
@@ -74,8 +75,8 @@ public class ChannelTab extends GenericTab  {
         //TEMP: Background color set just to show the diff
         
 		panel = new JPanel();
-		close = new JButton("Close channel", null);
-		attach = new JButton("Detach tab", null);
+		close = new JButton(IRCClient.messages.getString("chan.close"), null);
+		attach = new JButton(IRCClient.messages.getString("chan.detach"), null);
 		
 		close.addActionListener(new ButtonListener());
 		attach.addActionListener(new ButtonListener());
@@ -107,12 +108,17 @@ public class ChannelTab extends GenericTab  {
      * Function to split the string of all the users on this channel, and add each
      * username into an array. Then all the users are added to the listModel.
      * @param names String including the result of a NAMES-command
+     * 
+     * OBS: Must test this sorting-thing, haven`t tested what happens when someone
+     * is voiced on the channel. But OP`s is listed at the top!
      */
     
     public void addNames (String names) {
         String namesSplitted[];
+        
         namesSplitted = names.split(" ");
         listModel.removeAllElements();
+        Arrays.sort(namesSplitted);
         
         for(int i = 0; i < namesSplitted.length; i++) {
             listModel.addElement(namesSplitted[i]);
@@ -120,13 +126,18 @@ public class ChannelTab extends GenericTab  {
     }
     
     /**
-     * For future use we have to remove the '@' or '+' before sending
-     * the username to the server.
+     * When using whois, we must send the nickname as parameter. If a user
+     * is OP or voiced we have their nickname with a '@' or '+' in our list, so
+     * this must be removed before processing the WHOIS.
      */
     
     private void whois(String user) {
-        System.out.println("This is the selected user: "+user);
-        writeToLn("WHOIS "+user);
+        String whoIsUser = user;;
+        
+        if(user.startsWith("@") || user.startsWith("+")) {
+            whoIsUser = user.substring(1);
+        }       
+        writeToLn("WHOIS "+whoIsUser); 
     }
     
     /**
@@ -135,14 +146,14 @@ public class ChannelTab extends GenericTab  {
     
     private void setupItems() {    
         popUp = new JPopupMenu();
-        popUp.add(item = new JMenuItem(IRCClient.messages.getString("chanTab.popUp.whois")));
+        popUp.add(item = new JMenuItem(IRCClient.messages.getString("popUp.whois")));
 
         item.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 try {
                     String temp =  list.getSelectedValue().toString();
                     whois(temp);
-                    System.out.println("ActionPerformed YES SIR! "+temp);
+                    System.out.println("ActionPerformed on target: "+temp);
                 } catch (NullPointerException npe) {};
             }
         });
@@ -161,11 +172,15 @@ public class ChannelTab extends GenericTab  {
        @Override
        public void mouseClicked(MouseEvent e) {
             if (e.getClickCount() == 2) {
-                //We have a bug here, 
-                manager.createPersonalTab(list.getSelectedValue().toString());
+                String selected = list.getSelectedValue().toString();
+                // If the user we want to chat with is OP or voiced, we must
+                // remove the first letter when creating a personaltab.
+                if(selected.startsWith("@") || selected.startsWith("+")) {
+                    selected = selected.substring(1);
+                }
+                manager.createPersonalTab(selected);
              }
             else if (e.isMetaDown()) {
-                //And the same bug will happen here.
                 list.setSelectedIndex( list.locationToIndex(e.getPoint()) );
                 System.out.println(list.getSelectedValue() +" selected" );
                 setupItems();
@@ -195,7 +210,7 @@ public class ChannelTab extends GenericTab  {
 					newFrame.setMinimumSize(new Dimension(300, 300));
 					newFrame.add(self);
 					newFrame.setVisible(true);
-					attach.setText("Attach window");
+					attach.setText(IRCClient.messages.getString("chan.attach"));
 					//Removes tab from tabManager
 					manager.releaseTab(filter);
 					
@@ -204,7 +219,7 @@ public class ChannelTab extends GenericTab  {
 					manager.attachTab(filter, self);
 					newFrame.remove(self);
 					newFrame.dispose();
-					attach.setText("Detach tab");
+					attach.setText(IRCClient.messages.getString("chan.detach"));
 					
 					isAttached = true;
 				}
@@ -212,3 +227,5 @@ public class ChannelTab extends GenericTab  {
 		}
 	} 
 }
+
+   

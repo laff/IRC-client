@@ -174,7 +174,7 @@ public class TabManager extends JPanel implements ActionListener {
 			} else if (command.equals("PRIVMSG") && message.startsWith("#")) {
 				chanName = message.substring(message.indexOf("#"), message.indexOf(" "));
                 restMessage = message.substring(message.indexOf(":")+1, message.length());
-				distributeChannel(prefix, chanName, restMessage);
+				distributeChannel(prefix, chanName, restMessage, true);
 			
             // A JOIN command appears when we join a new channel, or when a new
             // user joins a channel we are a member of.
@@ -208,9 +208,9 @@ public class TabManager extends JPanel implements ActionListener {
                 // Sends the channelname, and the result of the NAMES-command
                 // (as a string) to the setChannelNames-method.
                 setChannelNames(chanName, names);
-   
+            } 
             // Else add the rest to the local servertab.
-            } else {
+             else {
 				addText(message);
 			}
 		}
@@ -267,7 +267,7 @@ public class TabManager extends JPanel implements ActionListener {
      * @param prefix 
      */
     
-	private void distributeChannel(String prefix, String chanName, String message) {
+	private void distributeChannel(String prefix, String chanName, String message, Boolean incoming) {
         int chans = channelTabs.size();
         ChannelTab chanTab;
         
@@ -276,7 +276,7 @@ public class TabManager extends JPanel implements ActionListener {
             // If the current tab has the corresponding channelname,
             // we can add the message to that channel.
             if (chanTab.getFilter().equals(chanName)) {
-                chanTab.addText(prefix, message, true);
+                chanTab.addText(prefix, message, incoming);
             }
         }
 	}
@@ -331,8 +331,8 @@ public class TabManager extends JPanel implements ActionListener {
     /**
      * When a message starting with 'JOIN' is written in the textfield, 
      * we send the text to his place, to check if a tab with that channelname already
-     * exists. If it does, no action is made, if it doesn`t exists, we creates
-     * a tab with that name.
+     * exists. If it does, we set this channel to focus, if it doesn`t exists, 
+     * we create a tab with that name.
      * @param outText a message, starting with 'JOIN #'.
      */
     
@@ -427,36 +427,31 @@ public class TabManager extends JPanel implements ActionListener {
      */
 
 	public void actionPerformed(ActionEvent e) {
-		String outText;
+		String outText, temp ="", receiver="", message="";
     
         if (e.getSource() == write) {
 			outText = write.getText();
-            // If the text inserted in the write-field starts with JOIN #, 
-            // then we want to create a channeltab with that name, unless
-            // it already exists.
-            //if (outText.startsWith("JOIN #")) {
-             //   checkForNewChannel(outText); 
             
-            // Maybe the user wants to leave a channel:
-        //    } 
-       // else 
-            //if (outText.startsWith("PART #")) {
-              //  checkToLeaveChannel(outText);
-            // The user might initiate a conversation with a user.   
-                
-            //} else 
+            // Parsing out the elements from the textfield that we need for 
+            // sending a PRIVMSG to either a channel or a user.
+            // It might not be a PRIVMSG where these strings are used that 
+            // are typed, so it might throw an exception.
+            try {
+                temp = outText.substring(outText.indexOf(" ")+1);
+                receiver = temp.substring(0, temp.indexOf(" "));
+                message = temp.substring(temp.indexOf(" ")+1, temp.length());
+            } catch (StringIndexOutOfBoundsException sioobe) {};
+            
+            // If the text starts with 'PRIVMSG #', its destination is a channel.
             if (outText.startsWith("PRIVMSG #")) {
-                // Just check if the channel is joined, if not, the server
-                // answers with an error.
+                // Distribute the message to the correct channel, and since this
+                // is an outgoing message, we add 'false'(true = incoming).
+                distributeChannel(this.nick, receiver, message, false);
+            // If no '#' is detected, it is a regular personal-message.
             } else if (outText.startsWith("PRIVMSG")) {
-                
-                String temp = outText.substring(outText.indexOf(" ")+1);
-                String nickName = temp.substring(0, temp.indexOf(" "));
-                String message = temp.substring(temp.indexOf(" ")+1, temp.length());
-                checkPersonalTabs(nickName, message+"\n", false);
-                
+                checkPersonalTabs(receiver, message, false);
             // If it`s just a 'regular' message, we add it to the textarea. 
-            } else addText(outText);
+            } else addText(outText+"\n");
 
 			writeToLn(outText);
 			write.setText("");
@@ -465,7 +460,7 @@ public class TabManager extends JPanel implements ActionListener {
 			connection.close();
 		}
 	}
-    
+     
     /**
      * Method to create a new tab, for a channel that the user wants to join.
      * The channel is added to the Vector with all the other channeltabs, and
