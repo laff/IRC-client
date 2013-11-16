@@ -152,11 +152,12 @@ public class TabManager extends JPanel implements ActionListener {
 	 * Function that distributes messages to appropriate tabs.
 	 * @param : message containing a message.
 	 * @param : command conatining a code.
-	 * @param : prefix containing the servername
+     * @param : alias 
+	 * @param : prefix containing the servername 
 	 * @param : server The servername as received by the message
 	 */
 	public void distributeMessage (String prefix, String command, String alias, String server, String message) {
-		String chanName, restMessage;
+		String chanName, restMessage, pref;
         
 		if (server.equals(serverName) && alias.equals(nick)) {
                      System.out.println("I distributeMessage er message lik: "+message);
@@ -175,45 +176,72 @@ public class TabManager extends JPanel implements ActionListener {
                 restMessage = message.substring(message.indexOf(":")+1, message.length());
 				distributeChannel(prefix, chanName, restMessage);
 			
-			} else if (command.equals("JOIN")) {
-                checkForNewChannel(message); 
-                
-            } else if (command.equals("PART")) {
-                checkToLeaveChannel(message);
-                
-                
-                // TODO: If a JOIN or PART command appears here, the list of
-                // users on the right side must be updated. Either did someone
-                // leave the chan, or someone joined it. (And it might be us that
-                // joined or leaved. If we leaved, we can just close the tab.
-                // If we joined, a NAMES-command is automatically executed, 
-                // (actually the command is: NAMES #channelname), this will list
-                // all the users. The 'command id' for this is 353.
-                // And the message looks like this: OurNick = #channelName :Ournick
-                // OtherUser1 OtherUser2 etc.
+            // A JOIN command appears when we join a new channel, or when a new
+            // user joins a channel we are a member of.
+			} else if (command.equals("JOIN") || command.equals("PART")) {
+                pref = prefix.substring(0, prefix.indexOf("!"));
+                chanName = message.substring(message.indexOf(":")+1, message.length()-1);
+                // If it is us that joins or leaves a channel
+                if (pref.equals(nick)){
+                    if (command.equals("JOIN")) {
+                        checkForNewChannel(message);
+                    } else checkToLeaveChannel(message);
+                  
+                // But it also appears when a new user joins a channel that we already
+                // are a member of, but then the prefix doesn`t include our nick.
+                } else {
+                    updateChannel(chanName, prefix, command);
+                }
+
+                // TODO:
                 // The users with OP shall be listed first(says the project-text), 
-                // and they will be listed first when the NAMES-command is issued.
-                // If a user who joins AFTER us, is autopromoted OP, he also should be
-                // listed over the "normal" users. So maybe the best solution is to
-                // do the NAMES-command again for each JOIN/PART?
-            
+                // so we have to sort them (using the sort-it-out-algorithm)
+               
             // Command: 353 means that the output of the NAMES-command comes now.
             } else if (command.equals("353")) {
-                String temp = message.substring(message.indexOf("#"));
+                //Variables used to split the message.
+                String temp, names;
+                
+                temp = message.substring(message.indexOf("#"));
                 chanName = temp.substring(0, temp.indexOf(" "));
-                String names = message.substring(message.indexOf(":")+1, message.length()-1);
-                System.out.println("kanalnavn i command 353: "+chanName);
-                System.out.println("Names i command 353: "+names);
-                
+                names = message.substring(message.indexOf(":")+1, message.length()-1);
+                // Sends the channelname, and the result of the NAMES-command
+                // (as a string) to the setChannelNames-method.
                 setChannelNames(chanName, names);
-
-                
+   
             // Else add the rest to the local servertab.
             } else {
 				addText(message);
 			}
 		}
 	}
+    
+    /**
+     * Some updates has occured on the channel, and these changes must be
+     * shown to the user.
+     * @param msg - the channel where there has been changes.
+     * @param prefix - a string where the first part is the nick of a user.
+     * @param command - this will include a JOIN or PART -string.
+     */
+    
+    private void updateChannel(String msg, String prefix, String command) {
+        String newUser = prefix.substring(0, prefix.indexOf("!"));
+        int chans = channelTabs.size();
+        ChannelTab chanTab;
+        
+        for (int i = 0; i < chans; i++) {
+            chanTab = (ChannelTab)channelTabs.elementAt(i);
+            if (chanTab.getFilter().equals(msg)) {
+                chanTab.updateNames(newUser, command);
+            }
+        }
+    }
+    
+    /**
+     * Used to send the result of the NAMES-command to a specific tab.
+     * @param chanName - The name of the channel this NAMES-command belongs to.
+     * @param names - String including all users on the channel.
+     */
     
     private void setChannelNames(String chanName, String names) {
         int chans = channelTabs.size();
@@ -224,7 +252,7 @@ public class TabManager extends JPanel implements ActionListener {
             // If the current tab has the corresponding channelname,
             // we can add the message to that channel.
             if (chanTab.getFilter().equals(chanName)) {
-                chanTab.updateNames(names);
+                chanTab.addNames(names);
             }
         }
     }
@@ -264,7 +292,7 @@ public class TabManager extends JPanel implements ActionListener {
 		//boolean noFoundTab = true;
 		//String tabName = prefix.substring(0, prefix.indexOf("!"));
         
-        
+        // Includes paramter 'true', to tell that this is an incoming message.
         checkPersonalTabs(prefix, message, true);
 		// Goes through the personal tabs to find one that matches our description.
 		// Sets the noFoundTab variable to false if there was found a tab that match.
@@ -421,9 +449,9 @@ public class TabManager extends JPanel implements ActionListener {
             } else if (outText.startsWith("PRIVMSG")) {
                 
                 String temp = outText.substring(outText.indexOf(" ")+1);
-                String nick = temp.substring(0, temp.indexOf(" "));
+                String nickName = temp.substring(0, temp.indexOf(" "));
                 String message = temp.substring(temp.indexOf(" ")+1, temp.length());
-                checkPersonalTabs(nick, message+"\n", false);
+                checkPersonalTabs(nickName, message+"\n", false);
                 
             // If it`s just a 'regular' message, we add it to the textarea. 
             } else addText(outText+"\n");
@@ -503,9 +531,6 @@ public class TabManager extends JPanel implements ActionListener {
         int pos = text.getStyledDocument().getEndPosition().getOffset();
 
       //  String test = "\nPrefix: " + prefix + "\nCommand: " + command + "\nMessage: " + msg + "\n";
-
-
-        // Logic that checks if the messages from IRC-client (IRCConnection) is meant for this tabmanager. 
         try {	
             text.getStyledDocument().insertString(pos, msg, null);
         } catch (BadLocationException ble) {};					
@@ -549,7 +574,7 @@ public class TabManager extends JPanel implements ActionListener {
 	
 	public void closeTab(String filter) {
 		//Channel filters start with #
-		if ( filter.startsWith("#") ) {
+		if (filter.startsWith("#")) {
 			int channelCount = channelTabs.size();
 	        ChannelTab cTab;
 	

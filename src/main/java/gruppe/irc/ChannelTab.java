@@ -88,14 +88,31 @@ public class ChannelTab extends GenericTab  {
 	}
     
     /**
+     * Used to update the list of names on the right side of the client.
+     * @param newUser Name of the user that has joined/parted the channel.
+     * @param command the command the server has sent to us(JOIN or PART).
+     */
+    
+    public void updateNames (String newUser, String command) {
+        
+        if (command.equals("JOIN")) {
+            addText(this.filter, newUser+" has joined the channel", false);
+        } else  {
+            addText(this.filter, newUser+" has left the channel", false);
+        }
+      writeToLn("NAMES "+this.filter);      
+    }
+    
+    /**
      * Function to split the string of all the users on this channel, and add each
      * username into an array. Then all the users are added to the listModel.
      * @param names String including the result of a NAMES-command
      */
     
-    public void updateNames (String names) {
+    public void addNames (String names) {
         String namesSplitted[];
         namesSplitted = names.split(" ");
+        listModel.removeAllElements();
         
         for(int i = 0; i < namesSplitted.length; i++) {
             listModel.addElement(namesSplitted[i]);
@@ -103,7 +120,7 @@ public class ChannelTab extends GenericTab  {
     }
     
     /**
-     * Future use will might be to remove the '@' or '+' before sending
+     * For future use we have to remove the '@' or '+' before sending
      * the username to the server.
      */
     
