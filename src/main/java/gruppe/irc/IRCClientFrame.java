@@ -42,7 +42,7 @@ public class IRCClientFrame extends JFrame implements ActionListener {
 		// Perhaps a popup check should be sent?
 		setDefaultCloseOperation( JFrame.DO_NOTHING_ON_CLOSE ); // ?
         //setDefaultCloseOperation((EXIT_ON_CLOSE));
-		self = this;
+		self = IRCClientFrame.this;
 		setSize(500, 500);
 		setVisible(true);
 		

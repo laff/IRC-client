@@ -6,6 +6,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
@@ -36,7 +41,7 @@ public class LoginMenu extends JFrame implements ItemListener {
     private Vector<String> serverList = new Vector<String>(); 
     private Vector<String> groups = new Vector<String>();
     
-    Vector<ServerListItem> sli = new Vector<ServerListItem>();
+   public static Vector<ServerListItem> sli = new Vector<ServerListItem>();
 
 	// The panel
 	JPanel panel = new JPanel();		
@@ -79,6 +84,10 @@ public class LoginMenu extends JFrame implements ItemListener {
     JButton login = new JButton("Login");
 	JButton clear = new JButton("Clear");
     
+    
+    //TEMP: Just for testing some filehandling
+    JButton editServers = new JButton("Edit servers");
+    
 	// Check box
 	JCheckBox autologin = new JCheckBox();
 
@@ -104,6 +113,7 @@ public class LoginMenu extends JFrame implements ItemListener {
         try {
             initiateServerlist();
         } catch (MalformedURLException mue) {};
+        
         //Create a ComboBox, and add the server-names to it. And
         //make it possible to insert a servername not on the list.
         server = new JComboBox(serverList);
@@ -139,6 +149,10 @@ public class LoginMenu extends JFrame implements ItemListener {
 		// Position buttons
 		login.setBounds(40,180,115,20);
 		clear.setBounds(155,180,115,20);
+        
+        
+        editServers.setBounds(180, 200, 100, 20);
+        panel.add(editServers);
 		
 		// Position autologin
 		autologin.setBounds(110, 200, 20, 20);
@@ -183,7 +197,7 @@ public class LoginMenu extends JFrame implements ItemListener {
                 if(sli.elementAt(i).getGroup().equals(network.getSelectedItem())) {
                     
                     //TODO: Should display servername, instead of the server-address.
-                    server.addItem(sli.elementAt(i).getRelName());
+                    server.addItem(sli.elementAt(i).getAddress());
                 }
             }
         }
@@ -295,7 +309,103 @@ public class LoginMenu extends JFrame implements ItemListener {
                 server.requestFocus();
             }
         });
+        
+        editServers.addActionListener(new ActionListener() {
+    
+            public void actionPerformed (ActionEvent ae) {
+                editServerList();
+            }
+        });
 	}
+    
+    
+    //OBS: The next three functions are made just for some easy testing on the
+    // functionality of "maintaining" the list of servers.
+    
+    public void editServerList() {
+        ServerEditorWindow servEdit = new ServerEditorWindow();
+    }
+    
+    public static void writeFile() {
+        FileWriter fw;
+        BufferedWriter bw;
+        
+        try {
+            fw = new FileWriter("servers.ini");
+            bw = new BufferedWriter(fw);
+            bw.write("[servers]"+"\n");
+            
+            for(int i = 0; i < sli.size(); i++){
+                bw.write(sli.elementAt(i).toString());
+                bw.newLine();
+                bw.flush();
+                System.out.println(sli.elementAt(i).toString());
+            }
+            bw.close();
+        } catch (IOException e) {
+                e.printStackTrace();
+          }
+    
+    }
+    
+    private void readFile() {
+        String temp;
+        BufferedReader bReader = null;
+        FileReader f;
+        JFileChooser chooser;
+       
+        try {
+           chooser = new JFileChooser(new File("."));
+           chooser.setFileSelectionMode (JFileChooser.FILES_ONLY);
+
+            // The user can cancel if he wants to, no action then!
+            if (chooser.showOpenDialog(LoginMenu.this) == JFileChooser.CANCEL_OPTION)
+                return;
+
+            f  = new FileReader(chooser.getSelectedFile().getPath());
+            bReader = new BufferedReader(f);
+            
+        } catch (FileNotFoundException fnfe) {
+            System.out.println("Fant ingen fil");
+        } 
+          
+        try { 
+            while ((temp = bReader.readLine()) != null) {
+                if (temp.equals("[servers]")) {
+                    while((temp = bReader.readLine()) != null) {
+                        int start, end;
+                        String name, group, prtRange, srv;
+                        //Parsing to find the strings we are looking for in the
+                        // servers.ini file. Name of the server, address of the
+                        // server, port-range, and group-name.
+                        name = temp.substring(temp.indexOf("=")+1, temp.indexOf("SERVER"));
+                        start = temp.indexOf(":")+1;
+                        end = temp.indexOf(":", start);
+                        srv = temp.substring(start, end);
+                        //Add the servername to the serverList.
+                        serverList.add(srv);
+                        prtRange = temp.substring(end+1, temp.indexOf("GROUP"));
+                        group = temp.substring(temp.indexOf("GROUP")+6, temp.length());
+                        //Add the server to a list of server-objects.
+                        sli.add(new ServerListItem(sli.size(), name, group, srv, prtRange));
+                        
+                        System.out.println(sli.lastElement().toString());
+                        
+                        //If the group not already exists, create it!
+                        if(!groups.contains(group)) {
+                            groups.addElement(group);
+                        }
+                    }
+                }
+            }
+            bReader.close();
+            
+        }  catch (IOException ioe) {
+            System.err.println("IOException ERror");
+        } catch (NullPointerException npe) {
+            System.out.println("Nullpointer!");
+        } 
+}
 	
 	/*
 	 * The magnificent function that logs in.
@@ -366,10 +476,15 @@ public class LoginMenu extends JFrame implements ItemListener {
      * 
      */
     private void initiateServerlist() throws MalformedURLException {
+        
+        readFile();
+        
         BufferedReader bReader;    
         String temp, srv;
         URL servers;
+        AbstractAction load;
         
+
         try {
             servers = new URL("http://www.mirc.com/servers.ini");
             bReader = new BufferedReader(new InputStreamReader(servers.openStream()));
@@ -389,7 +504,7 @@ public class LoginMenu extends JFrame implements ItemListener {
                 if(temp.equals("[servers]")) {
                     while((temp = bReader.readLine()) != null) {
                         int start, end;
-                        String name, group;
+                        String name, group, prtRange;
                         
                         //Find the actual name of the server, not the address.
                         name = temp.substring(temp.indexOf("=")+1, temp.indexOf("SERVER"));
@@ -402,11 +517,12 @@ public class LoginMenu extends JFrame implements ItemListener {
                         srv = temp.substring(start, end);
                         //Add the servername to the serverList.
                         serverList.add(srv);
+                        
+                        prtRange = temp.substring(end+1, temp.indexOf("GROUP"));
                         //Find which group(network) the server belongs to.
                         group = temp.substring(temp.indexOf("GROUP")+6, temp.length());
                         //Add the server to a list of server-objects.
-                        sli.add(new ServerListItem(name, group, srv));
-                        
+                        sli.add(new ServerListItem(sli.size(), name, group, srv, prtRange));
                         
                         //If the group not already exists, create it!
                         if(!groups.contains(group)) {
@@ -421,8 +537,8 @@ public class LoginMenu extends JFrame implements ItemListener {
     
     //TEMP: Just to check the elements in the networks-list
     public void displayNetworks() {
-        for(int i = 0; i < networks.size(); i++) {
-          //  System.out.println(networks.elementAt(i));
+        for(int i = 0; i < sli.size(); i++) {
+            System.out.println(sli.elementAt(i).portRange);
         }
         // for(int i = 0; i < serverList.size(); i++) {
            // System.out.println(serverList.elementAt(i));
