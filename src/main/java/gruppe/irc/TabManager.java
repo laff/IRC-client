@@ -192,10 +192,6 @@ public class TabManager extends JPanel implements ActionListener {
                 } else {
                     updateChannel(chanName, prefix, command);
                 }
-
-                // TODO:
-                // The users with OP shall be listed first(says the project-text), 
-                // so we have to sort them (using the sort-it-out-algorithm)
                
             // Command: 353 means that the output of the NAMES-command comes now.
             } else if (command.equals("353")) {

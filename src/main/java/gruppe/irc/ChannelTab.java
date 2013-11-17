@@ -67,10 +67,12 @@ public class ChannelTab extends GenericTab  {
         list.setBackground(Color.LIGHT_GRAY);
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         list.addMouseListener(new MouseClick());
-        ListSelectionModel listSelectionModel = list.getSelectionModel();
-        listSelectionModel.addListSelectionListener(new ListListener());
         
-        list.setSelectionModel(listSelectionModel);
+        
+     //   ListSelectionModel listSelectionModel = list.getSelectionModel();
+      //  listSelectionModel.addListSelectionListener(new ListListener());
+        
+      //  list.setSelectionModel(listSelectionModel);
 
 
         //We want the textpane to be the left component, we also want the left
@@ -141,7 +143,7 @@ public class ChannelTab extends GenericTab  {
      */
     
     private void whois(String user) {
-        String whoIsUser = user;;
+        String whoIsUser = user;
         
         if(user.startsWith("@") || user.startsWith("+")) {
             whoIsUser = user.substring(1);
@@ -195,28 +197,31 @@ public class ChannelTab extends GenericTab  {
         
        @Override
        public void mouseClicked(MouseEvent e) {
-            if (e.getClickCount() == 2) {
-                String selected = list.getSelectedValue().toString();
-                // If the user we want to chat with is OP or voiced, we must
-                // remove the first letter when creating a personaltab.
-                if(selected.startsWith("@") || selected.startsWith("+")) {
-                    selected = selected.substring(1);
+           try {
+                if (e.getClickCount() == 2) {
+                    String selected = list.getSelectedValue().toString();
+                    // If the user we want to chat with is OP or voiced, we must
+                    // remove the first letter when creating a personaltab.
+                    if (selected.startsWith("@") || selected.startsWith("+")) {
+                        selected = selected.substring(1);
+                    }
+                    manager.createPersonalTab(selected);
+                    list.clearSelection();
+                 }
+                else if (e.isMetaDown()) {
+                    list.setSelectedIndex(list.locationToIndex(e.getPoint()));
+                    System.out.println(list.getSelectedValue() +" selected" );
+                    setupItems();
+                    popUp.show(list, e.getX(), e.getY());
                 }
-                manager.createPersonalTab(selected);
-                list.clearSelection();
-             }
-            else if (e.isMetaDown()) {
-                list.setSelectedIndex( list.locationToIndex(e.getPoint()) );
-                System.out.println(list.getSelectedValue() +" selected" );
-                setupItems();
-                popUp.show(list, e.getX(), e.getY());
-            }
-            
-            //Test det her med flere brukere inne på chan:
-              if (!list.getCellBounds(list.getSelectedIndex(), list.getSelectedIndex()).contains(e.getPoint())){
-                    list.removeSelectionInterval(list.getSelectedIndex(),list.getSelectedIndex());
+
+
+                //Test det her med flere brukere inne på chan:
+                if (!list.getCellBounds(list.getSelectedIndex(), list.getSelectedIndex()).contains(e.getPoint())){
+                        list.removeSelectionInterval(list.getSelectedIndex(),list.getSelectedIndex());
                 }      
-       }
+           } catch (NullPointerException npe) {};
+        }
    };
    
    private class ListListener implements ListSelectionListener {

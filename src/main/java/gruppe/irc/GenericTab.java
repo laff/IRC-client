@@ -52,7 +52,7 @@ public class GenericTab extends JPanel implements ActionListener {
     	scrollBar = scrollPane.getVerticalScrollBar();
 		
 		write = new JTextField();
-		write.addActionListener(this);
+		write.addActionListener(GenericTab.this);
 		
 		add(scrollPane, BorderLayout.CENTER);
 		add(write, BorderLayout.SOUTH);
