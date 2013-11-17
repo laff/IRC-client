@@ -22,6 +22,9 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 
 /**
@@ -62,7 +65,13 @@ public class ChannelTab extends GenericTab  {
         // Setting some values for our list.
         list.setVisible(true);
         list.setBackground(Color.LIGHT_GRAY);
+        list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         list.addMouseListener(new MouseClick());
+        ListSelectionModel listSelectionModel = list.getSelectionModel();
+        listSelectionModel.addListSelectionListener(new ListListener());
+        
+        list.setSelectionModel(listSelectionModel);
+
 
         //We want the textpane to be the left component, we also want the left
         //component to have the highest weighting when resizing the window.
@@ -146,6 +155,7 @@ public class ChannelTab extends GenericTab  {
     
     private void setupItems() {    
         popUp = new JPopupMenu();
+        
         popUp.add(item = new JMenuItem(IRCClient.messages.getString("popUp.whois")));
 
         item.addActionListener(new ActionListener() {
@@ -157,14 +167,28 @@ public class ChannelTab extends GenericTab  {
                 } catch (NullPointerException npe) {};
             }
         });
+        
+        popUp.add(item = new JMenuItem(IRCClient.messages.getString("popUp.query")));
+        
+        item.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                String selected = list.getSelectedValue().toString();
+                try {
+                    if(selected.startsWith("@") || selected.startsWith("+")) {
+                    selected = selected.substring(1);
+                }
+                manager.createPersonalTab(selected);
+                } catch (NullPointerException npe) {};
+            }
+        });
     }
     
     /**
      * MouseListener for our list of users. On doubleclick a PersonalTab with
      * that user is opened. On right-click a popupmenu shows up on the mouseovered
      * users.
-     * TOFIX: If the user we doubleclick is OP or Voiced,
-     * then the tab we creates will contain '@' or '+' before the nick.
+     * TOFIX: Should be possible to deselect an item (Now it`s only deselected
+     * after the doubleclick. Kinda stupido!
      */
       
    private class MouseClick extends MouseAdapter {
@@ -179,6 +203,7 @@ public class ChannelTab extends GenericTab  {
                     selected = selected.substring(1);
                 }
                 manager.createPersonalTab(selected);
+                list.clearSelection();
              }
             else if (e.isMetaDown()) {
                 list.setSelectedIndex( list.locationToIndex(e.getPoint()) );
@@ -186,8 +211,36 @@ public class ChannelTab extends GenericTab  {
                 setupItems();
                 popUp.show(list, e.getX(), e.getY());
             }
-        }
+            
+            //Test det her med flere brukere inne på chan:
+              if (!list.getCellBounds(list.getSelectedIndex(), list.getSelectedIndex()).contains(e.getPoint())){
+                    list.removeSelectionInterval(list.getSelectedIndex(),list.getSelectedIndex());
+                }      
+       }
    };
+   
+   private class ListListener implements ListSelectionListener {
+
+        public void valueChanged(ListSelectionEvent e) {
+           ListSelectionModel lsm = (ListSelectionModel)e.getSource();
+           
+           int firstIndex = e.getFirstIndex();
+           int lastIndex = e.getLastIndex();
+          
+           if (lsm.isSelectionEmpty()) {
+ 
+           }
+           else {
+               int minIndex = lsm.getMinSelectionIndex();
+               int maxIndex = lsm.getMaxSelectionIndex();
+               for (int i = minIndex; i<= maxIndex; i++) {
+                   if(lsm.isSelectedIndex(i))
+                       System.out.println(" HOI");
+               }
+           }
+        }
+   }
+   
 	
 	/**
 	 * ButtonListener is an action listener for the buttons
