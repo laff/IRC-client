@@ -235,7 +235,7 @@ public class TabManager extends JPanel implements ActionListener {
     }
     
     /**
-     * Some updates has occured on the channel, and these changes must be
+     * Some updates have occurred on the channel, and these changes must be
      * shown to the user.
      * @param msg - the channel where there has been changes.
      * @param prefix - a string where the first part is the nick of a user.
@@ -568,6 +568,7 @@ public class TabManager extends JPanel implements ActionListener {
 	public void closeConnection() {
 		try {
 			connection.close();
+			parent.setVisible(false);
 			parent.dispose();
 		} catch (NullPointerException npe) {
 			System.out.println("TabManager::closeConnection: Error closing connection " + npe.getMessage());
@@ -653,6 +654,10 @@ public class TabManager extends JPanel implements ActionListener {
         return nick;
     }
     
+    /**
+     * Method changes dimension for all tabs
+     * @param newHeight The new height of the IRCClientFrame
+     */
     public void resizeTabs(int newHeight) {
     	tabDimension.setSize(0, newHeight - heightOffset);
     	serverTab.setSize(tabDimension);
