@@ -37,17 +37,15 @@ public class LoginMenu extends JFrame implements ItemListener {
 	private String serverVar, nickVar, altnickVar, usernameVar, fullnameVar, serverfilePath;
 	private Integer	portVar;
 	
-    private Vector<String> networks = new Vector<String>();
     private Vector<String> serverList = new Vector<String>(); 
     private Vector<String> groups = new Vector<String>();
     
-   public static Vector<ServerListItem> sli = new Vector<ServerListItem>();
+    public static Vector<ServerListItem> sli = new Vector<ServerListItem>();
 
 	// The panel
 	JPanel panel = new JPanel();		
 
-	// Labels
-    
+	// Labels    
     JLabel networkL = new JLabel(IRCClient.messages.getString("loginM.nwLabel"));
 	JLabel serverL = new JLabel(IRCClient.messages.getString("loginM.srvLabel"));
 	JLabel portL = new JLabel(IRCClient.messages.getString("loginM.portLabel"));
@@ -56,17 +54,7 @@ public class LoginMenu extends JFrame implements ItemListener {
 	JLabel usernameL = new JLabel(IRCClient.messages.getString("loginM.usNameLabel"));
 	JLabel fullnameL = new JLabel(IRCClient.messages.getString("loginM.fullNameLabel"));
 	JLabel autologL = new JLabel(IRCClient.messages.getString("loginM.autoLogLabel"));
-	
-    /*
-    JLabel networkL = new JLabel("Network:");
-	JLabel serverL = new JLabel("Server:");
-	JLabel portL = new JLabel("Port:");
-	JLabel nickL = new JLabel("Nick");
-	JLabel altnickL = new JLabel("Nick 2");
-	JLabel usernameL = new JLabel("Username");
-	JLabel fullnameL = new JLabel("Full Name");
-	JLabel autologL = new JLabel("Auto Login:");
-    */
+
 	// Input fields
 	JTextField port = new JTextField(4);
 	JTextField nick = new JTextField(32);
@@ -77,13 +65,8 @@ public class LoginMenu extends JFrame implements ItemListener {
     JComboBox server, network;
 	
 	// Buttons for login and clear all fields.
-	/*
     JButton login = new JButton(IRCClient.messages.getString("loginM.loginButton"));
 	JButton clear = new JButton(IRCClient.messages.getString("loginM.clearButton"));	
-	*/
-    JButton login = new JButton("Login");
-	JButton clear = new JButton("Clear");
-    
     
     //TEMP: Just for testing some filehandling
     JButton editServers = new JButton("Edit servers");
@@ -98,8 +81,8 @@ public class LoginMenu extends JFrame implements ItemListener {
 	 * That is probably not a good idea though. Suggestions?
 	 */
 	LoginMenu(Object location) {
-		//super(IRCClient.messages.getString("loginM.header"));
-        super("Login Menu");
+        
+		super(IRCClient.messages.getString("loginM.header"));
 		setSize(330,280);
 		
 		// Sets location based on passed variable.
@@ -108,13 +91,7 @@ public class LoginMenu extends JFrame implements ItemListener {
 		} catch (NullPointerException npel) {
 			setLocationRelativeTo(null);
 		}
-        
-        //Initiate the server-list
-        /*
-		try {
-            initiateServerlist();
-        } catch (MalformedURLException mue) {};
-        */
+
         //Create a ComboBox, and add the server-names to it. And
         //make it possible to insert a servername not on the list.
         server = new JComboBox(serverList);
@@ -204,8 +181,6 @@ public class LoginMenu extends JFrame implements ItemListener {
             }
         }
     }
-    
-    
 
 	/**
 	* Method that finds preferences saved to current user of the computers profile,
@@ -225,7 +200,6 @@ public class LoginMenu extends JFrame implements ItemListener {
 		fullname.setText(pref.get("fullname", ""));
 		
 		serverfilePath = pref.get("serverfilePath", null);
-		
 	}
  
 	/**
@@ -274,8 +248,6 @@ public class LoginMenu extends JFrame implements ItemListener {
 		login.addActionListener(new ActionListener() {
 
         public void actionPerformed(ActionEvent ae) {
-
-            //serverVar = server.getText();
 
             serverVar = (String)server.getSelectedItem();
 
@@ -353,7 +325,6 @@ public class LoginMenu extends JFrame implements ItemListener {
         } catch (IOException e) {
                 e.printStackTrace();
           }
-    
     }
 	
     
@@ -362,20 +333,16 @@ public class LoginMenu extends JFrame implements ItemListener {
         BufferedReader bReader = null;
 		FileReader f;
         JFileChooser chooser;
-    
-		
+        
 		try {
 			if (serverfilePath == null) {
+                chooser = new JFileChooser(new File("."));
+                chooser.setFileSelectionMode (JFileChooser.FILES_ONLY);
+                 // The user can cancel if he wants to, no action then!
+                 if (chooser.showOpenDialog(LoginMenu.this) == JFileChooser.CANCEL_OPTION)
+                     return;
 
-				   chooser = new JFileChooser(new File("."));
-				   chooser.setFileSelectionMode (JFileChooser.FILES_ONLY);
-
-					// The user can cancel if he wants to, no action then!
-					if (chooser.showOpenDialog(LoginMenu.this) == JFileChooser.CANCEL_OPTION)
-						return;
-
-					serverfilePath = chooser.getSelectedFile().getPath();
-					
+                 serverfilePath = chooser.getSelectedFile().getPath();
 			}
 
 			f  = new FileReader(serverfilePath);
@@ -404,8 +371,6 @@ public class LoginMenu extends JFrame implements ItemListener {
                         group = temp.substring(temp.indexOf("GROUP")+6, temp.length());
                         //Add the server to a list of server-objects.
                         sli.add(new ServerListItem(sli.size(), name, group, srv, prtRange));
-                        
-                        System.out.println(sli.lastElement().toString());
                         
                         //If the group not already exists, create it!
                         if(!groups.contains(group)) {
@@ -492,10 +457,9 @@ public class LoginMenu extends JFrame implements ItemListener {
      * heading [networks] in the file, the servers are located under the heading [servers] (belive it or not).
      * 
      */
+
     private void initiateServerlist() throws MalformedURLException {
-        
-        
-        
+
         BufferedReader bReader;    
         String temp, srv;
         URL servers;

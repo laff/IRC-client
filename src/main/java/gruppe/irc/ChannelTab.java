@@ -1,7 +1,5 @@
 package gruppe.irc;
 
-import gruppe.irc.PersonalTab.ButtonListener;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -12,17 +10,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Arrays;
-import javax.swing.DefaultListModel;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JList;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -108,11 +97,12 @@ public class ChannelTab extends GenericTab  {
     public void updateNames (String newUser, String command) {
         
         if (command.equals("JOIN")) {
-            addText(this.filter, newUser+" has joined the channel", false);
-        } else  {
-            addText(this.filter, newUser+" has left the channel", false);
+            addText(this.filter, newUser+" has joined the channel\n", false);
+        } 
+        else {
+            addText(this.filter, newUser+" has left the channel\n", false);
         }
-      writeToLn("NAMES "+this.filter);      
+        writeToLn("NAMES "+this.filter);      
     }
     
     /**
@@ -149,6 +139,25 @@ public class ChannelTab extends GenericTab  {
             whoIsUser = user.substring(1);
         }       
         writeToLn("WHOIS "+whoIsUser); 
+    }
+    
+    /**
+     * When someone quits IRC, without any part being issued to our channel, we
+     * must find which user that left, and if he was a member of our chan.
+     * @param nickName The nick of the user.
+     * @param message The user might left a quit-message.
+     */
+    
+    public void quit(String nickName, String message) {
+        int users = listModel.size();
+        
+        for (int i = 0; i < users; i++) {
+            if (nickName.equals(listModel.getElementAt(i))) {
+                addText(nickName+" has quit IRC", message, false);
+                writeToLn("NAMES "+this.filter);
+                break;
+            }
+        }
     }
     
     /**

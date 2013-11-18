@@ -71,12 +71,10 @@ public class TabManager extends JPanel implements ActionListener {
 	 * 
 	 * PS! Should rather have this inside the loginmenu logic.
 	 */
-	private final int maxNickLength = 9;
 	//The height offset between the IRCClientFrame and the tabs
 	private final int heightOffset = 80;
 	private Dimension tabDimension;
-	
-	
+    
 	// The server name this TabManager is connected to.
 	private String serverName, nick, altNick;
 	
@@ -84,7 +82,6 @@ public class TabManager extends JPanel implements ActionListener {
 	private JTabbedPane tabbedPane;
     private JDesktopPane desktop;
 	private JScrollPane scrollPane;
-
 	
 	// These components are used within the servertab
 	private JTextField write;
@@ -146,7 +143,6 @@ public class TabManager extends JPanel implements ActionListener {
 		
 		return intFrame;
 	}
-	
 		
 	/**
 	 * Function that distributes messages to appropriate tabs.
@@ -166,19 +162,22 @@ public class TabManager extends JPanel implements ActionListener {
 			// If the command matches "PRIVMSG" we have a personal message incoming,
             // unless the message starts with a '#', in which case it is a channel-message.
 			if (command.equals("PRIVMSG") && !message.startsWith("#")) {
-				distributePrivate(prefix, message);
+				
+                distributePrivate(prefix, message);
 			
             // If we get a PRIVMSG command, and a channelname specified with a '#', then
             // this message is meant for a specific tab that already exists, because
             // a user cannot receive messages from a channel he has not joined.
 			} else if (command.equals("PRIVMSG") && message.startsWith("#")) {
-				chanName = message.substring(message.indexOf("#"), message.indexOf(" "));
+				
+                chanName = message.substring(message.indexOf("#"), message.indexOf(" "));
                 restMessage = message.substring(message.indexOf(":")+1, message.length());
 				distributeChannel(prefix, chanName, restMessage, true);
 			
             // A JOIN command appears when we join a new channel, or when a new
             // user joins a channel we are a member of.
 			} else if (command.equals("JOIN") || command.equals("PART")) {
+                
                 pref = prefix.substring(0, prefix.indexOf("!"));
                 chanName = message.substring(message.indexOf(":")+1, message.length()-1);
                 // If it is us that joins or leaves a channel
@@ -195,14 +194,13 @@ public class TabManager extends JPanel implements ActionListener {
             // A QUIT command has been issued, by us or a user on a channel we
             // are a memeber of
             } else if (command.equals("QUIT")) {
+                
                 pref = prefix.substring(0, prefix.indexOf("!"));
+                restMessage = message.substring(message.indexOf(":")+1);
                 
                 if (pref.equals(this.nick)) { 
                     closeAllTabs();
-                } //else someoneQuitted(pref, command, message);
-                
-                
-                
+                } else someoneQuit(pref, restMessage);              
                 
             // Command: 353 means that the output of the NAMES-command comes now.
             } else if (command.equals("353")) {
@@ -223,15 +221,39 @@ public class TabManager extends JPanel implements ActionListener {
 		}
 	}
     
+    /**
+     * Someone other than us quitted a channel we are a member of. This command
+     * from the server does not tell us which channel the user did quit from, so
+     * we have to find the righ chan(s).
+     * @param nick Nickname of the user who quit.
+     * @param message This might be an empty string, timeout message, or something
+     * the user wrote himself.
+     */
+    
+    private void someoneQuit(String nick, String message) {
+        int nrTabs = channelTabs.size();
+        ChannelTab chanTab;
+        
+        for (int i = 0; i < nrTabs; i++) {
+            chanTab = (ChannelTab)channelTabs.elementAt(i);
+            chanTab.quit(nick, message);
+        }
+        
+    }
+    
+    /**
+     * Closing all tabs, called when we type QUIT. The quit-command handles
+     * leaving the channels, so we just have to close the tabs here.
+     */
+    
     private void closeAllTabs() {
         int nrTabs = channelTabs.size();
         ChannelTab cTab;
         
-            for (int i = 0; i < nrTabs; i++) {
-                cTab = (ChannelTab)channelTabs.elementAt(i);
-                System.out.println("Prøver vi å slette tabs?");
-                releaseTab(cTab.getFilter());
-            }
+        for (int i = 0; i < nrTabs; i++) {
+            cTab = (ChannelTab)channelTabs.elementAt(i);
+            releaseTab(cTab.getFilter());
+        }
     }
     
     /**
@@ -305,47 +327,11 @@ public class TabManager extends JPanel implements ActionListener {
 	 * @param prefix 
 	 * @param message 
 	 */
-	private void distributePrivate(String prefix, String message) {
-		//int personalCount = personalTabs.size();
-		//boolean noFoundTab = true;
-		//String tabName = prefix.substring(0, prefix.indexOf("!"));
-        
-        // Includes paramter 'true', to tell that this is an incoming message.
-        checkPersonalTabs(prefix, message, true);
-		// Goes through the personal tabs to find one that matches our description.
-		// Sets the noFoundTab variable to false if there was found a tab that match.
-	/*	for (int i = 0; i < personalCount; ++i) {
-
-			PersonalTab pTab = (PersonalTab)personalTabs.elementAt (i);
-			
-			if (pTab.getFilter().equals(tabName)) {
-				
-				pTab.addText(prefix, message, true);
-				noFoundTab = false;
-			}
-		}
-
-		// Now, if there is not found a personal tab matching our description, a new one must be made.
-		if (noFoundTab) {
-			
-			PersonalTab newPersonalTab = new PersonalTab(tabName, this,tabDimension);
-			personalTabs.add(newPersonalTab);
-
-			attachTab(tabName, newPersonalTab);
-
-			newPersonalTab.addText(prefix, message, true);
-		} */
-	}
-	
-    protected JComponent makeTextPanel(String text) {
-        JPanel panel = new JPanel(false);
-        JLabel filler = new JLabel(text);
-        filler.setHorizontalAlignment(JLabel.CENTER);
-        panel.setLayout(new GridLayout(1, 1));
-        panel.add(filler);
-        return panel;
-    }
     
+	private void distributePrivate(String prefix, String message) {
+        checkPersonalTabs(prefix, message, true);
+	}
+	    
     /**
      * When a message starting with 'JOIN' is written in the textfield, 
      * we send the text to his place, to check if a tab with that channelname already
