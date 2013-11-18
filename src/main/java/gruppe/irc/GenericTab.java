@@ -94,7 +94,7 @@ public class GenericTab extends JPanel implements ActionListener {
         }
         
 		try {	
-			text.getStyledDocument().insertString(pos, sender+": "+message+"\n", null);
+			text.getStyledDocument().insertString(pos, sender+": "+message, null);
 		} catch (BadLocationException ble) {};					
 		
         //When new messages appears in the window, it scrolls down automagically.
@@ -127,8 +127,9 @@ public class GenericTab extends JPanel implements ActionListener {
 		if (e.getSource() == write) {
             // We fetch text from the field, and then add it to the textArea.
             fromText = write.getText();
+            
             // This is a outgoing message, therefore we send 'false'.            
-            addText(manager.getNick(), fromText, false);
+            addText(manager.getNick(), fromText+"\n", false);
             // Then we send the message to the server aswell.
             writeToLn("PRIVMSG "+filter+" :"+fromText);
             write.setText("");
