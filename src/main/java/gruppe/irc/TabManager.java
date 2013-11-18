@@ -475,7 +475,7 @@ public class TabManager extends JPanel implements ActionListener {
 			write.setText("");
             
 		} else if (e.getSource() == quit) {
-			connection.close();
+			closeConnection();
 		}
 	}
      
@@ -568,11 +568,11 @@ public class TabManager extends JPanel implements ActionListener {
 	public void closeConnection() {
 		try {
 			connection.close();
-			parent.setVisible(false);
-			parent.dispose();
 		} catch (NullPointerException npe) {
 			System.out.println("TabManager::closeConnection: Error closing connection " + npe.getMessage());
 		}
+		parent.setVisible(false);
+		parent.dispose();
 	}
 
 	/**
