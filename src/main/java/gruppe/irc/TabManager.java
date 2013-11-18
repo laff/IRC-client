@@ -192,7 +192,18 @@ public class TabManager extends JPanel implements ActionListener {
                 } else {
                     updateChannel(chanName, prefix, command);
                 }
-               
+            // A QUIT command has been issued, by us or a user on a channel we
+            // are a memeber of
+            } else if (command.equals("QUIT")) {
+                pref = prefix.substring(0, prefix.indexOf("!"));
+                
+                if (pref.equals(this.nick)) { 
+                    closeAllTabs();
+                } //else someoneQuitted(pref, command, message);
+                
+                
+                
+                
             // Command: 353 means that the output of the NAMES-command comes now.
             } else if (command.equals("353")) {
                 //Variables used to split the message.
@@ -211,6 +222,17 @@ public class TabManager extends JPanel implements ActionListener {
 			}
 		}
 	}
+    
+    private void closeAllTabs() {
+        int nrTabs = channelTabs.size();
+        ChannelTab cTab;
+        
+            for (int i = 0; i < nrTabs; i++) {
+                cTab = (ChannelTab)channelTabs.elementAt(i);
+                System.out.println("Prøver vi å slette tabs?");
+                releaseTab(cTab.getFilter());
+            }
+    }
     
     /**
      * Some updates has occured on the channel, and these changes must be
