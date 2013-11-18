@@ -34,9 +34,9 @@ public class LoginMenu extends JFrame implements ItemListener {
 	}
 	
 	// The variables for logging in.
-	private String serverVar, nickVar, altnickVar, usernameVar, fullnameVar;
+	private String serverVar, nickVar, altnickVar, usernameVar, fullnameVar, serverfilePath;
 	private Integer	portVar;
-    
+	
     private Vector<String> networks = new Vector<String>();
     private Vector<String> serverList = new Vector<String>(); 
     private Vector<String> groups = new Vector<String>();
@@ -110,10 +110,11 @@ public class LoginMenu extends JFrame implements ItemListener {
 		}
         
         //Initiate the server-list
-        try {
+        /*
+		try {
             initiateServerlist();
         } catch (MalformedURLException mue) {};
-        
+        */
         //Create a ComboBox, and add the server-names to it. And
         //make it possible to insert a servername not on the list.
         server = new JComboBox(serverList);
@@ -181,6 +182,7 @@ public class LoginMenu extends JFrame implements ItemListener {
 		setVisible(true);
 
 		getPrefs();
+		readFile();
 		actionlogin();      
 	}
     /**
@@ -221,6 +223,9 @@ public class LoginMenu extends JFrame implements ItemListener {
 		altnick.setText(pref.get("altNick", ""));
 		username.setText(pref.get("username", ""));
 		fullname.setText(pref.get("fullname", ""));
+		
+		serverfilePath = pref.get("serverfilePath", null);
+		
 	}
  
 	/**
@@ -238,6 +243,9 @@ public class LoginMenu extends JFrame implements ItemListener {
 			pref.put("altNick", altnickVar); 
 			pref.put("username", usernameVar);
 			pref.put("fullname", fullnameVar);
+			
+			pref.put("serverfilePath", serverfilePath);
+			
 			
 		} else {
 			
@@ -347,28 +355,36 @@ public class LoginMenu extends JFrame implements ItemListener {
           }
     
     }
+	
     
     private void readFile() {
         String temp;
         BufferedReader bReader = null;
-        FileReader f;
+		FileReader f;
         JFileChooser chooser;
-       
-        try {
-           chooser = new JFileChooser(new File("."));
-           chooser.setFileSelectionMode (JFileChooser.FILES_ONLY);
+    
+		
+		try {
+			if (serverfilePath == null) {
 
-            // The user can cancel if he wants to, no action then!
-            if (chooser.showOpenDialog(LoginMenu.this) == JFileChooser.CANCEL_OPTION)
-                return;
+				   chooser = new JFileChooser(new File("."));
+				   chooser.setFileSelectionMode (JFileChooser.FILES_ONLY);
 
-            f  = new FileReader(chooser.getSelectedFile().getPath());
-            bReader = new BufferedReader(f);
-            
-        } catch (FileNotFoundException fnfe) {
-            System.out.println("Fant ingen fil");
-        } 
-          
+					// The user can cancel if he wants to, no action then!
+					if (chooser.showOpenDialog(LoginMenu.this) == JFileChooser.CANCEL_OPTION)
+						return;
+
+					serverfilePath = chooser.getSelectedFile().getPath();
+					
+			}
+
+			f  = new FileReader(serverfilePath);
+			bReader = new BufferedReader(f);
+
+		} catch (FileNotFoundException fnfe) {
+			System.out.println("Fant ingen fil");
+		}
+		
         try { 
             while ((temp = bReader.readLine()) != null) {
                 if (temp.equals("[servers]")) {
@@ -421,6 +437,7 @@ public class LoginMenu extends JFrame implements ItemListener {
 	 * 
 	 */
 	public void login () {
+
 		putPrefs(true);
 	  
 		IRCConnection connection = new IRCConnection (
@@ -477,7 +494,7 @@ public class LoginMenu extends JFrame implements ItemListener {
      */
     private void initiateServerlist() throws MalformedURLException {
         
-        readFile();
+        
         
         BufferedReader bReader;    
         String temp, srv;
@@ -534,7 +551,7 @@ public class LoginMenu extends JFrame implements ItemListener {
             bReader.close();
         } catch (IOException ioe) {};
     }
-    
+	
     //TEMP: Just to check the elements in the networks-list
     public void displayNetworks() {
         for(int i = 0; i < sli.size(); i++) {
