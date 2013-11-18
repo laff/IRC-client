@@ -465,6 +465,7 @@ public class TabManager extends JPanel implements ActionListener {
                 // Distribute the message to the correct channel, and since this
                 // is an outgoing message, we add 'false'(true = incoming).
                 distributeChannel(this.nick, receiver, message, false);
+                if(tabbedPane.getSelectedIndex() != tabbedPane.indexOfTab(this.nick));
             // If no '#' is detected, it is a regular personal-message.
             } else if (outText.startsWith("PRIVMSG")) {
                 checkPersonalTabs(receiver, message, false);
