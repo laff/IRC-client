@@ -123,7 +123,6 @@ public class TabManager extends JPanel {
 	public void distributeMessage (String prefix, String command, String alias, String server, String message) {
 		String chanName, restMessage, pref;
         
-        
 		if (server.equals(serverName) && alias.equals(nick)) {
                      System.out.println("I distributeMessage er message lik: "+message);
                      System.out.println("I distributeMessage er command lik: "+command);
@@ -312,8 +311,6 @@ public class TabManager extends JPanel {
             cTab = (ChannelTab)channelTabs.elementAt(i);
             if (cTab.getFilter().equals(chanName)) {
                 noFoundTab = false;
-                // If the user tries to join a channel that he already has joined
-                // this channel will be set as selected.
                 tabbedPane.setSelectedIndex(tabbedPane.indexOfTab(chanName));
             }   
         }
@@ -363,7 +360,7 @@ public class TabManager extends JPanel {
             sender = receiver;
         } else {
             tabName = receiver;
-            sender = this.nick; 
+            sender = this.nick;
         }
         
         for (int i = 0; i < personalCount; ++i) {
@@ -412,8 +409,7 @@ public class TabManager extends JPanel {
         for (int i = 0; i < personalCount; ++i) {
             pTab = (PersonalTab)personalTabs.elementAt(i);
             if (pTab.getFilter().equals(tabName)) {
-                
-                //MISSING: Focus this tab here.
+                tabbedPane.setSelectedIndex(tabbedPane.indexOfTab(tabName));
                 noFoundTab = false;
             }
         }

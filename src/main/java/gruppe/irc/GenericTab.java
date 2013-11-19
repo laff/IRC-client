@@ -138,11 +138,11 @@ public class GenericTab extends JPanel implements ActionListener {
                 
                 if (receiver.startsWith("#")) {
                     manager.distributeChannel(manager.getNick(), receiver, message+"\n", false);
-                    writeToLn(command.toUpperCase()+" "+receiver+" :"+message);
                 } else {
                     manager.checkPersonalTabs(receiver, message+"\n", false);
-                    writeToLn(command.toUpperCase()+" "+receiver+" :"+message);
                 }
+                writeToLn(command.toUpperCase()+" "+receiver+" :"+message);
+                
             } else if (fromText.startsWith("/")) {
                 
                 try {

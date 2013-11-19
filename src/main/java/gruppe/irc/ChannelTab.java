@@ -190,8 +190,6 @@ public class ChannelTab extends GenericTab  {
      * MouseListener for our list of users. On doubleclick a PersonalTab with
      * that user is opened. On right-click a popupmenu shows up on the mouseovered
      * users.
-     * TOFIX: Should be possible to deselect an item (Now it`s only deselected
-     * after the doubleclick. Kinda stupido!
      */
    private class MouseClick extends MouseAdapter {
         
