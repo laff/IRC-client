@@ -1,28 +1,13 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package gruppe.irc;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDesktopPane;
-import javax.swing.JInternalFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JScrollBar;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;
 
@@ -32,7 +17,8 @@ import javax.swing.text.BadLocationException;
  */
 public class ServerTab extends GenericTab {
 	
-	JButton quit;
+	private JButton quit;
+    
 	/**
 	 * Constructor for ServerTab
 	 * @param mng Pointer to parent TabManager
@@ -40,12 +26,44 @@ public class ServerTab extends GenericTab {
 	 */
 	public ServerTab(TabManager mng, Dimension dim) {
 		super("Server", mng, dim);
-		
+        		
+		text.setBackground(Color.LIGHT_GRAY);
+		text.setEditable(false);
+
 		quit = new JButton("Close window");
 		quit.addActionListener(new QuitListener());
-		
+
 		add(quit, BorderLayout.NORTH);
 	}
+    
+    
+    
+    
+    /**
+     * Takes care of sending the text the user enters to the appropriate place,
+     * which is the textarea, and/or the server.
+     * @param e 
+     */
+    
+    public void addText (String msg) {
+        int pos = text.getStyledDocument().getEndPosition().getOffset();
+
+        try {	
+            text.getStyledDocument().insertString(pos, msg, null);
+        } catch (BadLocationException ble) {};					
+
+        //When new messages appears in the window, it scrolls down automagically.
+        //Borrowed from Oyvind`s example.
+        SwingUtilities.invokeLater(new Thread() {
+            public void run() {
+                // Get the scrollbar from the scroll pane
+                JScrollBar scrollbar = scrollPane.getVerticalScrollBar();
+                // Set the scrollbar to its maximum value
+                scrollbar.setValue(scrollbar.getMaximum());
+            }
+        });
+}
+    
 	
 	/**
 	 * ActionListener for the quit-button

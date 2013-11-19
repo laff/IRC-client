@@ -1,6 +1,3 @@
-/**
- * 
- */
 package gruppe.irc;
 
 import java.awt.BorderLayout;
@@ -80,7 +77,7 @@ public class GenericTab extends JPanel implements ActionListener {
 		String sender, message;
         
         // If it`s an incoming message.
-        if(incoming) {
+        if (incoming) {
         // We must find out who the sender of the message is, and then clean the 
         // rest of the message, so only the actual text is left.
             sender = prefix.substring(0, prefix.indexOf("!"));
@@ -106,54 +103,74 @@ public class GenericTab extends JPanel implements ActionListener {
 	        }
 	    });
 	}
+    
+       public void addText (String msg) {
+        int pos = text.getStyledDocument().getEndPosition().getOffset();
+
+        try {	
+            text.getStyledDocument().insertString(pos, msg, null);
+        } catch (BadLocationException ble) {};					
+
+        //When new messages appears in the window, it scrolls down automagically.
+        //Borrowed from Oyvind`s example.
+        SwingUtilities.invokeLater(new Thread() {
+            public void run() {
+                // Get the scrollbar from the scroll pane
+                JScrollBar scrollbar = scrollPane.getVerticalScrollBar();
+                // Set the scrollbar to its maximum value
+                scrollbar.setValue(scrollbar.getMaximum());
+            }
+        });
+}
 
 	
 	/**
 	 * Static function that takes the string parameter and sends to connection and its writeln function.
-	 * @param msg 
+	 * @param msg String sent to communicate with the server.
 	 */
+       
 	public void writeToLn(String msg) {
 		manager.getConnection().writeln(msg);
 	}
     
-	/**
-     * Getting the text from the textfield, when the user push 'Enter'-button.
-     * If the text entered starts with an '/', it indicate that it is a
-     * command to the server. Then we parse out the actual command to send to
-     * the server, and finally we find the message that follows the command.
+    /**
+     * Getting the text from the textfield when the user push 'Enter'.
+     * If the text entered starts with an '/', it indicates that this is a 
+     * command to the server. Then we parse out the actual to command to send
+     * to the server, and finally we find the message that follows the command.
      * If it is not a command, the nick of the sender is displayed in the textarea
      * together with the written message, and the message is also sent to the server.
      * @param e The actual event.
      */
-	
+    
+       @Override
 	public void actionPerformed(ActionEvent e) {
-		String fromText, message="", command="";
-
-		if (e.getSource() == write) {
-            fromText = write.getText();
+		String fromText, command ="", message="";
+    
+        if (e.getSource() == write) {
+			fromText = write.getText();
             
             if (fromText.startsWith("/")) {
-               try {
+                try {
                     command = fromText.substring(fromText.indexOf("/")+1, fromText.indexOf(" "));
                     message = fromText.substring(fromText.indexOf(" ")+1, fromText.length());
-               } catch (StringIndexOutOfBoundsException sioobe) {;}
+                } catch (StringIndexOutOfBoundsException sioobe) {}
                 
-               // A special case if someone types only /part and no channelname in a
-               // specific channel.
-               if (command.equals("")) {
+                // A special case if the user types only /part into a channel-textfield.
+                if (command.equals("")) {
                     try {
                         command = fromText.substring(fromText.indexOf("/")+1, fromText.length());
                         message = this.getFilter();
-                    } catch (StringIndexOutOfBoundsException sioobe) {;}
+                    } catch (StringIndexOutOfBoundsException sioobe) {}
                 }
                 writeToLn(command.toUpperCase()+" "+message);
-                
+            
+            // This is an outgoing message(from our user), therefore we send 'false'.
             } else {
-                // This is a outgoing message(from our user), therefore we send 'false'.            
                 addText(manager.getNick(), fromText+"\n", false);
                 writeToLn("PRIVMSG "+filter+" :"+fromText);
             }
-            write.setText("");
+            write.setText("");    
 		}
 	}
 }

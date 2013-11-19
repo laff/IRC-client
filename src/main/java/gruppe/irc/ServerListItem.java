@@ -1,12 +1,10 @@
 package gruppe.irc;
 
-import java.io.Serializable;
-
 /**
- *
+ * A class that holds information about one line in the servers.ini file.
  * @author Ch
  */
-public class ServerListItem implements Serializable {
+public class ServerListItem {
     String serverName, group, address, portRange;
     int index;
 

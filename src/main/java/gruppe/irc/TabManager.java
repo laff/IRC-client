@@ -49,11 +49,12 @@ import javax.swing.text.BadLocationException;
  */
 
 
-public class TabManager extends JPanel implements ActionListener {
+public class TabManager extends JPanel {
 	
-	private JPanel serverTab;
+	//private JPanel serverTab;
 	private Vector<GenericTab> channelTabs = new Vector<GenericTab>();
 	private Vector<GenericTab> personalTabs = new Vector<GenericTab>();
+    private GenericTab serverTab;
 	
 	// This TabManager's IRCConnection
 	private IRCConnection connection;
@@ -97,7 +98,7 @@ public class TabManager extends JPanel implements ActionListener {
 		tabDimension = new Dimension(0, parent.getHeight() - heightOffset);
 		
         desktop = new JDesktopPane();
-        serverTab = createServerTab();
+        serverTab = new ServerTab(TabManager.this, tabDimension);
         desktop.add(serverTab);
     
         add(desktop);
@@ -120,7 +121,7 @@ public class TabManager extends JPanel implements ActionListener {
     public IRCConnection getConnection () {
         return connection;
     }
-	
+	/*
 	public JPanel createServerTab() {
 		JPanel intFrame = new JPanel();
 		
@@ -143,6 +144,7 @@ public class TabManager extends JPanel implements ActionListener {
 		
 		return intFrame;
 	}
+    */
 		
 	/**
 	 * Function that distributes messages to appropriate tabs.
@@ -154,6 +156,7 @@ public class TabManager extends JPanel implements ActionListener {
 	 */
 	public void distributeMessage (String prefix, String command, String alias, String server, String message) {
 		String chanName, restMessage, pref;
+        
         
 		if (server.equals(serverName) && alias.equals(nick)) {
                      System.out.println("I distributeMessage er message lik: "+message);
@@ -216,7 +219,7 @@ public class TabManager extends JPanel implements ActionListener {
             } 
             // Else add the rest to the local servertab.
              else {
-				addText(message);
+				serverTab.addText(message);
 			}
 		}
 	}
@@ -430,6 +433,7 @@ public class TabManager extends JPanel implements ActionListener {
      * @param e 
      */
 
+    /*
 	public void actionPerformed(ActionEvent e) {
 		String outText, temp ="", receiver="", message="";
     
@@ -465,7 +469,7 @@ public class TabManager extends JPanel implements ActionListener {
 			closeConnection();
 		}
 	}
-     
+ */    
     /**
      * Method to create a new tab, for a channel that the user wants to join.
      * The channel is added to the Vector with all the other channeltabs, and
@@ -515,24 +519,12 @@ public class TabManager extends JPanel implements ActionListener {
 	public void writeToLn(String msg) {
 		connection.writeln(msg);
 	}
+
+    
 	
-    /** Returns an ImageIcon, or null if the path was invalid. */
-	/*
-    protected static ImageIcon createImageIcon(String path) {
-        java.net.URL imgURL = TabbedPaneDemo.class.getResource(path);
-        if (imgURL != null) {
-            return new ImageIcon(imgURL);
-        } else {
-            System.err.println("Couldn't find file: " + path);
-            return null;
-        }
-    }
-	*/
-	
-    public void addText (String msg) { //(String prefix, String command, String msg) {
+    public void addText (String msg) {
         int pos = text.getStyledDocument().getEndPosition().getOffset();
 
-      //  String test = "\nPrefix: " + prefix + "\nCommand: " + command + "\nMessage: " + msg + "\n";
         try {	
             text.getStyledDocument().insertString(pos, msg, null);
         } catch (BadLocationException ble) {};					
@@ -590,6 +582,7 @@ public class TabManager extends JPanel implements ActionListener {
 				if (cTab.getFilter().equals(filter)) {
                     writeToLn("PART "+filter);
                     channelTabs.remove(i);
+                    break;
 				}
 			}	
 		}
