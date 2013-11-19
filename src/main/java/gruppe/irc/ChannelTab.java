@@ -95,8 +95,11 @@ public class ChannelTab extends GenericTab  {
         if (command.equals("JOIN")) {
             addText(this.filter, newUser+" has joined the channel\n", false);
         } 
-        else {
+        else if (command.equals("PART")) {
             addText(this.filter, newUser+" has left the channel\n", false);
+        }
+        else if(command.startsWith("+") || command.startsWith("-")) {
+            addText(this.filter, newUser+" sets mode: "+command+"\n", false);
         }
         writeToLn("NAMES "+this.filter);      
     }
@@ -151,6 +154,12 @@ public class ChannelTab extends GenericTab  {
                 break;
             }
         }
+    }
+    
+    public void updateMode(String sender, String mode, String target) {
+        int users = listModel.size();
+        
+        
     }
     
     /**

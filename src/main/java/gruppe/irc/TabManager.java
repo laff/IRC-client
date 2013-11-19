@@ -170,6 +170,15 @@ public class TabManager extends JPanel {
                     closeAllTabs();
                 } else someoneQuit(pref, restMessage);              
                 
+            } else if (command.equals("MODE")) {
+                
+               // pref = prefix.substring(0, prefix.indexOf("!"));
+                chanName = message.substring(message.indexOf("#"), message.indexOf(" "));
+                restMessage = message.substring(message.indexOf(" ")+1, message.length());
+                
+                updateChannel(chanName, prefix, restMessage);
+                
+                
             // Command: 353 means that the output of the NAMES-command comes now.
             } else if (command.equals("353")) {
                 //Variables used to split the message.
@@ -221,6 +230,19 @@ public class TabManager extends JPanel {
             releaseTab(cTab.getFilter());
         }
     }
+    
+  /*  private void modeChange(String prefix, String chan, String target) {
+        int chans = channelTabs.size();
+        ChannelTab chanTab;
+        
+        for (int i = 0; i < chans; i++) {
+            chanTab = (ChannelTab)channelTabs.elementAt(i);
+            if (chanTab.getFilter().equals(chan)) {
+                chanTab.updateMode(prefix, target);
+            }
+        }
+    }
+    */
     
     /**
      * Some updates have occurred on the channel, and these changes must be
@@ -393,7 +415,7 @@ public class TabManager extends JPanel {
         channelTabs.addElement(chanTab = new ChannelTab(chanName, this, tabDimension));
         tabbedPane.addTab(chanName, null, chanTab);
         tabbedPane.setSelectedIndex(tabbedPane.indexOfTab(chanName));
-        chanTab.addText(chanName, "Now talking in "+chanName, false);
+        chanTab.addText(chanName, "Now talking in "+chanName+"\n", false);
     }
     
     /**
