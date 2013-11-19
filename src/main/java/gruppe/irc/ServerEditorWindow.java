@@ -18,7 +18,6 @@ import javax.swing.JTextField;
 public class ServerEditorWindow extends JFrame {
    private JLabel srvNmL, grpNmL, prtRngL, srvAdrL;
    private JTextField serverName, groupName, portRange, servAddr;
-  // private Vector<ServerListItem> serverList;
    private JButton addItem;
     
     ServerEditorWindow() {
@@ -40,10 +39,10 @@ public class ServerEditorWindow extends JFrame {
 
         myPanel.setLayout(null);
 
-        srvNmL.setBounds (20, 5, 85, 20);
-        grpNmL.setBounds (20,30, 85, 20);
-        prtRngL.setBounds(20,55, 85, 20);
-        srvAdrL.setBounds(20,80, 85, 20);
+        srvNmL.setBounds (15, 5, 85, 20);
+        grpNmL.setBounds (15,30, 85, 20);
+        prtRngL.setBounds(15,55, 85, 20);
+        srvAdrL.setBounds(15,80, 85, 20);
 
 
         serverName.setBounds(90, 5, 160, 20);
@@ -58,8 +57,6 @@ public class ServerEditorWindow extends JFrame {
                 addServer();
             }
         });
-        
-        
 
         myPanel.add(srvNmL);
         myPanel.add(grpNmL);
@@ -82,7 +79,4 @@ public class ServerEditorWindow extends JFrame {
         LoginMenu.sli.addElement(s);
         LoginMenu.writeFile();
     }
- 
-    
-    
 }

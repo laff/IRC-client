@@ -34,7 +34,8 @@ public class LoginMenu extends JFrame implements ItemListener {
 	}
 	
 	// The variables for logging in.
-	private String serverVar, nickVar, altnickVar, usernameVar, fullnameVar, serverfilePath;
+	private String serverVar, nickVar, altnickVar, usernameVar, fullnameVar;
+    private static String serverfilePath;
 	private Integer	portVar;
 	
     private Vector<String> serverList = new Vector<String>(); 
@@ -298,6 +299,18 @@ public class LoginMenu extends JFrame implements ItemListener {
         });
 	}
     
+    public void importServers() {
+        JFileChooser chooser;
+ 
+        chooser = new JFileChooser(new File("."));
+        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+         // The user can cancel if he wants to, no action then!
+         if (chooser.showOpenDialog(LoginMenu.this) == JFileChooser.CANCEL_OPTION)
+             return;
+
+         serverfilePath = chooser.getSelectedFile().getPath();
+    }
+    
     
     //OBS: The next three functions are made just for some easy testing on the
     // functionality of "maintaining" the list of servers.
@@ -307,44 +320,30 @@ public class LoginMenu extends JFrame implements ItemListener {
     }
     
     public static void writeFile() {
-        FileWriter fw;
         BufferedWriter bw;
         
         try {
-            fw = new FileWriter("servers.ini");
-            bw = new BufferedWriter(fw);
-            bw.write("[servers]"+"\n");
-            
-            for(int i = 0; i < sli.size(); i++){
-                bw.write(sli.elementAt(i).toString());
-                bw.newLine();
-                bw.flush();
-                System.out.println(sli.elementAt(i).toString());
-            }
+            bw = new BufferedWriter(new FileWriter(serverfilePath, true));
+            bw.write(sli.lastElement().toString());
+            bw.flush();
+            bw.newLine();
             bw.close();
         } catch (IOException e) {
                 e.printStackTrace();
           }
     }
-	
+    
     
     private void readFile() {
         String temp;
         BufferedReader bReader = null;
 		FileReader f;
-        JFileChooser chooser;
         
 		try {
 			if (serverfilePath == null) {
-                chooser = new JFileChooser(new File("."));
-                chooser.setFileSelectionMode (JFileChooser.FILES_ONLY);
-                 // The user can cancel if he wants to, no action then!
-                 if (chooser.showOpenDialog(LoginMenu.this) == JFileChooser.CANCEL_OPTION)
-                     return;
-
-                 serverfilePath = chooser.getSelectedFile().getPath();
-			}
-
+                importServers();
+            }
+            
 			f  = new FileReader(serverfilePath);
 			bReader = new BufferedReader(f);
 
@@ -371,6 +370,7 @@ public class LoginMenu extends JFrame implements ItemListener {
                         group = temp.substring(temp.indexOf("GROUP")+6, temp.length());
                         //Add the server to a list of server-objects.
                         sli.add(new ServerListItem(sli.size(), name, group, srv, prtRange));
+                        
                         
                         //If the group not already exists, create it!
                         if(!groups.contains(group)) {

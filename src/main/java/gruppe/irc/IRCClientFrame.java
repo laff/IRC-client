@@ -28,7 +28,7 @@ public class IRCClientFrame extends JFrame implements ActionListener {
 	// Variables for the menu.
 	private static JMenuBar menuBar;
 	private static JMenu moreMenu;
-	private static JMenuItem showLogin;
+	private static JMenuItem showLogin, importServers;
 	
 	public TabManager thisTab;
 	private String frameTitle;
@@ -50,8 +50,11 @@ public class IRCClientFrame extends JFrame implements ActionListener {
 		menuBar = new JMenuBar();
 		moreMenu = new JMenu("More..");
 		showLogin = new JMenuItem("login");
-		showLogin.addActionListener(this);
+		showLogin.addActionListener(IRCClientFrame.this);
+        importServers = new JMenuItem(IRCClient.messages.getString("frame.import"));
+        importServers.addActionListener(IRCClientFrame.this);
 		moreMenu.add(showLogin);
+        moreMenu.add(importServers);
 		menuBar.add(moreMenu);
 		add(menuBar, BorderLayout.NORTH);
 		
@@ -89,6 +92,10 @@ public class IRCClientFrame extends JFrame implements ActionListener {
 				System.out.println("couldnt even try to show");
 			}
 		}
+        else if (ae.getSource() == importServers) {
+            IRCClient.loginMenu.importServers();
+        }
+        
 	}
 	
 	WindowListener exitListener = new WindowAdapter() {

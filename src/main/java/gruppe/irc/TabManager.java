@@ -393,6 +393,7 @@ public class TabManager extends JPanel {
         channelTabs.addElement(chanTab = new ChannelTab(chanName, this, tabDimension));
         tabbedPane.addTab(chanName, null, chanTab);
         tabbedPane.setSelectedIndex(tabbedPane.indexOfTab(chanName));
+        chanTab.addText(chanName, "Now talking in "+chanName, false);
     }
     
     /**
