@@ -115,23 +115,44 @@ public class GenericTab extends JPanel implements ActionListener {
 	public void writeToLn(String msg) {
 		manager.getConnection().writeln(msg);
 	}
+    
 	/**
      * Getting the text from the textfield, when the user push 'Enter'-button.
+     * If the text entered starts with an '/', it indicate that it is a
+     * command to the server. Then we parse out the actual command to send to
+     * the server, and finally we find the message that follows the command.
+     * If it is not a command, the nick of the sender is displayed in the textarea
+     * together with the written message, and the message is also sent to the server.
      * @param e The actual event.
      */
 	
 	public void actionPerformed(ActionEvent e) {
-		String fromText;
-        
-        // If some text is added in the text-field, and the user push 'Enter'.
+		String fromText, message="", command="";
+
 		if (e.getSource() == write) {
-            // We fetch text from the field, and then add it to the textArea.
             fromText = write.getText();
             
-            // This is a outgoing message, therefore we send 'false'.            
-            addText(manager.getNick(), fromText+"\n", false);
-            // Then we send the message to the server aswell.
-            writeToLn("PRIVMSG "+filter+" :"+fromText);
+            if (fromText.startsWith("/")) {
+               try {
+                    command = fromText.substring(fromText.indexOf("/")+1, fromText.indexOf(" "));
+                    message = fromText.substring(fromText.indexOf(" ")+1, fromText.length());
+               } catch (StringIndexOutOfBoundsException sioobe) {;}
+                
+               // A special case if someone types only /part and no channelname in a
+               // specific channel.
+               if (command.equals("")) {
+                    try {
+                        command = fromText.substring(fromText.indexOf("/")+1, fromText.length());
+                        message = this.getFilter();
+                    } catch (StringIndexOutOfBoundsException sioobe) {;}
+                }
+                writeToLn(command.toUpperCase()+" "+message);
+                
+            } else {
+                // This is a outgoing message(from our user), therefore we send 'false'.            
+                addText(manager.getNick(), fromText+"\n", false);
+                writeToLn("PRIVMSG "+filter+" :"+fromText);
+            }
             write.setText("");
 		}
 	}
