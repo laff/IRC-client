@@ -66,13 +66,11 @@ public class GenericTab extends JPanel implements ActionListener {
 	public String getFilter () {
 		return filter;
 	}
-	
 
 	/**
 	 * Function displays text to the text field.
 	 */
 	public void addText(String prefix, String msg, Boolean incoming) {
-
         int pos = text.getStyledDocument().getEndPosition().getOffset();
 		String sender, message;
         
@@ -97,38 +95,18 @@ public class GenericTab extends JPanel implements ActionListener {
         //When new messages appears in the window, it scrolls down automagically.
         //Borrowed from Oyvind`s example.
         SwingUtilities.invokeLater(new Thread() {
+            @Override
 	        public void run() {
 	        	// Set the scrollbar to its maximum value
 	        	scrollBar.setValue(scrollBar.getMaximum());
 	        }
 	    });
 	}
-    
-       public void addText (String msg) {
-        int pos = text.getStyledDocument().getEndPosition().getOffset();
-
-        try {	
-            text.getStyledDocument().insertString(pos, msg, null);
-        } catch (BadLocationException ble) {};					
-
-        //When new messages appears in the window, it scrolls down automagically.
-        //Borrowed from Oyvind`s example.
-        SwingUtilities.invokeLater(new Thread() {
-            public void run() {
-                // Get the scrollbar from the scroll pane
-                JScrollBar scrollbar = scrollPane.getVerticalScrollBar();
-                // Set the scrollbar to its maximum value
-                scrollbar.setValue(scrollbar.getMaximum());
-            }
-        });
-}
-
 	
 	/**
 	 * Static function that takes the string parameter and sends to connection and its writeln function.
 	 * @param msg String sent to communicate with the server.
 	 */
-       
 	public void writeToLn(String msg) {
 		manager.getConnection().writeln(msg);
 	}
@@ -142,7 +120,6 @@ public class GenericTab extends JPanel implements ActionListener {
      * together with the written message, and the message is also sent to the server.
      * @param e The actual event.
      */
-    
        @Override
 	public void actionPerformed(ActionEvent e) {
 		String fromText, command ="", message="";

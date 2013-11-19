@@ -75,5 +75,4 @@ public class PersonalTab extends GenericTab {
 		}
 		
 	}
-	
 }

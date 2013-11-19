@@ -43,18 +43,15 @@ import javax.swing.text.BadLocationException;
 /**
  *
  * @author HS Vikar
- * 
- * TODO: When we click a tab, the focus should be set to the InternalFrame that 
- * tab belongs to.
- */
 
+ */
 
 public class TabManager extends JPanel {
 	
 	//private JPanel serverTab;
 	private Vector<GenericTab> channelTabs = new Vector<GenericTab>();
 	private Vector<GenericTab> personalTabs = new Vector<GenericTab>();
-    private GenericTab serverTab;
+    private ServerTab serverTab;
 	
 	// This TabManager's IRCConnection
 	private IRCConnection connection;
@@ -82,12 +79,6 @@ public class TabManager extends JPanel {
 	// A Bunch of components
 	private JTabbedPane tabbedPane;
     private JDesktopPane desktop;
-	private JScrollPane scrollPane;
-	
-	// These components are used within the servertab
-	private JTextField write;
-	private JButton quit;
-	private JTextPane text;
 	
 	public TabManager (IRCClientFrame prnt) {
 	
@@ -107,7 +98,6 @@ public class TabManager extends JPanel {
         tabbedPane.addTab("Server", serverTab);
         add(tabbedPane, BorderLayout.NORTH);
         tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
-		
 	}
 	
 	
@@ -121,30 +111,6 @@ public class TabManager extends JPanel {
     public IRCConnection getConnection () {
         return connection;
     }
-	/*
-	public JPanel createServerTab() {
-		JPanel intFrame = new JPanel();
-		
-        intFrame.setLayout(new BorderLayout());
-        intFrame.add(scrollPane = new JScrollPane(text = new JTextPane()), BorderLayout.CENTER);
-        
-        write = new JTextField();
-        write.addActionListener(this);
-        intFrame.add(write, BorderLayout.SOUTH);
-
-		text.setBackground(Color.LIGHT_GRAY);
-		text.setEditable(false);
-     
-		quit = new JButton("Close connection");
-		quit.addActionListener(this);
-        
-        intFrame.add(quit, BorderLayout.NORTH);
-        intFrame.setVisible(true);
-        intFrame.setPreferredSize(tabDimension);
-		
-		return intFrame;
-	}
-    */
 		
 	/**
 	 * Function that distributes messages to appropriate tabs.
@@ -232,7 +198,6 @@ public class TabManager extends JPanel {
      * @param message This might be an empty string, timeout message, or something
      * the user wrote himself.
      */
-    
     private void someoneQuit(String nick, String message) {
         int nrTabs = channelTabs.size();
         ChannelTab chanTab;
@@ -248,7 +213,6 @@ public class TabManager extends JPanel {
      * Closing all tabs, called when we type QUIT. The quit-command handles
      * leaving the channels, so we just have to close the tabs here.
      */
-    
     private void closeAllTabs() {
         int nrTabs = channelTabs.size();
         ChannelTab cTab;
@@ -266,7 +230,6 @@ public class TabManager extends JPanel {
      * @param prefix - a string where the first part is the nick of a user.
      * @param command - this will include a JOIN or PART -string.
      */
-    
     private void updateChannel(String msg, String prefix, String command) {
         String newUser = prefix.substring(0, prefix.indexOf("!"));
         int chans = channelTabs.size();
@@ -285,7 +248,6 @@ public class TabManager extends JPanel {
      * @param chanName - The name of the channel this NAMES-command belongs to.
      * @param names - String including all users on the channel.
      */
-    
     private void setChannelNames(String chanName, String names) {
         int chans = channelTabs.size();
         ChannelTab chanTab;
@@ -309,7 +271,6 @@ public class TabManager extends JPanel {
      * @param message The message to display in a channelwindow.
      * @param prefix 
      */
-    
 	private void distributeChannel(String prefix, String chanName, String message, Boolean incoming) {
         int chans = channelTabs.size();
         ChannelTab chanTab;
@@ -330,7 +291,6 @@ public class TabManager extends JPanel {
 	 * @param prefix 
 	 * @param message 
 	 */
-    
 	private void distributePrivate(String prefix, String message) {
         checkPersonalTabs(prefix, message, true);
 	}
@@ -342,7 +302,6 @@ public class TabManager extends JPanel {
      * we create a tab with that name.
      * @param outText a message, starting with 'JOIN #'.
      */
-    
     private void checkForNewChannel(String message) {
         String chanName = message.substring(message.indexOf("#"), message.length()-1);
         ChannelTab cTab;
@@ -370,7 +329,6 @@ public class TabManager extends JPanel {
      * if not, the server sends a 'no such nick' message.
      * @param outText The text the user entered in the write-field.
      */
-    
     private void checkToLeaveChannel(String outText) {
         String chanName = outText.substring(outText.indexOf("#"), outText.length()-1);
         int tabs = channelTabs.size();
@@ -394,7 +352,6 @@ public class TabManager extends JPanel {
      * @param incoming True if the message is incoming, false if it was sent
      * from our write-field.
      */
-    
     private void checkPersonalTabs(String receiver, String message, Boolean incoming) {
         int personalCount = personalTabs.size();
         boolean noFoundTab = true;
@@ -428,55 +385,11 @@ public class TabManager extends JPanel {
     }    
     
     /**
-     * Takes care of sending the text the user enters to the appropriate place,
-     * which is the textarea, and/or the server.
-     * @param e 
-     */
-
-    /*
-	public void actionPerformed(ActionEvent e) {
-		String outText, temp ="", receiver="", message="";
-    
-        if (e.getSource() == write) {
-			outText = write.getText();
-            
-            // Parsing out the elements from the textfield that we need for 
-            // sending a PRIVMSG to either a channel or a user.
-            // It might not be a PRIVMSG where these strings are used that 
-            // are typed, so it might throw an exception.
-            try {
-                temp = outText.substring(outText.indexOf(" ")+1);
-                receiver = temp.substring(0, temp.indexOf(" "));
-                message = temp.substring(temp.indexOf(" ")+1, temp.length());
-            } catch (StringIndexOutOfBoundsException sioobe) {};
-            
-            // If the text starts with 'PRIVMSG #', its destination is a channel.
-            if (outText.startsWith("PRIVMSG #")) {
-                // Distribute the message to the correct channel, and since this
-                // is an outgoing message, we add 'false'(true = incoming).
-                distributeChannel(this.nick, receiver, message, false);
-                if(tabbedPane.getSelectedIndex() != tabbedPane.indexOfTab(this.nick));
-            // If no '#' is detected, it is a regular personal-message.
-            } else if (outText.startsWith("PRIVMSG")) {
-                checkPersonalTabs(receiver, message, false);
-            // If it`s just a 'regular' message, we add it to the textarea. 
-            } else addText(outText+"\n");
-
-			writeToLn(outText);
-			write.setText("");
-            
-		} else if (e.getSource() == quit) {
-			closeConnection();
-		}
-	}
- */    
-    /**
      * Method to create a new tab, for a channel that the user wants to join.
      * The channel is added to the Vector with all the other channeltabs, and
      * a tabbedPane is also created. At last the tab will be selected.
      * @param chanName a text that include a channel name to join.
      */
-    
     private void createChannelTab(String chanName) {
         ChannelTab chanTab;
         
@@ -491,7 +404,6 @@ public class TabManager extends JPanel {
      * @param tabName The username of the user we want to communicate with, and
      * also used as tabName.
      */
-    
     public void createPersonalTab(String tabName) {
         int personalCount = personalTabs.size();
         PersonalTab pTab;
@@ -514,33 +426,12 @@ public class TabManager extends JPanel {
 	
 	/**
 	 * Static function that takes the string parameter and sends to connection and its writeln function.
-	 * @param msg 
+	 * @param msg message to be sent to the server.
 	 */
 	public void writeToLn(String msg) {
 		connection.writeln(msg);
 	}
-
     
-	
-    public void addText (String msg) {
-        int pos = text.getStyledDocument().getEndPosition().getOffset();
-
-        try {	
-            text.getStyledDocument().insertString(pos, msg, null);
-        } catch (BadLocationException ble) {};					
-
-        //When new messages appears in the window, it scrolls down automagically.
-        //Borrowed from Oyvind`s example.
-        SwingUtilities.invokeLater(new Thread() {
-            public void run() {
-                // Get the scrollbar from the scroll pane
-                JScrollBar scrollbar = scrollPane.getVerticalScrollBar();
-                // Set the scrollbar to its maximum value
-                scrollbar.setValue(scrollbar.getMaximum());
-            }
-        });
-}
-	
 	/**
 	 * Method closes connection and the parent window
 	 */
@@ -566,7 +457,6 @@ public class TabManager extends JPanel {
 	 * Method deletes the contents of tab and calls releaseTab to remove it from tabManager.
 	 * @param filter The filter text of the tab to be closed
 	 */
-	
 	public void closeTab (String filter) {
 		//Channel filters start with #
 		if (filter.startsWith("#")) {

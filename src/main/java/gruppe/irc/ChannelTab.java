@@ -8,7 +8,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.Arrays;
 
 import javax.swing.*;
@@ -37,13 +36,11 @@ public class ChannelTab extends GenericTab  {
     //TODO: Maybe some minimum-values should be set for the components in the splitpane?
     
 	public ChannelTab (String chanName, TabManager mng, Dimension dim) {
-		//TODO: Must receive a proper filter
 		super(chanName, mng, dim);
           
         // Adding some elements to the list, the hard way.
         listModel = new DefaultListModel();
    
-        //add(textScrollPane = new JScrollPane(text = new JTextPane()), BorderLayout.WEST);
         add(scrollPane, BorderLayout.WEST);
         add(usersScrollPane = new JScrollPane(list = new JList(listModel)), BorderLayout.EAST);
         
@@ -93,7 +90,6 @@ public class ChannelTab extends GenericTab  {
      * @param newUser Name of the user that has joined/parted the channel.
      * @param command the command the server has sent to us(JOIN or PART).
      */
-    
     public void updateNames (String newUser, String command) {
         
         if (command.equals("JOIN")) {
@@ -113,7 +109,6 @@ public class ChannelTab extends GenericTab  {
      * OBS: Must test this sorting-thing, haven`t tested what happens when someone
      * is voiced on the channel. But OP`s is listed at the top!
      */
-    
     public void addNames (String names) {
         String namesSplitted[];
         
@@ -131,7 +126,6 @@ public class ChannelTab extends GenericTab  {
      * is OP or voiced we have their nickname with a '@' or '+' in our list, so
      * this must be removed before processing the WHOIS.
      */
-    
     private void whois(String user) {
         String whoIsUser = user;
         
@@ -147,7 +141,6 @@ public class ChannelTab extends GenericTab  {
      * @param nickName The nick of the user.
      * @param message The user might left a quit-message.
      */
-    
     public void quit(String nickName, String message) {
         int users = listModel.size();
         
@@ -163,7 +156,6 @@ public class ChannelTab extends GenericTab  {
     /**
      * Set up the different items in the popup-menu when rightclicking.
      */
-    
     private void setupItems() {    
         popUp = new JPopupMenu();
         
@@ -175,7 +167,7 @@ public class ChannelTab extends GenericTab  {
                     String temp =  list.getSelectedValue().toString();
                     whois(temp);
                     System.out.println("ActionPerformed on target: "+temp);
-                } catch (NullPointerException npe) {};
+                } catch (NullPointerException npe) {}
             }
         });
         
@@ -189,7 +181,7 @@ public class ChannelTab extends GenericTab  {
                     selected = selected.substring(1);
                 }
                 manager.createPersonalTab(selected);
-                } catch (NullPointerException npe) {};
+                } catch (NullPointerException npe) {}
             }
         });
     }
@@ -201,7 +193,6 @@ public class ChannelTab extends GenericTab  {
      * TOFIX: Should be possible to deselect an item (Now it`s only deselected
      * after the doubleclick. Kinda stupido!
      */
-      
    private class MouseClick extends MouseAdapter {
         
        @Override

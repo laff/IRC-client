@@ -36,15 +36,10 @@ public class ServerTab extends GenericTab {
 		add(quit, BorderLayout.NORTH);
 	}
     
-    
-    
-    
     /**
      * Takes care of sending the text the user enters to the appropriate place,
-     * which is the textarea, and/or the server.
-     * @param e 
+     * which is the textarea in the servertab.
      */
-    
     public void addText (String msg) {
         int pos = text.getStyledDocument().getEndPosition().getOffset();
 
@@ -55,6 +50,7 @@ public class ServerTab extends GenericTab {
         //When new messages appears in the window, it scrolls down automagically.
         //Borrowed from Oyvind`s example.
         SwingUtilities.invokeLater(new Thread() {
+            @Override
             public void run() {
                 // Get the scrollbar from the scroll pane
                 JScrollBar scrollbar = scrollPane.getVerticalScrollBar();
@@ -62,7 +58,7 @@ public class ServerTab extends GenericTab {
                 scrollbar.setValue(scrollbar.getMaximum());
             }
         });
-}
+    }
     
 	
 	/**
