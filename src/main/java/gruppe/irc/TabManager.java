@@ -271,7 +271,7 @@ public class TabManager extends JPanel {
      * @param message The message to display in a channelwindow.
      * @param prefix 
      */
-	private void distributeChannel(String prefix, String chanName, String message, Boolean incoming) {
+	public void distributeChannel(String prefix, String chanName, String message, Boolean incoming) {
         int chans = channelTabs.size();
         ChannelTab chanTab;
         
@@ -352,7 +352,7 @@ public class TabManager extends JPanel {
      * @param incoming True if the message is incoming, false if it was sent
      * from our write-field.
      */
-    private void checkPersonalTabs(String receiver, String message, Boolean incoming) {
+    public void checkPersonalTabs(String receiver, String message, Boolean incoming) {
         int personalCount = personalTabs.size();
         boolean noFoundTab = true;
         PersonalTab pTab;
@@ -369,7 +369,7 @@ public class TabManager extends JPanel {
         for (int i = 0; i < personalCount; ++i) {
             pTab = (PersonalTab)personalTabs.elementAt(i);
             if (pTab.getFilter().equals(tabName)) {
-                pTab.addText(receiver, message, incoming);
+                pTab.addText(sender, message, incoming);
                 noFoundTab = false;
             }
         }

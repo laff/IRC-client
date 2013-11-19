@@ -72,7 +72,5 @@ public class ServerTab extends GenericTab {
 			writeToLn("QUIT");
 			manager.closeConnection();
 		}
-		
 	}
-
 }

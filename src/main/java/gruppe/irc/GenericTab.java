@@ -122,12 +122,36 @@ public class GenericTab extends JPanel implements ActionListener {
      */
        @Override
 	public void actionPerformed(ActionEvent e) {
-		String fromText, command ="", message="";
+		String fromText, command ="", message="", receiver="", temp="";
     
         if (e.getSource() == write) {
 			fromText = write.getText();
             
-            if (fromText.startsWith("/")) {
+            if (fromText.startsWith("/privmsg #")) {
+                
+                try {
+                    temp = fromText.substring(fromText.indexOf(" ")+1, fromText.length());
+                    receiver = temp.substring(0, temp.indexOf(" "));
+                    message = temp.substring(temp.indexOf(" ")+1, temp.length());
+                } catch (StringIndexOutOfBoundsException sioobe) {}
+                
+                manager.distributeChannel(manager.getNick(), receiver, message+"\n", false);
+                writeToLn("PRIVMSG "+receiver+" :"+message);
+            
+            } else if (fromText.startsWith("/privmsg ")) {
+                
+                try {
+                    temp = fromText.substring(fromText.indexOf(" ")+1);
+                    receiver = temp.substring(0, temp.indexOf(" "));
+                    message = temp.substring(temp.indexOf(" ")+1, temp.length());
+                } catch (StringIndexOutOfBoundsException sioobe) {}
+                
+                manager.checkPersonalTabs(receiver, message+"\n", false);
+                writeToLn("PRIVMSG "+receiver+" :"+message);
+            }
+            
+            else if (fromText.startsWith("/")) {
+                
                 try {
                     command = fromText.substring(fromText.indexOf("/")+1, fromText.indexOf(" "));
                     message = fromText.substring(fromText.indexOf(" ")+1, fromText.length());
