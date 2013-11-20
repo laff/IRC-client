@@ -9,14 +9,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
 
 /**
  *
@@ -35,9 +30,6 @@ public class ChannelTab extends GenericTab  {
     private JPopupMenu popUp;
     private JMenu modes;
     private DefaultListModel listModel;
-	
-
-    //TODO: Maybe some minimum-values should be set for the components in the splitpane?
     
 	public ChannelTab (String chanName, TabManager mng, Dimension dim) {
 		super(chanName, mng, dim);
@@ -115,26 +107,27 @@ public class ChannelTab extends GenericTab  {
      * Function to split the string of all the users on this channel, and add each
      * username into an array. Then all the users are added to the listModel.
      * @param names String including the result of a NAMES-command
-     * 
-     * OBS: Must test this sorting-thing, haven`t tested what happens when someone
-     * is voiced on the channel. But OP`s is listed at the top!
      */
     public void addNames (String names) {
         String namesSplitted[];
         ArrayList sorted;
-        
-        
+
         namesSplitted = names.split(" ");
         sorted = sortNames(namesSplitted);
-        
         listModel.removeAllElements();
-        
-       // listModel.add(sorted);
+
         for(int i = 0; i < sorted.size(); i++) {
             listModel.addElement(sorted.get(i));
         }
     }
     
+    /**
+     * Sorting the nicks of the users on a chan. First divided into Op`ed, Voiced,
+     * and normal users. Then these lists are sorted separately, before they are
+     * merget into the sorted-array, which we return in this method.
+     * @param names String-array of all users on channel.
+     * @return The same users, sorted.
+     */
     private ArrayList sortNames (String [] names) {
         ArrayList<String> sorted = new ArrayList<String>();
         ArrayList<String> op = new ArrayList<String>();
@@ -215,7 +208,6 @@ public class ChannelTab extends GenericTab  {
                 try {
                     String temp =  list.getSelectedValue().toString();
                     whois(temp);
-                    System.out.println("ActionPerformed on target: "+temp);
                 } catch (NullPointerException npe) {}
             }
         });
@@ -291,14 +283,22 @@ public class ChannelTab extends GenericTab  {
         popUp.add(modes);
     }
     
+    /**
+     * Used to send command for setting voice or devoice.
+     * @param selectedUser target of the action.
+     * @param bool wether it`s a voice or devoice-action.
+     */
     private void setVoice(String selectedUser, Boolean bool) {
-        
         String mode = bool ? " +v " : " -v ";
         writeToLn("MODE "+this.filter+mode+selectedUser);
     }
     
+    /**
+     * Used to issue the command to give someone Op, or Deop someone.
+     * @param selectedUser the selected target of the action.
+     * @param bool true is Op, false is Deop
+     */
     private void setOp(String selectedUser, Boolean bool) {
-        
         String mode = bool ? " +o " : " -o ";
         writeToLn("MODE "+this.filter+mode+selectedUser);
     }

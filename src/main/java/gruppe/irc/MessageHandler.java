@@ -22,13 +22,18 @@ public class MessageHandler {
      * Message to a specific chan, channelname and the message is parsed out, and
      * sent to the method that distributes messages to channels. A user can not
      * receive messages from a channel that he not is a member of, so the tab
-     * will always exist.
+     * will always exist. Slap! is special occasion of privmsg, an is recognized
+     * by the ACTION keyword.
      * @param prefix Prefixmessage, passed to distributeChannel.
      * @param message the target-channel and the actual message is in this string.
      */
     public void handlePrivForChan(String prefix, String message) {
         chanName = message.substring(message.indexOf("#"), message.indexOf(" "));
-        restMessage = message.substring(message.indexOf(":")+1, message.length());
+        restMessage = message.substring(message.indexOf(":")+2, message.length());
+        
+        if (restMessage.startsWith("ACTION ")) {
+            restMessage = restMessage.substring(restMessage.indexOf(" ")+1, restMessage.length());
+        }
         manager.distributeChannel(prefix, chanName, restMessage, true);
     }
 
@@ -107,6 +112,12 @@ public class MessageHandler {
     void handlePriv(String prefix, String message) {
         manager.checkPersonalTabs(prefix, message, true);
     }
+    
+    /**
+     * Handling the error-message that occurs when performing an action without
+     * enough permission.
+     * @param message Error-message given by the server.
+     */
 
     void handleNotOp(String message) {
         String temp = message.substring(message.indexOf("#"));
