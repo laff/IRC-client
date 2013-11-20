@@ -35,6 +35,8 @@ import java.util.Vector;
 
 import javax.swing.*;
 import javax.swing.JInternalFrame.JDesktopIcon;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
  *
@@ -92,6 +94,7 @@ public class TabManager extends JPanel {
         add(desktop);
         
         tabbedPane = new JTabbedPane();
+        tabbedPane.addChangeListener( new tabChangeListener() );
         tabbedPane.addTab("Server", serverTab);
         add(tabbedPane, BorderLayout.NORTH);
         tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
@@ -159,9 +162,9 @@ public class TabManager extends JPanel {
 	}
     
     /**
-     * Someone other than us quitted a channel we are a member of. This command
+     * Someone other than us quit a channel we are a member of. This command
      * from the server does not tell us which channel the user did quit from, so
-     * we have to find the righ chan(s).
+     * we have to find the right chan(s).
      * @param nick Nickname of the user who quit.
      * @param message This might be an empty string, timeout message, or something
      * the user wrote himself.
@@ -277,6 +280,12 @@ public class TabManager extends JPanel {
             // we can add the message to that channel.
             if (chanTab.getFilter().equals(chanName)) {
                 chanTab.addText(prefix, message, incoming, 1);
+                //If message recipient is not the currently selected
+                // tab, the tab name changes color to red
+                int index = tabbedPane.indexOfTab(chanName);
+                if (tabbedPane.getSelectedIndex() != index ) {
+                	tabbedPane.setForegroundAt(index, Color.RED);
+                }
             }
         }
     }
@@ -355,6 +364,12 @@ public class TabManager extends JPanel {
             if (pTab.getFilter().equals(tabName)) {
                 pTab.addText(sender, message, incoming, 2);
                 noFoundTab = false;
+              //If message recipient is not the currently selected
+                // tab, the tab name changes color to red
+                int index = tabbedPane.indexOfTab(tabName);
+                if (tabbedPane.getSelectedIndex() != index ) {
+                	tabbedPane.setForegroundAt(index, Color.RED);
+                }
             }
         }
         // Now, if there is not found a personal tab matching our description, a
@@ -523,5 +538,21 @@ public class TabManager extends JPanel {
     	for (int i = 0; i < count; ++i) {
     		personalTabs.get(i).setSize(tabDimension);
     	}
+    }
+    
+    /**
+     * ChangeListener for the tabbed pane, used to sense when
+     * a tab change occurs and set the color of that tab to default.
+     * @author Anders
+     *
+     */
+    class tabChangeListener implements ChangeListener {
+
+		public void stateChanged(ChangeEvent arg0) {
+			int i = tabbedPane.getSelectedIndex();
+			tabbedPane.setForegroundAt(i, Color.BLACK);
+			
+		}
+    	
     }
 }

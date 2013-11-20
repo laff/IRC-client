@@ -35,9 +35,9 @@ public class GenericTab extends JPanel implements ActionListener {
 	protected JTextField write;
 	protected boolean isAttached;
     
-    AbstractDocument doc;
-    StyledDocument styledDoc;
-    SimpleAttributes attrs;
+    protected AbstractDocument doc;
+    protected StyledDocument styledDoc;
+    protected SimpleAttributes attrs;
     
     
 	public GenericTab (String tabFilter, TabManager mng, Dimension dim) {
