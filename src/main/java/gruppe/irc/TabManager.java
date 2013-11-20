@@ -31,14 +31,10 @@
 package gruppe.irc;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.beans.PropertyVetoException;
 import java.util.Vector;
 
 import javax.swing.*;
-import javax.swing.text.BadLocationException;
+import javax.swing.JInternalFrame.JDesktopIcon;
 
 /**
  *
@@ -72,7 +68,7 @@ public class TabManager extends JPanel {
 	 * PS! Should rather have this inside the loginmenu logic.
 	 */
 	//The height offset between the IRCClientFrame and the tabs
-	private final int heightOffset = 80;
+	private static int heightOffset = 80;
 	private Dimension tabDimension;
     
 	// The server name this TabManager is connected to.
@@ -80,7 +76,6 @@ public class TabManager extends JPanel {
 	
 	// A Bunch of components
 	private JTabbedPane tabbedPane;
-    private JDesktopPane desktop;
 	
 	public TabManager (IRCClientFrame prnt) {
 	
@@ -90,7 +85,7 @@ public class TabManager extends JPanel {
 		parent = prnt;
 		tabDimension = new Dimension(0, parent.getHeight() - heightOffset);
 		
-        desktop = new JDesktopPane();
+        JDesktopPane desktop = new JDesktopPane();
         serverTab = new ServerTab(TabManager.this, tabDimension);
         desktop.add(serverTab);
     
@@ -118,7 +113,7 @@ public class TabManager extends JPanel {
 	/**
 	 * Function that distributes messages to appropriate tabs.
 	 * @param : message containing a message.
-	 * @param : command conatining a code.
+	 * @param : command containing a code.
      * @param : alias 
 	 * @param : prefix containing the servername 
 	 * @param : server The servername as received by the message
@@ -314,7 +309,7 @@ public class TabManager extends JPanel {
    
     /**
      * When a 'PART #'-message is issued, we end up here to see if the user
-     * has joined this channel at all. If the channelTab is open, we closes it,
+     * has joined this channel at all. If the channelTab is open, we close it,
      * if not, the server sends a 'no such nick' message.
      * @param outText The text the user entered in the write-field.
      */

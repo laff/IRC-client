@@ -6,7 +6,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.JFrame;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
@@ -16,8 +15,6 @@ import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
 /**
@@ -143,7 +140,7 @@ public class GenericTab extends JPanel implements ActionListener {
      * together with the written message, and the message is also sent to the server.
      * @param e The actual event.
      */
-       @Override
+  //     @Override
 	public void actionPerformed(ActionEvent e) {
 		String fromText, command ="", message="", receiver="", temp="";
     

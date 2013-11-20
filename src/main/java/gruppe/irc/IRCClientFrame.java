@@ -35,15 +35,16 @@ public class IRCClientFrame extends JFrame implements ActionListener {
 	private IRCClientFrame self;
 	
 	public IRCClientFrame() {
+		int initSize = 500;
 	
 		// Fantastic GUI settings.
 		setTitle("I was told this is the server");
 		// Exit button should only close the program if it is the last IRC-Frame.
 		// Perhaps a popup check should be sent?
-		setDefaultCloseOperation( JFrame.DO_NOTHING_ON_CLOSE ); // ?
+		setDefaultCloseOperation( JFrame.DO_NOTHING_ON_CLOSE ); // ? ! Because we have listener instead
         //setDefaultCloseOperation((EXIT_ON_CLOSE));
 		self = IRCClientFrame.this;
-		setSize(500, 500);
+		setSize(initSize, initSize);
 		setVisible(true);
         setLocationRelativeTo(null);
 		
@@ -98,7 +99,7 @@ public class IRCClientFrame extends JFrame implements ActionListener {
         
 	}
 	
-	WindowListener exitListener = new WindowAdapter() {
+	private WindowListener exitListener = new WindowAdapter() {
 		@Override
 		public void windowClosing(WindowEvent e) {
 			thisTab.closeConnection();
@@ -106,7 +107,7 @@ public class IRCClientFrame extends JFrame implements ActionListener {
 		}
 	};
 	
-	ComponentAdapter resizeListener = new ComponentAdapter() {
+	private ComponentAdapter resizeListener = new ComponentAdapter() {
 		
 		@Override
 		public void componentResized(ComponentEvent e) {

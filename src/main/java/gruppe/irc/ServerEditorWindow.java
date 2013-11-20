@@ -16,26 +16,25 @@ import javax.swing.JTextField;
  * @author Ch
  */
 public class ServerEditorWindow extends JFrame {
-   private JLabel srvNmL, grpNmL, prtRngL, srvAdrL;
+
    private JTextField serverName, groupName, portRange, servAddr;
-   private JButton addItem;
     
     ServerEditorWindow() {
     
         super("EpicServerEditorWindow");    
         setSize(330,280);
         JPanel myPanel = new JPanel();
-        srvNmL = new JLabel("Server name");
-        grpNmL = new JLabel("Group name");
-        prtRngL = new JLabel("Port(s)");
-        srvAdrL = new JLabel("Server address");
+        JLabel srvNmL = new JLabel("Server name");
+        JLabel grpNmL = new JLabel("Group name");
+        JLabel prtRngL = new JLabel("Port(s)");
+        JLabel srvAdrL = new JLabel("Server address");
 
         serverName = new JTextField(15);
         groupName = new JTextField(15);
         portRange = new JTextField(10);
         servAddr = new JTextField(15);
         
-        addItem = new JButton("Add");
+        JButton addItem = new JButton("Add");
 
         myPanel.setLayout(null);
 

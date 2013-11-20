@@ -19,10 +19,7 @@ import javax.swing.*;
  */
 public class ChannelTab extends GenericTab  {
 	
-	private JScrollPane usersScrollPane;
-	private JSplitPane splitPane;
 	private JButton close, attach;
-	private JPanel panel;
 	private ChannelTab self;
 	private JFrame newFrame;
     private JList list;
@@ -34,14 +31,19 @@ public class ChannelTab extends GenericTab  {
 	public ChannelTab (String chanName, TabManager mng, Dimension dim) {
 		super(chanName, mng, dim);
           
+		//Magic numbers
+		int width = 30;
+		double resizeWeight = 0.92;
         // Adding some elements to the list, the hard way.
         listModel = new DefaultListModel();
    
         add(scrollPane, BorderLayout.WEST);
-        add(usersScrollPane = new JScrollPane(list = new JList(listModel)), BorderLayout.EAST);
+        list = new JList(listModel);
+        JScrollPane usersScrollPane = new JScrollPane(list);
+        add(usersScrollPane, BorderLayout.EAST);
         
         //Splits the users and text components.
-        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                     scrollPane, usersScrollPane);
         
         // Setting some values for our list.
@@ -49,8 +51,8 @@ public class ChannelTab extends GenericTab  {
         list.setBackground(Color.LIGHT_GRAY);
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         list.addMouseListener(new MouseClick());
-        list.setSize(dim.height, 30);
-        list.setFixedCellWidth(30);
+        list.setSize(dim.height, width);
+        list.setFixedCellWidth(width);
                 
         
         
@@ -64,13 +66,13 @@ public class ChannelTab extends GenericTab  {
         //component to have the highest weighting when resizing the window.
         splitPane.setLeftComponent(scrollPane);
         splitPane.setRightComponent(usersScrollPane);
-        splitPane.setResizeWeight(0.92);
+        splitPane.setResizeWeight(resizeWeight);
 
         add(splitPane, BorderLayout.CENTER);
         
         //TEMP: Background color set just to show the diff
         
-		panel = new JPanel();
+		JPanel panel = new JPanel();
 		close = new JButton(IRCClient.messages.getString("chan.close"), null);
 		attach = new JButton(IRCClient.messages.getString("chan.detach"), null);
 		
@@ -201,7 +203,8 @@ public class ChannelTab extends GenericTab  {
     private void setupItems() {    
         popUp = new JPopupMenu();
         
-        popUp.add(item = new JMenuItem(IRCClient.messages.getString("popUp.whois")));
+        item = new JMenuItem(IRCClient.messages.getString("popUp.whois"));
+        popUp.add(item);
 
         item.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
@@ -212,7 +215,8 @@ public class ChannelTab extends GenericTab  {
             }
         });
         
-        popUp.add(item = new JMenuItem(IRCClient.messages.getString("popUp.query")));
+        item = new JMenuItem( IRCClient.messages.getString("popUp.query") );
+        popUp.add(item);
  
         item.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
@@ -228,7 +232,8 @@ public class ChannelTab extends GenericTab  {
         
         popUp.addSeparator();
         modes = new JMenu(IRCClient.messages.getString("popUp.modes"));
-        modes.add(item = new JMenuItem(IRCClient.messages.getString("popUp.voice")));
+        item = new JMenuItem(IRCClient.messages.getString("popUp.voice"));
+        modes.add(item);
         
         item.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
@@ -241,7 +246,8 @@ public class ChannelTab extends GenericTab  {
             }
         });
         
-        modes.add(item = new JMenuItem(IRCClient.messages.getString("popUp.deVoice")));
+        item = new JMenuItem(IRCClient.messages.getString("popUp.deVoice"));
+        modes.add(item);
         
         item.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
@@ -254,7 +260,8 @@ public class ChannelTab extends GenericTab  {
             }
         });
         
-        modes.add(item = new JMenuItem(IRCClient.messages.getString("popUp.op")));
+        item = new JMenuItem(IRCClient.messages.getString("popUp.op"));
+        modes.add(item);
         
         item.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
@@ -267,7 +274,8 @@ public class ChannelTab extends GenericTab  {
             }
         });
         
-        modes.add(item = new JMenuItem(IRCClient.messages.getString("popUp.deOp")));
+        item = new JMenuItem(IRCClient.messages.getString("popUp.deOp"));
+        modes.add(item);
         
         item.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
@@ -377,15 +385,20 @@ public class ChannelTab extends GenericTab  {
 				}
 			} else if (e.getSource() == attach) {
 				if (isAttached == true) {
+					//Magic numbers
+					int width = 400;
+					int height = 500;
+					int minDim = 300;
+					
 					newFrame = new JFrame();
-					newFrame.setPreferredSize(new Dimension(400, 500));
-					newFrame.setMinimumSize(new Dimension(300, 300));
+					newFrame.setPreferredSize(new Dimension(width, height));
+					newFrame.setMinimumSize(new Dimension(minDim, minDim));
 					newFrame.add(self);
 					newFrame.setVisible(true);
 					attach.setText(IRCClient.messages.getString("chan.attach"));
+					
 					//Removes tab from tabManager
 					manager.releaseTab(filter);
-					
 					isAttached = false;
 				} else {
 					manager.attachTab(filter, self);

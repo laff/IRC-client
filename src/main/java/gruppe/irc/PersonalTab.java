@@ -16,14 +16,13 @@ import javax.swing.JPanel;
 public class PersonalTab extends GenericTab {
 
 	private JButton close, attach;
-	private JPanel panel;
 	private PersonalTab self;
 	private JFrame newFrame;
 	
 	public PersonalTab (String stringF, TabManager mng, Dimension dim) {
 	
 		super(stringF, mng, dim);
-		panel = new JPanel();
+		JPanel panel = new JPanel();
 		close = new JButton("Close private chat", null);
 		attach = new JButton("Detach tab", null);
 		
@@ -53,15 +52,20 @@ public class PersonalTab extends GenericTab {
 				}
 			} else if (e.getSource() == attach) {
 				if (isAttached == true) {
+					//Magic numbers
+					int width = 400;
+					int height = 500;
+					int minDim = 300;
+					
 					newFrame = new JFrame();
-					newFrame.setPreferredSize(new Dimension(400, 500));
-					newFrame.setMinimumSize(new Dimension(300, 300));
+					newFrame.setPreferredSize(new Dimension(width, height));
+					newFrame.setMinimumSize(new Dimension(minDim, minDim));
 					newFrame.add(self);
 					newFrame.setVisible(true);
 					attach.setText("Attach window");
+					
 					//Removes tab from tabManager
 					manager.releaseTab(filter);
-					
 					isAttached = false;
 				} else {
 					manager.attachTab(filter, self);

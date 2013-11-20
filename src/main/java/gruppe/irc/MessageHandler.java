@@ -53,7 +53,9 @@ public class MessageHandler {
         if (pref.equals(nick)){
             if (cmd.equals("JOIN")) {
                 manager.checkForNewChannel(message);
-            } else manager.checkToLeaveChannel(message);
+            } else {
+            	manager.checkToLeaveChannel(message);
+            }
         } else {
             manager.updateChannel(chanName, prefix, cmd, nick);
         }
@@ -72,7 +74,9 @@ public class MessageHandler {
                 
         if (pref.equals(nick)) { 
             manager.closeAllTabs();
-        } else manager.someoneQuit(pref, restMessage);   
+        } else { 
+        	manager.someoneQuit(pref, restMessage);   
+        }
     }
     
     /**

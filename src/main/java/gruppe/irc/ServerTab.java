@@ -12,12 +12,10 @@ import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;
 
 /**
- *
+ * Inherits properties from GenericTab
  * @author HS Vikar
  */
 public class ServerTab extends GenericTab {
-	
-	private JButton quit;
     
 	/**
 	 * Constructor for ServerTab
@@ -30,7 +28,7 @@ public class ServerTab extends GenericTab {
 		text.setBackground(Color.LIGHT_GRAY);
 		text.setEditable(false);
 
-		quit = new JButton("Close window");
+		JButton quit = new JButton("Close window");
 		quit.addActionListener(new QuitListener());
 
 		add(quit, BorderLayout.NORTH);

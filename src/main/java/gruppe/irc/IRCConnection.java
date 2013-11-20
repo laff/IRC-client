@@ -150,7 +150,7 @@ public class IRCConnection extends IRCClient implements Runnable {
   /**
    * Method not to be called directly. 
    * This method contains the code that actually connects to the server and handles the client server interaction. Contains a loop
-   * that continualy listens to transmissions from the server.
+   * that continually listens to transmissions from the server.
    */
   public void run() {
 
