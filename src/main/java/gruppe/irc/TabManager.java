@@ -149,12 +149,16 @@ public class TabManager extends JPanel {
                 // Command: 353 means that the output of the NAMES-command comes now.
             } else if (command.equals("353")) {             
                 mh.handleNames(message);
-            
+            } else if (command.equals("482")) {
+                mh.handleNotOp(message);
+                
+                
                 // Else add the rest to the local servertab.
             } else {
 				serverTab.addText(message);
 			}
 		}
+        
 	}
     
     /**

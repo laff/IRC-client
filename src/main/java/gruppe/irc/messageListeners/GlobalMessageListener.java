@@ -16,5 +16,6 @@ public class GlobalMessageListener implements MessageListener {
    */
   public void messageReceived (MessageEvent me) {
     System.out.println (me.getPrefix()+"\t"+me.getCommand()+"\t"+me.getMessage());
+            
   }
 }

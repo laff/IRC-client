@@ -8,7 +8,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -30,6 +33,7 @@ public class ChannelTab extends GenericTab  {
     private JList list;
     private JMenuItem item;
     private JPopupMenu popUp;
+    private JMenu modes;
     private DefaultListModel listModel;
 	
 
@@ -114,15 +118,54 @@ public class ChannelTab extends GenericTab  {
      */
     public void addNames (String names) {
         String namesSplitted[];
+        ArrayList sorted;
+        
         
         namesSplitted = names.split(" ");
-        listModel.removeAllElements();
-        Arrays.sort(namesSplitted);
+        sorted = sortNames(namesSplitted);
         
-        for(int i = 0; i < namesSplitted.length; i++) {
-            listModel.addElement(namesSplitted[i]);
+        listModel.removeAllElements();
+        
+       // listModel.add(sorted);
+        for(int i = 0; i < sorted.size(); i++) {
+            listModel.addElement(sorted.get(i));
         }
     }
+    
+    private ArrayList sortNames (String [] names) {
+        ArrayList<String> sorted = new ArrayList<String>();
+        ArrayList<String> op = new ArrayList<String>();
+        ArrayList<String> voice = new ArrayList<String>();
+        ArrayList<String> regular = new ArrayList<String>();
+        char firstChar;
+        
+        for (int i = 0; i < names.length; i++) {
+             firstChar = names[i].charAt(0);
+            
+            switch (firstChar) {
+                
+                case '@' :
+                    op.add(names[i]);
+                        break;
+                case '+' : 
+                    voice.add(names[i]);
+                        break;
+                default :
+                    regular.add(names[i]);
+                        break;
+            }
+        }
+        
+        Collections.sort(op);
+        Collections.sort(voice);
+        Collections.sort(regular);
+        
+        sorted.addAll(op);
+        sorted.addAll(voice);
+        sorted.addAll(regular);
+        
+       return sorted; 
+    } 
     
     /**
      * When using whois, we must send the nickname as parameter. If a user
@@ -155,13 +198,7 @@ public class ChannelTab extends GenericTab  {
             }
         }
     }
-    
-    public void updateMode(String sender, String mode, String target) {
-        int users = listModel.size();
-        
-        
-    }
-    
+
     /**
      * Set up the different items in the popup-menu when rightclicking.
      */
@@ -181,7 +218,7 @@ public class ChannelTab extends GenericTab  {
         });
         
         popUp.add(item = new JMenuItem(IRCClient.messages.getString("popUp.query")));
-        
+ 
         item.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 String selected = list.getSelectedValue().toString();
@@ -193,6 +230,78 @@ public class ChannelTab extends GenericTab  {
                 } catch (NullPointerException npe) {}
             }
         });
+        
+        popUp.addSeparator();
+        modes = new JMenu(IRCClient.messages.getString("popUp.modes"));
+        modes.add(item = new JMenuItem(IRCClient.messages.getString("popUp.voice")));
+        
+        item.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                String selected = list.getSelectedValue().toString();
+                
+                if(selected.startsWith("@") || selected.startsWith("+")) {
+                    selected = selected.substring(1);
+                }
+                setVoice(selected, true);
+            }
+        });
+        
+        modes.add(item = new JMenuItem(IRCClient.messages.getString("popUp.deVoice")));
+        
+        item.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                String selected = list.getSelectedValue().toString();
+                
+                if(selected.startsWith("@") || selected.startsWith("+")) {
+                    selected = selected.substring(1);
+                }
+                setVoice(selected, false);
+            }
+        });
+        
+        modes.add(item = new JMenuItem(IRCClient.messages.getString("popUp.op")));
+        
+        item.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                String selected = list.getSelectedValue().toString();
+                
+                if (selected.startsWith("@") || selected.startsWith("+")) {
+                    selected = selected.substring(1);
+                }
+                setOp(selected, true);
+            }
+
+
+        });
+        
+        modes.add(item = new JMenuItem(IRCClient.messages.getString("popUp.deOp")));
+        
+        item.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                String selected = list.getSelectedValue().toString();
+                
+                if (selected.startsWith("@") || selected.startsWith("+")) {
+                    selected = selected.substring(1);
+                }
+                setOp(selected, false);
+            }
+
+
+        });
+        
+        popUp.add(modes);
+    }
+    
+    private void setVoice(String selectedUser, Boolean bool) {
+        
+        String mode = bool ? " +v " : " -v ";
+        writeToLn("MODE "+this.filter+mode+selectedUser);
+    }
+    
+    private void setOp(String selectedUser, Boolean bool) {
+        
+        String mode = bool ? " +o " : " -o ";
+        writeToLn("MODE "+this.filter+mode+selectedUser);
     }
     
     /**

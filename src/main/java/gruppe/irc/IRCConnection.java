@@ -132,7 +132,7 @@ public class IRCConnection extends IRCClient implements Runnable {
         command = message.substring (0, message.indexOf(" "));
         message = message.substring (message.indexOf(" ")+1);
 
-		sendInfo(prefix, command, nick, server, message + "\n");
+    sendInfo(prefix, command, nick, server, message + "\n");
     logging.finest ("New message arriver : "+command+" | "+message);
 
     MessageEvent me = new MessageEvent (prefix, command, message, this);
@@ -186,7 +186,7 @@ public class IRCConnection extends IRCClient implements Runnable {
     try {
       String message;  
       while ((message = input.readLine()) != null) {
-        message (message);
+        message(message);
       } 
     } catch (Exception e) {
 		  if (state != DISCONNECTING) {

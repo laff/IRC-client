@@ -107,4 +107,13 @@ public class MessageHandler {
     void handlePriv(String prefix, String message) {
         manager.checkPersonalTabs(prefix, message, true);
     }
+
+    void handleNotOp(String message) {
+        String temp = message.substring(message.indexOf("#"));
+        
+        chanName = temp.substring(0, temp.indexOf(" "));
+        restMessage = message.substring(message.indexOf(":")+1, message.length());
+        
+        manager.distributeChannel(chanName+"!", chanName, restMessage, true);
+    }
 }
