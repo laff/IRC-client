@@ -93,11 +93,11 @@ public class ChannelTab extends GenericTab  {
         
         if (command.equals("JOIN")) {
             addText(this.filter, newUser+" has joined the channel\n", false, 2);
-        } 
-        else if (command.equals("PART")) {
+            
+        } else if (command.equals("PART")) {
             addText(this.filter, newUser+" has left the channel\n", false, 2);
-        }
-        else if(command.startsWith("+") || command.startsWith("-")) {
+            
+        } else if (command.startsWith("+") || command.startsWith("-")) {
             addText(this.filter, newUser+" sets mode: "+command, false, 2);
         }
         writeToLn("NAMES "+this.filter);      
@@ -280,6 +280,19 @@ public class ChannelTab extends GenericTab  {
             }
         });
         
+        modes.add(item = new JMenuItem(IRCClient.messages.getString("popUp.kick")));
+        
+        item.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                String selected = list.getSelectedValue().toString();
+                
+                if (selected.startsWith("@") || selected.startsWith("+")) {
+                    selected = selected.substring(1);
+                }
+                kickUser(selected);
+            }
+        });
+        
         popUp.add(modes);
     }
     
@@ -301,6 +314,15 @@ public class ChannelTab extends GenericTab  {
     private void setOp(String selectedUser, Boolean bool) {
         String mode = bool ? " +o " : " -o ";
         writeToLn("MODE "+this.filter+mode+selectedUser);
+    }
+    
+    private void kickUser(String selectedUser) {
+        writeToLn("KICK "+this.filter+" "+selectedUser);
+    }
+
+    public void updateKick(String sender, String target) {
+        addText(this.filter, target+" was kicked by "+sender, false, 2);
+        writeToLn("NAMES "+this.filter); 
     }
     
     /**

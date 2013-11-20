@@ -148,9 +148,12 @@ public class TabManager extends JPanel {
                 // Command: 353 means that the output of the NAMES-command comes now.
             } else if (command.equals("353")) {             
                 mh.handleNames(message);
+                
             } else if (command.equals("482")) {
                 mh.handleNotOp(message);
                 
+            } else if (command.equals("KICK")) {
+                mh.handleKick(prefix, message);
                 
                 // Else add the rest to the local servertab.
             } else {
@@ -200,7 +203,7 @@ public class TabManager extends JPanel {
      * for a MODE-event, the new mode, and the nick of the target.)
      * @param command - this will include a JOIN/PART or MODE -string.
      */
-    public void updateChannel(String msg, String prefix, String command) {
+    public void updateChannel(String msg, String prefix, String command, String trgt) {
         String newUser = "";
         int chans = channelTabs.size();
         ChannelTab chanTab;
@@ -209,12 +212,35 @@ public class TabManager extends JPanel {
             newUser = prefix.substring(0, prefix.indexOf("!"));
         } catch (StringIndexOutOfBoundsException sioobe) {}
         
-        
         for (int i = 0; i < chans; i++) {
             chanTab = (ChannelTab)channelTabs.elementAt(i);
             if (chanTab.getFilter().equals(msg)) {
                 chanTab.updateNames(newUser, command);
             }
+        }
+    }
+    
+    /**
+     * Does basically the same as the previous method, but some
+     * more other variables and information are needed when a kick occurs.
+     * So that the variable-names makes sense, we created a new method.
+     * @param chan - Name of the channel the where the kick appeared.
+     * @param sender - Who did kick someone.
+     * @param target - Who was kicked, might have been us.
+     * @param restMessage - If there was any reason for the kick.
+     */
+    
+    public void updateOnKick(String chan, String sender, String target, String restMessage) {
+        int chans = channelTabs.size();
+        ChannelTab chanTab;
+        
+        for (int i = 0; i < chans; i++) {
+            chanTab = (ChannelTab)channelTabs.elementAt(i);
+            if (chanTab.getFilter().equals(chan)) {   
+                if (target.equals(this.nick)) {
+                    closeTab(chan);
+                } else chanTab.updateKick(sender, target);
+            }   
         }
     }
     

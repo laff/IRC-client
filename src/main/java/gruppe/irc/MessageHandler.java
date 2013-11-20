@@ -55,7 +55,7 @@ public class MessageHandler {
                 manager.checkForNewChannel(message);
             } else manager.checkToLeaveChannel(message);
         } else {
-            manager.updateChannel(chanName, prefix, cmd);
+            manager.updateChannel(chanName, prefix, cmd, nick);
         }
     }
     
@@ -85,7 +85,7 @@ public class MessageHandler {
         chanName = message.substring(message.indexOf("#"), message.indexOf(" "));
         restMessage = message.substring(message.indexOf(" ")+1, message.length());
 
-        manager.updateChannel(chanName, prefix, restMessage);
+        manager.updateChannel(chanName, prefix, restMessage, message);
     }
 
     /**
@@ -126,5 +126,24 @@ public class MessageHandler {
         restMessage = message.substring(message.indexOf(":")+1, message.length());
         
         manager.distributeChannel(chanName+"!", chanName, restMessage, true);
+    }
+    
+    /**
+     * Used for parsing the message when a kick occurs, the message will contain
+     * target and sender of the kick, and which channel it appeared on.
+     * @param prefix - Standard prefix-message, including the sender of the kick.
+     * @param message - Rest of the message, including chan, target, and maybe a 
+     * reason(opt)
+     */
+    void handleKick(String prefix, String message) {
+        String temp, target, sender;
+        
+        sender = prefix.substring(0, prefix.indexOf("!"));
+        chanName = message.substring(message.indexOf("#"), message.indexOf(" "));
+        temp = message.substring(message.indexOf(" ")+1, message.length());
+        target = temp.substring(0, temp.indexOf(" "));
+        restMessage = temp.substring(temp.indexOf(" ")+1, temp.length());
+        
+        manager.updateChannel(chanName, sender, target, restMessage);
     }
 }
