@@ -52,7 +52,9 @@ public class TabManager extends JPanel {
 	private Vector<GenericTab> channelTabs = new Vector<GenericTab>();
 	private Vector<GenericTab> personalTabs = new Vector<GenericTab>();
     private ServerTab serverTab;
-	
+    
+    private MessageHandler mh;
+    
 	// This TabManager's IRCConnection
 	private IRCConnection connection;
 	// This TabManagers IRCClientFrame parent
@@ -98,6 +100,8 @@ public class TabManager extends JPanel {
         tabbedPane.addTab("Server", serverTab);
         add(tabbedPane, BorderLayout.NORTH);
         tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+        
+        mh = new MessageHandler(TabManager.this);
 	}
 	
 	
@@ -121,78 +125,33 @@ public class TabManager extends JPanel {
 	 * @param : server The servername as received by the message
 	 */
 	public void distributeMessage (String prefix, String command, String alias, String server, String message) {
-		String chanName, restMessage, pref;
         
 		if (server.equals(serverName) && alias.equals(nick)) {
                      System.out.println("I distributeMessage er message lik: "+message);
                      System.out.println("I distributeMessage er command lik: "+command);
                      System.out.println("I distributeMessage er prefix lik: "+prefix);
-			// If the command matches "PRIVMSG" we have a personal message incoming,
-            // unless the message starts with a '#', in which case it is a channel-message.
+
 			if (command.equals("PRIVMSG") && !message.startsWith("#")) {
-				
-                distributePrivate(prefix, message);
-			
-            // If we get a PRIVMSG command, and a channelname specified with a '#', then
-            // this message is meant for a specific tab that already exists, because
-            // a user cannot receive messages from a channel he has not joined.
-			} else if (command.equals("PRIVMSG") && message.startsWith("#")) {
-				
-                chanName = message.substring(message.indexOf("#"), message.indexOf(" "));
-                restMessage = message.substring(message.indexOf(":")+1, message.length());
-				distributeChannel(prefix, chanName, restMessage, true);
-			
-            // A JOIN command appears when we join a new channel, or when a new
-            // user joins a channel we are a member of.
-			} else if (command.equals("JOIN") || command.equals("PART")) {
+                mh.handlePriv(prefix, message);
                 
-                pref = prefix.substring(0, prefix.indexOf("!"));
-                chanName = message.substring(message.indexOf(":")+1, message.length()-1);
-                // If it is us that joins or leaves a channel
-                if (pref.equals(nick)){
-                    if (command.equals("JOIN")) {
-                        checkForNewChannel(message);
-                    } else checkToLeaveChannel(message);
-                  
-                // But it also appears when a new user joins a channel that we already
-                // are a member of, but then the prefix doesn`t include our nick.
-                } else {
-                    updateChannel(chanName, prefix, command);
-                }
-            // A QUIT command has been issued, by us or a user on a channel we
-            // are a memeber of
+            } else if (command.equals("PRIVMSG") && message.startsWith("#")) {
+                mh.handlePrivForChan(prefix, message);
+			
+            } else if (command.equals("JOIN") || command.equals("PART")) {
+                mh.handleJoinAndPart(prefix, message, this.nick, command);
+            
             } else if (command.equals("QUIT")) {
-                
-                pref = prefix.substring(0, prefix.indexOf("!"));
-                restMessage = message.substring(message.indexOf(":")+1);
-                
-                if (pref.equals(this.nick)) { 
-                    closeAllTabs();
-                } else someoneQuit(pref, restMessage);              
-                
+                mh.handleQuit(prefix, message, this.nick);
+            
             } else if (command.equals("MODE")) {
-                
-               // pref = prefix.substring(0, prefix.indexOf("!"));
-                chanName = message.substring(message.indexOf("#"), message.indexOf(" "));
-                restMessage = message.substring(message.indexOf(" ")+1, message.length());
-                
-                updateChannel(chanName, prefix, restMessage);
-                
-                
-            // Command: 353 means that the output of the NAMES-command comes now.
-            } else if (command.equals("353")) {
-                //Variables used to split the message.
-                String temp, names;
-                
-                temp = message.substring(message.indexOf("#"));
-                chanName = temp.substring(0, temp.indexOf(" "));
-                names = message.substring(message.indexOf(":")+1, message.length()-1);
-                // Sends the channelname, and the result of the NAMES-command
-                // (as a string) to the setChannelNames-method.
-                setChannelNames(chanName, names);
-            } 
-            // Else add the rest to the local servertab.
-             else {
+                mh.handleMode(prefix, message);
+            
+                // Command: 353 means that the output of the NAMES-command comes now.
+            } else if (command.equals("353")) {             
+                mh.handleNames(message);
+            
+                // Else add the rest to the local servertab.
+            } else {
 				serverTab.addText(message);
 			}
 		}
@@ -206,22 +165,21 @@ public class TabManager extends JPanel {
      * @param message This might be an empty string, timeout message, or something
      * the user wrote himself.
      */
-    private void someoneQuit(String nick, String message) {
+    public void someoneQuit(String nick, String message) {
         int nrTabs = channelTabs.size();
         ChannelTab chanTab;
         
         for (int i = 0; i < nrTabs; i++) {
             chanTab = (ChannelTab)channelTabs.elementAt(i);
             chanTab.quit(nick, message);
-        }
-        
+        } 
     }
     
     /**
      * Closing all tabs, called when we type QUIT. The quit-command handles
      * leaving the channels, so we just have to close the tabs here.
      */
-    private void closeAllTabs() {
+    public void closeAllTabs() {
         int nrTabs = channelTabs.size();
         ChannelTab cTab;
         
@@ -231,30 +189,23 @@ public class TabManager extends JPanel {
         }
     }
     
-  /*  private void modeChange(String prefix, String chan, String target) {
-        int chans = channelTabs.size();
-        ChannelTab chanTab;
-        
-        for (int i = 0; i < chans; i++) {
-            chanTab = (ChannelTab)channelTabs.elementAt(i);
-            if (chanTab.getFilter().equals(chan)) {
-                chanTab.updateMode(prefix, target);
-            }
-        }
-    }
-    */
-    
     /**
      * Some updates have occurred on the channel, and these changes must be
      * shown to the user.
      * @param msg - the channel where there has been changes.
-     * @param prefix - a string where the first part is the nick of a user.
-     * @param command - this will include a JOIN or PART -string.
+     * @param prefix - a string where the first part is the nick of a user. (Or 
+     * for a MODE-event, the new mode, and the nick of the target.)
+     * @param command - this will include a JOIN/PART or MODE -string.
      */
-    private void updateChannel(String msg, String prefix, String command) {
-        String newUser = prefix.substring(0, prefix.indexOf("!"));
+    public void updateChannel(String msg, String prefix, String command) {
+        String newUser = "";
         int chans = channelTabs.size();
         ChannelTab chanTab;
+        
+        try {
+            newUser = prefix.substring(0, prefix.indexOf("!"));
+        } catch (StringIndexOutOfBoundsException sioobe) {}
+        
         
         for (int i = 0; i < chans; i++) {
             chanTab = (ChannelTab)channelTabs.elementAt(i);
@@ -269,7 +220,7 @@ public class TabManager extends JPanel {
      * @param chanName - The name of the channel this NAMES-command belongs to.
      * @param names - String including all users on the channel.
      */
-    private void setChannelNames(String chanName, String names) {
+    public void setChannelNames(String chanName, String names) {
         int chans = channelTabs.size();
         ChannelTab chanTab;
         
@@ -304,17 +255,7 @@ public class TabManager extends JPanel {
                 chanTab.addText(prefix, message, incoming);
             }
         }
-	}
-
-    
-	/**
-	 * Function that takes care of distributing messages to the personaltabs.
-	 * @param prefix 
-	 * @param message 
-	 */
-	private void distributePrivate(String prefix, String message) {
-        checkPersonalTabs(prefix, message, true);
-	}
+    }
 	    
     /**
      * When a message starting with 'JOIN' is written in the textfield, 
@@ -323,7 +264,7 @@ public class TabManager extends JPanel {
      * we create a tab with that name.
      * @param outText a message, starting with 'JOIN #'.
      */
-    private void checkForNewChannel(String message) {
+    public void checkForNewChannel(String message) {
         String chanName = message.substring(message.indexOf("#"), message.length()-1);
         ChannelTab cTab;
         Boolean noFoundTab = true;
@@ -348,7 +289,7 @@ public class TabManager extends JPanel {
      * if not, the server sends a 'no such nick' message.
      * @param outText The text the user entered in the write-field.
      */
-    private void checkToLeaveChannel(String outText) {
+    public void checkToLeaveChannel(String outText) {
         String chanName = outText.substring(outText.indexOf("#"), outText.length()-1);
         int tabs = channelTabs.size();
         ChannelTab cTab;

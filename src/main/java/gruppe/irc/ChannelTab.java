@@ -99,7 +99,7 @@ public class ChannelTab extends GenericTab  {
             addText(this.filter, newUser+" has left the channel\n", false);
         }
         else if(command.startsWith("+") || command.startsWith("-")) {
-            addText(this.filter, newUser+" sets mode: "+command+"\n", false);
+            addText(this.filter, newUser+" sets mode: "+command, false);
         }
         writeToLn("NAMES "+this.filter);      
     }
