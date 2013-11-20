@@ -34,7 +34,6 @@ public class ServerTab extends GenericTab {
 		quit.addActionListener(new QuitListener());
 
 		add(quit, BorderLayout.NORTH);
-       // changeForeground(text, Color.red);
     }
     
     /**

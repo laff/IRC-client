@@ -58,6 +58,7 @@ public class ChannelTab extends GenericTab  {
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         list.addMouseListener(new MouseClick());
         list.setSize(dim.height, 30);
+        list.setFixedCellWidth(30);
                 
         
         
