@@ -45,6 +45,7 @@ public class IRCClientFrame extends JFrame implements ActionListener {
 		self = IRCClientFrame.this;
 		setSize(500, 500);
 		setVisible(true);
+        setLocationRelativeTo(null);
 		
 		// Creating some JMenus? login for starters..
 		menuBar = new JMenuBar();
@@ -63,7 +64,6 @@ public class IRCClientFrame extends JFrame implements ActionListener {
         add(thisTab);
         this.addWindowListener(exitListener);
         this.addComponentListener(resizeListener);
-        
 	}
 	/**
 	 * Method that picks the name of this frame's connection

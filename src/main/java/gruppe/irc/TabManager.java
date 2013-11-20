@@ -100,7 +100,6 @@ public class TabManager extends JPanel {
         tabbedPane.addTab("Server", serverTab);
         add(tabbedPane, BorderLayout.NORTH);
         tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
-        
         mh = new MessageHandler(TabManager.this);
 	}
 	
@@ -256,7 +255,7 @@ public class TabManager extends JPanel {
             // If the current tab has the corresponding channelname,
             // we can add the message to that channel.
             if (chanTab.getFilter().equals(chanName)) {
-                chanTab.addText(prefix, message, incoming);
+                chanTab.addText(prefix, message, incoming, 1);
             }
         }
     }
@@ -333,7 +332,7 @@ public class TabManager extends JPanel {
         for (int i = 0; i < personalCount; ++i) {
             pTab = (PersonalTab)personalTabs.elementAt(i);
             if (pTab.getFilter().equals(tabName)) {
-                pTab.addText(sender, message, incoming);
+                pTab.addText(sender, message, incoming, 2);
                 noFoundTab = false;
             }
         }
@@ -344,7 +343,7 @@ public class TabManager extends JPanel {
             PersonalTab newPersonalTab = new PersonalTab(tabName, this, tabDimension);
             personalTabs.add(newPersonalTab);
             attachTab(tabName, newPersonalTab);
-            newPersonalTab.addText(sender, message, incoming);
+            newPersonalTab.addText(sender, message, incoming, 2);
         }
     }    
     
@@ -360,7 +359,7 @@ public class TabManager extends JPanel {
         channelTabs.addElement(chanTab = new ChannelTab(chanName, this, tabDimension));
         tabbedPane.addTab(chanName, null, chanTab);
         tabbedPane.setSelectedIndex(tabbedPane.indexOfTab(chanName));
-        chanTab.addText(chanName, "Now talking in "+chanName+"\n", false);
+        chanTab.addText(chanName, "Now talking in "+chanName+"\n", false, 1);
     }
     
     /**

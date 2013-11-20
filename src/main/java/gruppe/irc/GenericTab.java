@@ -2,9 +2,11 @@ package gruppe.irc;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.JFrame;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
@@ -12,7 +14,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
+import javax.swing.text.AbstractDocument;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 
 /**
  * @author Anders
@@ -31,7 +37,12 @@ public class GenericTab extends JPanel implements ActionListener {
 	protected JTextPane text;
 	protected JTextField write;
 	protected boolean isAttached;
-
+    
+    AbstractDocument doc;
+    StyledDocument styledDoc;
+    SimpleAttributes attrs;
+    
+    
 	public GenericTab (String tabFilter, TabManager mng, Dimension dim) {
 		filter = tabFilter;
 		manager = mng;
@@ -44,6 +55,15 @@ public class GenericTab extends JPanel implements ActionListener {
 		text = new JTextPane();
 		text.setEditable(false);
 		text.setBackground(Color.LIGHT_GRAY);
+        
+        attrs = new SimpleAttributes();
+        
+        styledDoc = text.getStyledDocument();
+        if (styledDoc instanceof AbstractDocument) {
+            doc = (AbstractDocument)styledDoc;
+        } else {
+            System.err.println("Text pane's document isn't an AbstractDocument!");
+        }
 		
 		scrollPane = new JScrollPane(text);
     	scrollBar = scrollPane.getVerticalScrollBar();
@@ -56,6 +76,8 @@ public class GenericTab extends JPanel implements ActionListener {
 		setVisible(true);
 		
 		setPreferredSize(dim);
+        
+        
 	}
 	
 	
@@ -66,11 +88,11 @@ public class GenericTab extends JPanel implements ActionListener {
 	public String getFilter () {
 		return filter;
 	}
-
+    
 	/**
 	 * Function displays text to the text field.
 	 */
-	public void addText(String prefix, String msg, Boolean incoming) {
+	public void addText(String prefix, String msg, Boolean incoming, Integer style) {
         int pos = text.getStyledDocument().getEndPosition().getOffset();
 		String sender, message;
         
@@ -87,9 +109,10 @@ public class GenericTab extends JPanel implements ActionListener {
             sender = prefix;
             message = msg;
         }
-        
+
 		try {	
-			text.getStyledDocument().insertString(pos, sender+": "+message, null);
+            doc.insertString(pos, sender+": "+message, attrs.getAttributes()[style]);
+			//text.getStyledDocument().insertString(pos, sender+": "+message, null);
 		} catch (BadLocationException ble) {};					
 		
         //When new messages appears in the window, it scrolls down automagically.
@@ -161,10 +184,14 @@ public class GenericTab extends JPanel implements ActionListener {
             
             // This is an outgoing message(from our user), therefore we send 'false'.
             } else {
-                addText(manager.getNick(), fromText+"\n", false);
+                addText(manager.getNick(), fromText+"\n", false, 0);
                 writeToLn("PRIVMSG "+filter+" :"+fromText);
             }
             write.setText("");    
 		}
 	}
+       
+       public void changeForeground(Component c, Color co) {
+           c.setForeground(co);
+       }
 }

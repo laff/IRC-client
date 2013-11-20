@@ -57,6 +57,8 @@ public class ChannelTab extends GenericTab  {
         list.setBackground(Color.LIGHT_GRAY);
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         list.addMouseListener(new MouseClick());
+        list.setSize(dim.height, 30);
+                
         
         
      //   ListSelectionModel listSelectionModel = list.getSelectionModel();
@@ -97,13 +99,13 @@ public class ChannelTab extends GenericTab  {
     public void updateNames (String newUser, String command) {
         
         if (command.equals("JOIN")) {
-            addText(this.filter, newUser+" has joined the channel\n", false);
+            addText(this.filter, newUser+" has joined the channel\n", false, 2);
         } 
         else if (command.equals("PART")) {
-            addText(this.filter, newUser+" has left the channel\n", false);
+            addText(this.filter, newUser+" has left the channel\n", false, 2);
         }
         else if(command.startsWith("+") || command.startsWith("-")) {
-            addText(this.filter, newUser+" sets mode: "+command, false);
+            addText(this.filter, newUser+" sets mode: "+command, false, 2);
         }
         writeToLn("NAMES "+this.filter);      
     }
@@ -192,7 +194,7 @@ public class ChannelTab extends GenericTab  {
         
         for (int i = 0; i < users; i++) {
             if (nickName.equals(listModel.getElementAt(i))) {
-                addText(nickName+" has quit IRC", message, false);
+                addText(nickName+" has quit IRC", message, false, 2);
                 writeToLn("NAMES "+this.filter);
                 break;
             }
@@ -270,8 +272,6 @@ public class ChannelTab extends GenericTab  {
                 }
                 setOp(selected, true);
             }
-
-
         });
         
         modes.add(item = new JMenuItem(IRCClient.messages.getString("popUp.deOp")));
@@ -285,8 +285,6 @@ public class ChannelTab extends GenericTab  {
                 }
                 setOp(selected, false);
             }
-
-
         });
         
         popUp.add(modes);
@@ -339,30 +337,7 @@ public class ChannelTab extends GenericTab  {
            } catch (NullPointerException npe) {};
         }
    };
-   
-   private class ListListener implements ListSelectionListener {
-
-        public void valueChanged(ListSelectionEvent e) {
-           ListSelectionModel lsm = (ListSelectionModel)e.getSource();
-           
-           int firstIndex = e.getFirstIndex();
-           int lastIndex = e.getLastIndex();
-          
-           if (lsm.isSelectionEmpty()) {
- 
-           }
-           else {
-               int minIndex = lsm.getMinSelectionIndex();
-               int maxIndex = lsm.getMaxSelectionIndex();
-               for (int i = minIndex; i<= maxIndex; i++) {
-                   if(lsm.isSelectedIndex(i))
-                       System.out.println(" HOI");
-               }
-           }
-        }
-   }
-   
-	
+   	
 	/**
 	 * ButtonListener is an action listener for the buttons
 	 * associated with ChannelTab

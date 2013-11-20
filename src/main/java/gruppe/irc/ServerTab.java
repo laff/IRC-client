@@ -34,7 +34,8 @@ public class ServerTab extends GenericTab {
 		quit.addActionListener(new QuitListener());
 
 		add(quit, BorderLayout.NORTH);
-	}
+       // changeForeground(text, Color.red);
+    }
     
     /**
      * Takes care of sending the text the user enters to the appropriate place,
