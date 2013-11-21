@@ -29,7 +29,7 @@ public class MessageHandler {
      */
     public void handlePrivForChan(String prefix, String message) {
         chanName = message.substring(message.indexOf("#"), message.indexOf(" "));
-        restMessage = message.substring(message.indexOf(":")+2, message.length());
+        restMessage = message.substring(message.indexOf(":")+1, message.length());
         
         if (restMessage.startsWith("ACTION ")) {
             restMessage = restMessage.substring(restMessage.indexOf(" ")+1, restMessage.length());
