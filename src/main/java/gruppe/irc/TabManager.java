@@ -85,20 +85,17 @@ public class TabManager extends JPanel {
 		setVisible(true);
 		
 		parent = prnt;
-		tabDimension = new Dimension(0, parent.getHeight() - heightOffset);
+		tabDimension = new Dimension(parent.getWidth(), parent.getHeight() - heightOffset);
 		
-        JDesktopPane desktop = new JDesktopPane();
         serverTab = new ServerTab(TabManager.this, tabDimension);
-        desktop.add(serverTab);
-    
-        add(desktop);
-        
+
         tabbedPane = new JTabbedPane();
         tabbedPane.addChangeListener( new tabChangeListener() );
         tabbedPane.addTab("Server", serverTab);
         add(tabbedPane, BorderLayout.NORTH);
         tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
         mh = new MessageHandler(TabManager.this);
+        
 	}
 	
 	
@@ -528,7 +525,7 @@ public class TabManager extends JPanel {
      * @param newHeight The new height of the IRCClientFrame
      */
     public void resizeTabs(int newHeight) {
-    	tabDimension.setSize(0, newHeight - heightOffset);
+    	tabDimension.setSize(tabDimension.getHeight(), newHeight - heightOffset);
     	serverTab.setSize(tabDimension);
     	int count = channelTabs.size();
     	for (int i = 0; i < count; ++i) {

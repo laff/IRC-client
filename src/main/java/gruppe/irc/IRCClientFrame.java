@@ -65,6 +65,7 @@ public class IRCClientFrame extends JFrame implements ActionListener {
         add(thisTab);
         this.addWindowListener(exitListener);
         this.addComponentListener(resizeListener);
+        pack();
 	}
 	/**
 	 * Method that picks the name of this frame's connection
