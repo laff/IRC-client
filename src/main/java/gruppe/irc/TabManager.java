@@ -466,7 +466,12 @@ public class TabManager extends JPanel {
 				cTab = (ChannelTab)channelTabs.elementAt(i);
 				
 				if (cTab.getFilter().equals(filter)) {
-                    writeToLn("PART "+filter);
+					try {
+						writeToLn("PART "+filter);
+					} catch (Exception exc) {
+						//TODO: Exception handling
+						//This did ugly things when closing a connection that had timed out
+					}
                     channelTabs.remove(i);
                     break;
 				}

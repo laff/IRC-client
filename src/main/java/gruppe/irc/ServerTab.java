@@ -67,7 +67,11 @@ public class ServerTab extends GenericTab {
 	class QuitListener implements ActionListener {
 
 		public void actionPerformed(ActionEvent e) {
-			writeToLn("QUIT");
+			try {
+				writeToLn("QUIT");
+			} catch (Exception exc) {
+				// TODO: Exception handling
+			}
 			manager.closeConnection();
 		}
 	}
