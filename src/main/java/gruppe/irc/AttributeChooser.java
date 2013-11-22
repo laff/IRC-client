@@ -60,7 +60,7 @@ public class AttributeChooser extends JFrame {
 		// The buttons
 		changeFont = new JButton(IRCClient.messages.getString("attrC.changeFont"));
 		changeColor = new JButton(IRCClient.messages.getString("attrC.changeColor"));
-		confirm = new JButton(IRCClient.messages.getString("attrC.confirm"));
+		confirm = new JButton(IRCClient.messages.getString("attrC.apply"));
 		
 		// Oh I know you did'nt.
 		fillList();
@@ -104,21 +104,32 @@ public class AttributeChooser extends JFrame {
 					// Using the color previously set as default for the dialog.
 					selectedColor = JColorChooser.showDialog(jCC, message, initialColor);
 					
+					selectedColor = (selectedColor != null) ? selectedColor : initialColor;
+					
 					// Setting the chosen color
 					theAttributes.setAttributeColor(selectedStyle, selectedColor);
 				}	
 			}
 		});
 		
+		/**
+		 * Action when pressing the "Confirm".
+		 * 
+		 * First updates the attributes (so that they are immediately used).
+		 * Then saves these attributes to preferences.
+		 */
 		confirm.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				
 				theAttributes.updateAttributes();
-				
 			}
 		});
 	}
 	
+	/**
+	 * 
+	 * @param really 
+	 */
 	public void ShowFrame(Boolean really) {
 		setVisible(really);
 	}
@@ -146,9 +157,7 @@ public class AttributeChooser extends JFrame {
 	 * This way it is dynamic incase the amount of attributes change.
 	 */
 	private void calcListLength() {
-		
 		attrAmount = theAttributes.returnAttributeAmount();
-		
 		listHeight = ((attrAmount * elementHeight) + (frameSpace * 2)); 
 	}	
 }
