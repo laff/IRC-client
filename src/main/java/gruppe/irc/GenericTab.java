@@ -37,7 +37,7 @@ public class GenericTab extends JPanel implements ActionListener {
     
     protected AbstractDocument doc;
     protected StyledDocument styledDoc;
-    protected SimpleAttributes attrs;
+    
     
     
 	public GenericTab (String tabFilter, TabManager mng, Dimension dim) {
@@ -53,7 +53,7 @@ public class GenericTab extends JPanel implements ActionListener {
 		text.setEditable(false);
 		text.setBackground(Color.LIGHT_GRAY);
         
-        attrs = new SimpleAttributes();
+        
         
         styledDoc = text.getStyledDocument();
         if (styledDoc instanceof AbstractDocument) {
@@ -108,7 +108,7 @@ public class GenericTab extends JPanel implements ActionListener {
         }
 
 		try {	
-            doc.insertString(pos, sender+": "+message, attrs.getAttributes()[style]);
+            doc.insertString(pos, sender+": "+message, IRCClient.attrs.returnAttribute(style));
 			//text.getStyledDocument().insertString(pos, sender+": "+message, null);
 		} catch (BadLocationException ble) {};					
 		

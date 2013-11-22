@@ -26,10 +26,20 @@ public class IRCClient {
 	// The loginmenu!
 	public static LoginMenu loginMenu;
 	
+	// The attribute chooser!
+	public static AttributeChooser attrC;
+	
+	// Attributes
+	public static SimpleAttributes attrs;
+	
+
+	
 	public static void main(String[] args) {
         
         currentLocale = new Locale("en", "US");
         messages = ResourceBundle.getBundle("MessagesBundle", currentLocale);
+		
+		attrs = new SimpleAttributes();
 		
 		//Sets look and feel to system default
 		try {
@@ -55,6 +65,9 @@ public class IRCClient {
 		
 		// Initiate the g'old loginMenu.
 		loginMenu = new LoginMenu(null);
+		
+		// Initate the AttributeChooser.
+		attrC = new AttributeChooser();
 		
     }
 	

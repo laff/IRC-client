@@ -28,7 +28,7 @@ public class IRCClientFrame extends JFrame implements ActionListener {
 	// Variables for the menu.
 	private static JMenuBar menuBar;
 	private static JMenu moreMenu;
-	private static JMenuItem showLogin, importServers;
+	private static JMenuItem showLogin, showAttrC, importServers;
 	
 	public TabManager thisTab;
 	private String frameTitle;
@@ -50,12 +50,16 @@ public class IRCClientFrame extends JFrame implements ActionListener {
 		
 		// Creating some JMenus? login for starters..
 		menuBar = new JMenuBar();
-		moreMenu = new JMenu("More..");
-		showLogin = new JMenuItem("login");
+		moreMenu = new JMenu(IRCClient.messages.getString("frame.more"));
+		showLogin = new JMenuItem(IRCClient.messages.getString("frame.login"));
 		showLogin.addActionListener(IRCClientFrame.this);
+		showAttrC = new JMenuItem(IRCClient.messages.getString("frame.attribute"));
+		showAttrC.addActionListener(IRCClientFrame.this);
+		
         importServers = new JMenuItem(IRCClient.messages.getString("frame.import"));
         importServers.addActionListener(IRCClientFrame.this);
 		moreMenu.add(showLogin);
+		moreMenu.add(showAttrC);
         moreMenu.add(importServers);
 		menuBar.add(moreMenu);
 		add(menuBar, BorderLayout.NORTH);
@@ -93,8 +97,13 @@ public class IRCClientFrame extends JFrame implements ActionListener {
 			} catch (NullPointerException npe) {
 				System.out.println("couldnt even try to show");
 			}
-		}
-        else if (ae.getSource() == importServers) {
+			
+		} else if (ae.getSource() == showAttrC) {
+			try {
+				IRCClient.attrC.ShowFrame(true);
+			} catch (Exception e) {}
+			
+		} else if (ae.getSource() == importServers) {
             IRCClient.loginMenu.importServers();
         }
         
