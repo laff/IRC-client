@@ -6,6 +6,7 @@ package gruppe.irc;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
@@ -22,7 +23,7 @@ public class AttributeChooser extends JFrame {
 	
 	private DefaultListModel styleListModel;
 	private JList styleList;
-	private JButton changeFont, changeColor, confirm;
+	private JButton changeFont, changeColor, apply;
 	
 	private Integer selectedRow;
 	
@@ -60,7 +61,7 @@ public class AttributeChooser extends JFrame {
 		// The buttons
 		changeFont = new JButton(IRCClient.messages.getString("attrC.changeFont"));
 		changeColor = new JButton(IRCClient.messages.getString("attrC.changeColor"));
-		confirm = new JButton(IRCClient.messages.getString("attrC.apply"));
+		apply = new JButton(IRCClient.messages.getString("attrC.apply"));
 		
 		// Oh I know you did'nt.
 		fillList();
@@ -72,7 +73,7 @@ public class AttributeChooser extends JFrame {
 		add(styleList, BorderLayout.NORTH);
 		add(changeFont, BorderLayout.WEST);
 		add(changeColor, BorderLayout.CENTER);
-		add(confirm, BorderLayout.EAST);
+		add(apply, BorderLayout.EAST);
 		
 	}
 	/**
@@ -84,8 +85,25 @@ public class AttributeChooser extends JFrame {
 			
 			public void actionPerformed(ActionEvent ae) {
 				
-				//Do stuff
+				// Gets the selected list item's index.
+				Integer selectedStyle = styleList.getSelectedIndex();
 				
+				// Ensure the selectedStyle index actually exist
+				if (selectedStyle >= 0) {
+
+					// creates the font chooser.
+					JFontChooser fontChooser = new JFontChooser();
+
+					// shows it and returns its answer to result.
+					int result = fontChooser.showDialog(new JFrame());
+
+					// If the "OK" button is chosen, a font is stored and sent to attributes.
+					if (result == JFontChooser.OK_OPTION) {
+						Font font = fontChooser.getSelectedFont(); 
+
+						theAttributes.setAttributeFont(selectedStyle, font);
+					}
+				}
 			}
 			
 		});
@@ -104,6 +122,8 @@ public class AttributeChooser extends JFrame {
 					// Using the color previously set as default for the dialog.
 					selectedColor = JColorChooser.showDialog(jCC, message, initialColor);
 					
+					// Either sets the new color to selected color, or the initial color.
+					// This is to ensure that selectedColor is set, even if the color chooser is exited.
 					selectedColor = (selectedColor != null) ? selectedColor : initialColor;
 					
 					// Setting the chosen color
@@ -118,10 +138,11 @@ public class AttributeChooser extends JFrame {
 		 * First updates the attributes (so that they are immediately used).
 		 * Then saves these attributes to preferences.
 		 */
-		confirm.addActionListener(new ActionListener() {
+		apply.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				
 				theAttributes.updateAttributes();
+				theAttributes.savePreferences();
 			}
 		});
 	}

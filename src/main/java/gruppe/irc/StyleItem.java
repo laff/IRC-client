@@ -5,6 +5,7 @@
 package gruppe.irc;
 
 import java.awt.Color;
+import java.awt.Font;
 
 /**
  * This class contains information about each style.
@@ -16,8 +17,9 @@ public class StyleItem {
 	
 	// Private class variables.
 	private String styleName, fontName;
-	private Integer colorName;
+	private Integer colorName, fontSize;
 	private Color colorType;
+	private Font fontSpec;
 	
 	/**
 	 * Constructor
@@ -25,8 +27,10 @@ public class StyleItem {
 	public StyleItem () {
 		styleName = "";
 		colorName = 0;
-		fontName = "";
 		colorType = null;
+		fontSpec = null;
+		fontSize = 0;
+		fontName = "";
 	}
 	
 	/**
@@ -45,6 +49,56 @@ public class StyleItem {
 		return styleName;
 	}
 
+	/**
+	 * Function receiving this item's new font component.
+	 * Storing both the component and its fontname and size.
+	 * @param font 
+	 */
+	public void setFontSpec(Font font) {
+		fontSpec = font;
+		
+		fontName = fontSpec.getFontName();
+		fontSize = fontSpec.getSize();
+	}
+	
+	/**
+	 * Function that sets the size and name of the font.
+	 * It does not bother with setting the fontSpec, 
+	 * as that variable is only used when choosing font.
+	 * only used
+	 * @param size
+	 * @param name 
+	 */
+	public void setFont(Integer size, String name) {
+		fontName = name;
+		fontSize = size;
+	}
+	
+	
+	/**
+	 * Boolean that checks if fontSpec is set.
+	 * @return 
+	 */
+	public Boolean areFont() {
+		return (fontName == "") ? false : true;
+	}
+	
+	/**
+	 * Returns the font size.
+	 * @return 
+	 */
+	public Integer getFontSize() {
+		return fontSize;
+	}
+	
+	/**
+	 * Returns the family name of font.
+	 * @return 
+	 */
+	public String getFontName() {
+		return fontName;
+	}
+	
 	/**
 	 * Function setting the type of the color, but also sets the color's name.
 	 * 

@@ -2,6 +2,7 @@
 package gruppe.irc;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.util.Vector;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
@@ -62,7 +63,11 @@ public class SimpleAttributes extends SimpleAttributeSet {
 		
 	};
 	
-
+	// Prefixes used to store preferences.
+	private String customPrefix = "customAttr";
+	private String colorPrefix = "color";
+	private String fontNamePrefix = "fontName";
+	private String fontSizePrefix = "fontSize";
 	
 	/*
 	 * This is the constructor that initiates all Attribute action
@@ -110,7 +115,7 @@ public class SimpleAttributes extends SimpleAttributeSet {
 		// if the node is not null, there is custom prefs.
 		// Catching fault by setting default to false.
 		try {
-			customA = (pref.get("customAttr", null) != null) ? true : false;
+			customA = (pref.get(customPrefix, null) != null) ? true : false;
 			
 		} catch (Exception e) {
 			customA = false;
@@ -135,16 +140,19 @@ public class SimpleAttributes extends SimpleAttributeSet {
 			
 			StyleItem tmpStyle = (StyleItem)styles.elementAt(i);
 			
-			// sets tmpColor to either the customColor or the default color.
-			Integer tmpColor = pref.getInt("color"+tmpStyle.getStyleName(), defaultColors[i].getRGB());
+			// sets temporary variables to store inside the styleItem.
+			Integer tmpColor = pref.getInt(colorPrefix+tmpStyle.getStyleName(), defaultColors[i].getRGB());
+			String tmpFontName = pref.get(fontNamePrefix+tmpStyle.getStyleName(), null);
+			Integer tmpFontSize = pref.getInt(fontSizePrefix+tmpStyle.getStyleName(), 0);
 			
+			// Storing size and name.
+			if (tmpFontName != null && tmpFontSize != 0) {
+				tmpStyle.setFont(tmpFontSize, tmpFontName);
+			}
+				
 			// Tries to find a color whos names equals tmpColor, and sets it to Style.colorName;
 			// If it fails, customColor[i] stil is set with our default color.
 			try {
-				
-				
-				System.out.println((Color) Color.getColor(null, tmpColor));
-				
 				tmpStyle.setColorType((Color) Color.getColor(null, tmpColor));
 			} catch (Exception e) {
 				tmpStyle.setColorType(defaultColors[i]);
@@ -155,9 +163,6 @@ public class SimpleAttributes extends SimpleAttributeSet {
 	/**
 	 * Function that updates the attributes by going through the styleItem vector
 	 * 
-	 * BE AWARE!
-	 *		- The functionality within this function exist in other functions within this class.
-	 *		Probably should look into a better solution? - Olaf.
 	 */
 	public void updateAttributes() {
 		
@@ -167,10 +172,14 @@ public class SimpleAttributes extends SimpleAttributeSet {
 			
 			// Update Colors
 			StyleConstants.setForeground(attributes[i], tmpStyle.getColorType());
+			
+			// Updating Font attributes.
+			if (tmpStyle.areFont()) {
 
+				StyleConstants.setFontFamily(attributes[i], tmpStyle.getFontName());
+				StyleConstants.setFontSize(attributes[i], tmpStyle.getFontSize());
+			}
 		}
-		// Saving the preferences.
-		savePreferences();
 	}
 	
 	/**
@@ -181,28 +190,27 @@ public class SimpleAttributes extends SimpleAttributeSet {
 	 */
 	public void savePreferences() {
 		
-		String colorPrefix = "color";
-		
 		for (int i = 0; i < attributeAmount; i++) {
 			
 			StyleItem tmpStyle = (StyleItem)styles.elementAt(i);
 			
 			pref.putInt(colorPrefix+tmpStyle.getStyleName(), tmpStyle.getColorName());
-			
+			pref.put(fontNamePrefix+tmpStyle.getStyleName(), tmpStyle.getFontName());
+			pref.putInt(fontSizePrefix+tmpStyle.getStyleName(), tmpStyle.getFontSize());
 		}
 		
 		//Declaring that custom colors have been set.
-		//customA = (pref.nodeExists("customAttr")) ? false : true;
-		pref.put("customAttr", "true");
-		
+		pref.put(customPrefix, "areSet");
 	}
 	/*
 	 * Function that either initiates the default or custom attributes to the attributeSet.
 	 * Fonts are not set by default.
+	 * 
+	 * OBS! This function should only insert colors into the attributes, while rather calling updateAttributes after.
 	 */
 	private void initiateAttributes() {
 
-		// Currently only goes through eventual colors set.
+		// Currently only goes through eventual colors set
 		for (int i = 0; i < attributeAmount; i++) {
 			
 			StyleItem tmpStyle = (StyleItem)styles.elementAt(i);
@@ -210,23 +218,38 @@ public class SimpleAttributes extends SimpleAttributeSet {
 			Color tmpColor = (customA) ? tmpStyle.getColorType() : defaultColors[i];
 			// Add to attributes
 			attributes[i] = new SimpleAttributeSet();
-			StyleConstants.setForeground(attributes[i], tmpColor);
+	//		StyleConstants.setForeground(attributes[i], tmpColor);
 			
 			// Add color to styleitem
 			tmpStyle.setColorType(tmpColor);
+			
 		}
+		// Updating attributes
+		updateAttributes();
 	}
 	
 	/**
 	 * Function that sets the Color type of a specific style item.
-	 * 
+	 * @param index
+	 * @param font 
 	 */
-	public void setAttributeColor(Integer index, Color type) {
+	public void setAttributeColor (Integer index, Color type) {
 		
 		StyleItem tmpStyle = (StyleItem)styles.elementAt(index);
 		tmpStyle.setColorType(type);
 	}
 	
+	/**
+	 * This function sets the font component to the specific style item.
+	 * @param index
+	 * @param font 
+	 */
+	public void setAttributeFont (Integer index, Font font) {
+		
+		StyleItem tmpStyle = (StyleItem)styles.elementAt(index);
+		tmpStyle.setFontSpec(font);
+		
+	}
 	
 	/**
 	 * Below are multiple functions that return useful information to mostly other classes.
