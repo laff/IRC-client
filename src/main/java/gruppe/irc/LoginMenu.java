@@ -98,9 +98,9 @@ public class LoginMenu extends JFrame implements ItemListener {
         server = new JComboBox(serverList);
         server.setEditable(true);
         server.setMaximumRowCount(6);
-        server.addItemListener(this);
+        server.addItemListener(LoginMenu.this);
         network = new JComboBox(groups);
-        network.addItemListener(this);
+        network.addItemListener(LoginMenu.this);
         network.setMaximumRowCount(6);
 		
 		panel.setLayout (null); 
@@ -329,7 +329,7 @@ public class LoginMenu extends JFrame implements ItemListener {
             bw.newLine();
             bw.close();
         } catch (IOException e) {
-                e.printStackTrace();
+            System.out.println(IRCClient.messages.getString("ioException"+": "+e.getMessage()));
           }
     }
     
@@ -348,7 +348,7 @@ public class LoginMenu extends JFrame implements ItemListener {
 			bReader = new BufferedReader(f);
 
 		} catch (FileNotFoundException fnfe) {
-			System.out.println("Fant ingen fil");
+			System.out.println(IRCClient.messages.getString("fileNotFound")+": "+fnfe.getMessage());
 		}
 		
         try { 
@@ -382,9 +382,9 @@ public class LoginMenu extends JFrame implements ItemListener {
             bReader.close();
             
         }  catch (IOException ioe) {
-            System.err.println("IOException ERror");
+            System.err.println(IRCClient.messages.getString("ioException")+": "+ioe.getMessage());
         } catch (NullPointerException npe) {
-            System.out.println("Nullpointer!");
+            System.out.println(IRCClient.messages.getString("nullPointer")+": "+npe.getMessage());
         } 
 }
 	

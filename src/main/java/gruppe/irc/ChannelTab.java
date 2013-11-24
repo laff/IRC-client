@@ -94,13 +94,13 @@ public class ChannelTab extends GenericTab  {
     public void updateNames (String newUser, String command) {
         
         if (command.equals("JOIN")) {
-            addText(this.filter, newUser+" has joined the channel\n", false, 2);
+            addText(this.filter, newUser+" "+IRCClient.messages.getString("chan.join")+"\n", false, 2);
             
         } else if (command.equals("PART")) {
-            addText(this.filter, newUser+" has left the channel\n", false, 2);
+            addText(this.filter, newUser+" "+IRCClient.messages.getString("chan.part")+"\n", false, 2);
             
         } else if (command.startsWith("+") || command.startsWith("-")) {
-            addText(this.filter, newUser+" sets mode: "+command, false, 2);
+            addText(this.filter, newUser+" "+IRCClient.messages.getString("chan.setMode")+" "+command, false, 2);
         }
         writeToLn("NAMES "+this.filter);      
     }
@@ -190,7 +190,7 @@ public class ChannelTab extends GenericTab  {
         
         for (int i = 0; i < users; i++) {
             if (nickName.equals(listModel.getElementAt(i))) {
-                addText(nickName+" has quit IRC", message, false, 2);
+                addText(nickName+" "+IRCClient.messages.getString("chan.quit"), message, false, 2);
                 writeToLn("NAMES "+this.filter);
                 break;
             }
@@ -329,7 +329,7 @@ public class ChannelTab extends GenericTab  {
     }
 
     public void updateKick(String sender, String target) {
-        addText(this.filter, target+" was kicked by "+sender, false, 2);
+        addText(this.filter, target+" "+IRCClient.messages.getString("chan.kick")+" "+sender, false, 2);
         writeToLn("NAMES "+this.filter); 
     }
     
@@ -365,7 +365,9 @@ public class ChannelTab extends GenericTab  {
                 if (!list.getCellBounds(list.getSelectedIndex(), list.getSelectedIndex()).contains(e.getPoint())){
                         list.removeSelectionInterval(list.getSelectedIndex(),list.getSelectedIndex());
                 }      
-           } catch (NullPointerException npe) {};
+           } catch (NullPointerException npe) {
+                System.out.println(IRCClient.messages.getString("nullPointer")+": "+npe.getMessage());
+           }
         }
    };
    	
