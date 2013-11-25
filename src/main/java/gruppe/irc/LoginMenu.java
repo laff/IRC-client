@@ -265,7 +265,13 @@ public class LoginMenu extends JFrame implements ItemListener {
             //*CREATE*A*//
             //*FAILSAFE*//
             //**********//
-            login();
+
+			Thread queryThread = new Thread() {
+				public void run() {
+					login();
+				}
+			};
+			queryThread.start();
 
         }
     });
