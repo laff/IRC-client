@@ -5,26 +5,31 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 /**
- *
+ * Simple window used for adding a server to the 'servers.ini'-file.
  * @author Ch
  */
 public class ServerEditorWindow extends JFrame {
 
    private JTextField serverName, groupName, portRange, servAddr;
-    
+   private JPanel myPanel; 
+   private JLabel srvNmL, grpNmL, prtRngL, srvAdrL;
+   private JButton addItem, close;
+  
     ServerEditorWindow() {
     
-        super("EpicServerEditorWindow");    
+        super(IRCClient.messages.getString("srvEd.windTitle"));    
         setSize(330,280);
-        JPanel myPanel = new JPanel();
-        JLabel srvNmL = new JLabel("Server name");
-        JLabel grpNmL = new JLabel("Group name");
-        JLabel prtRngL = new JLabel("Port(s)");
-        JLabel srvAdrL = new JLabel("Server address");
+        
+        myPanel = new JPanel();
+        srvNmL = new JLabel(IRCClient.messages.getString("srvEd.srvName"));
+        grpNmL = new JLabel(IRCClient.messages.getString("srvEd.grpName"));
+        prtRngL = new JLabel(IRCClient.messages.getString("srvEd.prtRnge"));
+        srvAdrL = new JLabel(IRCClient.messages.getString("srvEd.srvAdr"));
 
         setLocationRelativeTo(null);
         
@@ -33,7 +38,8 @@ public class ServerEditorWindow extends JFrame {
         portRange = new JTextField(10);
         servAddr = new JTextField(15);
         
-        JButton addItem = new JButton("Add");
+        addItem = new JButton(IRCClient.messages.getString("srvEd.add"));
+        close = new JButton(IRCClient.messages.getString("srvEd.close"));
 
         myPanel.setLayout(null);
 
@@ -47,14 +53,20 @@ public class ServerEditorWindow extends JFrame {
         groupName.setBounds	(90,30, 160, 20);
         portRange.setBounds (90,55, 160, 20);
         servAddr.setBounds  (90,80, 160, 20);
+        addItem.setBounds(55, 120, 80, 20);
+        close.setBounds(145, 120, 80, 20);
         
-        addItem.setBounds(25, 120, 80, 20);
         addItem.addActionListener(new ActionListener() {
-    
             public void actionPerformed (ActionEvent ae) {
                 addServer();
             }
         });
+        
+        close.addActionListener(new ActionListener(){
+            public void actionPerformed (ActionEvent ae) {
+                dispose();
+            }
+        }); 
 
         myPanel.add(srvNmL);
         myPanel.add(grpNmL);
@@ -65,16 +77,29 @@ public class ServerEditorWindow extends JFrame {
         myPanel.add(portRange);
         myPanel.add(servAddr);
         myPanel.add(addItem);
+        myPanel.add(close);
 
         setVisible(true);
         getContentPane().add(myPanel);
     }
     
+    /**
+     * Adding the values from the input-fields to the serverlist in LoginMenu.
+     * Also writing the added server to the server-file, so it is saved for next
+     * time the application is run.
+     */
     private void addServer() {
         ServerListItem s;
         
-        s = new ServerListItem(LoginMenu.sli.size(), serverName.getText(), groupName.getText(), servAddr.getText(), portRange.getText());
-        LoginMenu.sli.addElement(s);
-        LoginMenu.writeFile();
+        if (!serverName.getText().isEmpty() && !groupName.getText().isEmpty() && 
+                !servAddr.getText().isEmpty() && !portRange.getText().isEmpty()) {
+            s = new ServerListItem(LoginMenu.sli.size(), serverName.getText(), groupName.getText(),
+                    servAddr.getText(), portRange.getText());
+            LoginMenu.sli.addElement(s);
+            LoginMenu.writeFile();
+            
+        } else
+            JOptionPane.showMessageDialog(ServerEditorWindow.this, IRCClient.messages.getString("srvEd.empty"), 
+                    null, JOptionPane.ERROR_MESSAGE);
     }
 }
