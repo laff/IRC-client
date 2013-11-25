@@ -527,6 +527,7 @@ public class TabManager extends JPanel {
 				
 				if (pTab.getFilter().equals(filter)) {
 					personalTabs.remove(i);
+                    break;
 				}
 			}
 		}
