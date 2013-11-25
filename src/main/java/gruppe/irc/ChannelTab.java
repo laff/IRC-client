@@ -27,6 +27,7 @@ public class ChannelTab extends GenericTab  {
     private JPopupMenu popUp;
     private JMenu modes;
     private DefaultListModel listModel;
+	private ArrayList sorted;
     
 	public ChannelTab (String chanName, TabManager mng, Dimension dim) {
 		super(chanName, mng, dim);
@@ -112,17 +113,31 @@ public class ChannelTab extends GenericTab  {
      */
     public void addNames (String names) {
         String namesSplitted[];
-        ArrayList sorted;
+		namesSplitted = names.split(" ");
+		
 
-        namesSplitted = names.split(" ");
-        sorted = sortNames(namesSplitted);
-        listModel.removeAllElements();
-
-        for(int i = 0; i < sorted.size(); i++) {
-            listModel.addElement(sorted.get(i));
-        }
+		sorted = sortNames(namesSplitted);
+		
+		updateNameList();
     }
     
+	public void updateNameList() {
+	
+		// convert from the total name string to arraylist
+		// set the new arraylist to the global sorted
+		
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				
+				listModel.removeAllElements();
+
+				for(int i = 0; i < sorted.size(); i++) {
+					listModel.addElement(sorted.get(i));
+				}
+			}
+		});
+	}
+	
     /**
      * Sorting the nicks of the users on a chan. First divided into Op`ed, Voiced,
      * and normal users. Then these lists are sorted separately, before they are

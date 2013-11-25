@@ -202,6 +202,7 @@ public class SimpleAttributes extends SimpleAttributeSet {
 		//Declaring that custom colors have been set.
 		pref.put(customPrefix, "areSet");
 	}
+	
 	/*
 	 * Function that either initiates the default or custom attributes to the attributeSet.
 	 * Fonts are not set by default.

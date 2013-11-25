@@ -50,7 +50,10 @@ public class TabManager extends JPanel {
 	private Vector<GenericTab> channelTabs = new Vector<GenericTab>();
 	private Vector<GenericTab> personalTabs = new Vector<GenericTab>();
     private ServerTab serverTab;
-    
+	
+	// vector containing channelames
+	private Vector<String> channelVector = new Vector<String>();
+	
     private MessageHandler mh;
     
 	// This TabManager's IRCConnection
@@ -74,7 +77,7 @@ public class TabManager extends JPanel {
 	private Dimension tabDimension;
     
 	// The server name this TabManager is connected to.
-	private String serverName, nick, altNick;
+	private String serverName, nick, altNick, channelNames;
 	
 	// A Bunch of components
 	private JTabbedPane tabbedPane;
@@ -119,12 +122,13 @@ public class TabManager extends JPanel {
 	 * @param : server The servername as received by the message
 	 */
 	public void distributeMessage (String prefix, String command, String alias, String server, String message) {
-        
+        String msg="", chanName;
 		if (server.equals(serverName) && alias.equals(nick)) {
+			/*
                      System.out.println("I distributeMessage er message lik: "+message);
                      System.out.println("I distributeMessage er command lik: "+command);
                      System.out.println("I distributeMessage er prefix lik: "+prefix);
-
+*/
 			if (command.equals("PRIVMSG") && !message.startsWith("#")) {
                 mh.handlePriv(prefix, message);
                 
@@ -141,15 +145,33 @@ public class TabManager extends JPanel {
                 mh.handleMode(prefix, message);
             
                 // Command: 353 means that the output of the NAMES-command comes now.
-            } else if (command.equals("353")) {             
-                mh.handleNames(message);
-                
+            } else if (command.equals("353")) {       
+				mh.handleNames(message, false);
+            
+			// Handles the end of /names list
+			} else if (command.equals("366")) {
+				mh.handleNames(message, true);
+				
             } else if (command.equals("482")) {
                 mh.handleNotOp(message);
                 
             } else if (command.equals("KICK")) {
                 mh.handleKick(prefix, message);
-                
+			
+			// This action is for the /list command.
+			// It required some more logic than the others.
+			// Might be able to make this prettier.
+			} else if (command.equals("322")) {
+				try  {
+					msg = message.substring(message.indexOf("#"), message.length());
+					chanName = msg.substring(0, msg.indexOf(" "));
+					channelVector.addElement(chanName);
+				} catch (StringIndexOutOfBoundsException sioobe) {};
+			
+			// This commands indicates the end of /list.
+			} else if (command.equals("323")) {
+				mh.handleList(prefix, channelVector);
+
                 // Else add the rest to the local servertab.
             } else {
 				serverTab.addText(message);
@@ -244,7 +266,7 @@ public class TabManager extends JPanel {
      * @param chanName - The name of the channel this NAMES-command belongs to.
      * @param names - String including all users on the channel.
      */
-    public void setChannelNames(String chanName, String names) {
+    public void setChannelNames(String chanName) {
         int chans = channelTabs.size();
         ChannelTab chanTab;
         
@@ -253,10 +275,16 @@ public class TabManager extends JPanel {
             // If the current tab has the corresponding channelname,
             // we can add the message to that channel.
             if (chanTab.getFilter().equals(chanName)) {
-                chanTab.addNames(names);
-            }
+				chanTab.addNames(channelNames);
+			}
         }
+		
+		channelNames = "";
     }
+	
+	public void createChannelNameString(String names) {
+		channelNames = channelNames + " " + names;
+	}
 	
 	/**
      * Function that takes care of distributing messages to the right channeltab.

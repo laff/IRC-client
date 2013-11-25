@@ -1,5 +1,7 @@
 package gruppe.irc;
 
+import java.util.Vector;
+
 /**
  * Class made for handling all message-events that occurs in our client
  * @author Christian
@@ -9,6 +11,7 @@ public class MessageHandler {
     private String restMessage;
     private String chanName;
     private TabManager manager;
+	private ChannelList channelL = null;
     
     /**
      * Constructor for our MessageHandler.
@@ -30,7 +33,7 @@ public class MessageHandler {
     public void handlePrivForChan(String prefix, String message) {
         chanName = message.substring(message.indexOf("#"), message.indexOf(" "));
         restMessage = message.substring(message.indexOf(":")+1, message.length());
-        
+		
         if (restMessage.startsWith("ACTION ")) {
             restMessage = restMessage.substring(restMessage.indexOf(" ")+1, restMessage.length());
         }
@@ -97,14 +100,20 @@ public class MessageHandler {
      * (as a string), for a channel. Sends this to the setChannelNames-method.
      * @param message a message including channelname and all the users on the chan.
      */
-    void handleNames(String message) {
+    void handleNames(String message, Boolean update) {
         String temp, names;
                 
         temp = message.substring(message.indexOf("#"));
         chanName = temp.substring(0, temp.indexOf(" "));
         names = message.substring(message.indexOf(":")+1, message.length()-1);
         
-        manager.setChannelNames(chanName, names);
+		// add names to the channeltab 
+		if (update) {
+			manager.setChannelNames(chanName);
+		} else {
+			manager.createChannelNameString(names);
+		}
+		
     }
 
     /**
@@ -150,4 +159,22 @@ public class MessageHandler {
         
         manager.updateChannel(chanName, sender, target, restMessage);
     }
+	/**
+	 * Function that creates the channelList and adding the vector with channels.
+	 * Then starting a thread for the GUI.
+	 * @param prefix : name of the server.
+	 * @param listVector : vector with channels
+	 */
+	void handleList(String prefix, Vector<String> listVector) {
+	
+		channelL = new ChannelList(prefix, this.manager);
+		channelL.addChannels(listVector);
+		
+		Thread queryThread = new Thread() {
+			public void run() {
+				channelL.updateList();
+			}
+		};
+		queryThread.start();
+	}
 }
