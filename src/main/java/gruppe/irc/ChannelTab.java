@@ -27,7 +27,7 @@ public class ChannelTab extends GenericTab  {
     private JPopupMenu popUp;
     private JMenu modes;
     private DefaultListModel listModel;
-	private ArrayList sorted;
+	private ArrayList sortedNames;
     
 	public ChannelTab (String chanName, TabManager mng, Dimension dim) {
 		super(chanName, mng, dim);
@@ -115,8 +115,7 @@ public class ChannelTab extends GenericTab  {
         String namesSplitted[];
 		namesSplitted = names.split(" ");
 		
-
-		sorted = sortNames(namesSplitted);
+		sortedNames = sortNames(namesSplitted);
 		
 		updateNameList();
     }
@@ -131,8 +130,8 @@ public class ChannelTab extends GenericTab  {
 				
 				listModel.removeAllElements();
 
-				for(int i = 0; i < sorted.size(); i++) {
-					listModel.addElement(sorted.get(i));
+				for(int i = 0; i < sortedNames.size(); i++) {
+					listModel.addElement(sortedNames.get(i));
 				}
 			}
 		});
@@ -151,11 +150,11 @@ public class ChannelTab extends GenericTab  {
         ArrayList<String> voice = new ArrayList<String>();
         ArrayList<String> regular = new ArrayList<String>();
         char firstChar;
-        
+		
         for (int i = 0; i < names.length; i++) {
-             firstChar = names[i].charAt(0);
+			firstChar = names[i].charAt(0);
             
-            switch (firstChar) {
+			switch (firstChar) {
                 
                 case '@' :
                     op.add(names[i]);

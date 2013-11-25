@@ -77,7 +77,7 @@ public class TabManager extends JPanel {
 	private Dimension tabDimension;
     
 	// The server name this TabManager is connected to.
-	private String serverName, nick, altNick, channelNames;
+	private String serverName, nick, altNick, channelNames = "";
 	
 	// A Bunch of components
 	private JTabbedPane tabbedPane;
@@ -275,7 +275,9 @@ public class TabManager extends JPanel {
             // If the current tab has the corresponding channelname,
             // we can add the message to that channel.
             if (chanTab.getFilter().equals(chanName)) {
+				
 				chanTab.addNames(channelNames);
+				
 			}
         }
 		
@@ -283,7 +285,11 @@ public class TabManager extends JPanel {
     }
 	
 	public void createChannelNameString(String names) {
-		channelNames = channelNames + " " + names;
+		if (channelNames.length() > 0) {
+			channelNames = channelNames + " " + names;
+		} else {
+			channelNames = names;
+		}
 	}
 	
 	/**
