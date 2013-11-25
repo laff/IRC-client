@@ -2,10 +2,7 @@ package gruppe.irc;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Vector;
-import javax.swing.Box;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -29,6 +26,8 @@ public class ServerEditorWindow extends JFrame {
         JLabel prtRngL = new JLabel("Port(s)");
         JLabel srvAdrL = new JLabel("Server address");
 
+        setLocationRelativeTo(null);
+        
         serverName = new JTextField(15);
         groupName = new JTextField(15);
         portRange = new JTextField(10);

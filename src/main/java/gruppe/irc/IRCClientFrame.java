@@ -27,8 +27,8 @@ public class IRCClientFrame extends JFrame implements ActionListener {
 	
 	// Variables for the menu.
 	private static JMenuBar menuBar;
-	private static JMenu moreMenu;
-	private static JMenuItem showLogin, showAttrC, importServers;
+	private static JMenu moreMenu, serverMgmt;
+	private static JMenuItem showLogin, showAttrC, importServers, addServer;
 	
 	public TabManager thisTab;
 	private String frameTitle;
@@ -56,12 +56,17 @@ public class IRCClientFrame extends JFrame implements ActionListener {
 		showAttrC = new JMenuItem(IRCClient.messages.getString("frame.attribute"));
 		showAttrC.addActionListener(IRCClientFrame.this);
 		
+        serverMgmt = new JMenu(IRCClient.messages.getString("frame.srvMgmt"));
         importServers = new JMenuItem(IRCClient.messages.getString("frame.import"));
         importServers.addActionListener(IRCClientFrame.this);
+        addServer = new JMenuItem(IRCClient.messages.getString("frame.addServ"));
+        addServer.addActionListener(IRCClientFrame.this);
+        serverMgmt.add(importServers);
+        serverMgmt.add(addServer);
 		moreMenu.add(showLogin);
 		moreMenu.add(showAttrC);
-        moreMenu.add(importServers);
 		menuBar.add(moreMenu);
+        menuBar.add(serverMgmt);
 		add(menuBar, BorderLayout.NORTH);
 		
 		// Creating the TabManager panel.
@@ -105,6 +110,8 @@ public class IRCClientFrame extends JFrame implements ActionListener {
 			
 		} else if (ae.getSource() == importServers) {
             IRCClient.loginMenu.importServers();
+        } else if (ae.getSource() == addServer) {
+            IRCClient.loginMenu.addServer();
         }
         
 	}

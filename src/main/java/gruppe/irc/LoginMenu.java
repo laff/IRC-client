@@ -69,9 +69,6 @@ public class LoginMenu extends JFrame implements ItemListener {
     JButton login = new JButton(IRCClient.messages.getString("loginM.loginButton"));
 	JButton clear = new JButton(IRCClient.messages.getString("loginM.clearButton"));	
     
-    //TEMP: Just for testing some filehandling
-    JButton editServers = new JButton("Edit servers");
-    
 	// Check box
 	JCheckBox autologin = new JCheckBox();
 
@@ -128,10 +125,6 @@ public class LoginMenu extends JFrame implements ItemListener {
 		// Position buttons
 		login.setBounds(40,180,115,20);
 		clear.setBounds(155,180,115,20);
-        
-        
-        editServers.setBounds(180, 200, 100, 20);
-        panel.add(editServers);
 		
 		// Position autologin
 		autologin.setBounds(110, 200, 20, 20);
@@ -296,13 +289,6 @@ public class LoginMenu extends JFrame implements ItemListener {
                 server.requestFocus();
             }
         });
-        
-        editServers.addActionListener(new ActionListener() {
-    
-            public void actionPerformed (ActionEvent ae) {
-                editServerList();
-            }
-        });
 	}
     
     public void importServers() {
@@ -317,12 +303,16 @@ public class LoginMenu extends JFrame implements ItemListener {
          serverfilePath = chooser.getSelectedFile().getPath();
     }
     
+    public void addServer() {
+        ServerEditorWindow servEdit = new ServerEditorWindow();
+    }
+    
     
     //OBS: The next three functions are made just for some easy testing on the
     // functionality of "maintaining" the list of servers.
     
     public void editServerList() {
-        ServerEditorWindow servEdit = new ServerEditorWindow();
+        
     }
     
     public static void writeFile() {
