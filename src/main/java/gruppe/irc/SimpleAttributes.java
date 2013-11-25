@@ -34,18 +34,7 @@ public class SimpleAttributes extends SimpleAttributeSet {
 	// This array contains the default colors.
 	// They are arranged in the order they appear inside the Color object/class.
 	// Except light_grey, as it is used as a background in our frames.
-    private final Color defaultColors[] = {
-		Color.BLACK,
-		Color.BLUE,
-		Color.CYAN,
-		Color.DARK_GRAY,
-		Color.GRAY,
-		Color.GREEN,
-		Color.MAGENTA,
-		Color.ORANGE,
-		Color.PINK,
-		Color.RED
-	};
+    private final Color defaultColors = Color.BLACK;
 	
 	// This array contains the stylenames
 	private final String styleName[] = {
@@ -53,7 +42,7 @@ public class SimpleAttributes extends SimpleAttributeSet {
 		IRCClient.messages.getString("styleN.private"),
 		IRCClient.messages.getString("styleN.channel"),
 		IRCClient.messages.getString("styleN.server"),
-		IRCClient.messages.getString("styleN.random1"),
+		IRCClient.messages.getString("styleN.personal"),
 		IRCClient.messages.getString("styleN.random2"),
 		IRCClient.messages.getString("styleN.random3"),
 		IRCClient.messages.getString("styleN.random4"),
@@ -115,7 +104,7 @@ public class SimpleAttributes extends SimpleAttributeSet {
 		// if the node is not null, there is custom prefs.
 		// Catching fault by setting default to false.
 		try {
-			customA = (pref.get(customPrefix, null) != null) ? true : false;
+			customA = ("true".equals(pref.get(customPrefix, null))) ? true : false;
 			
 		} catch (Exception e) {
 			customA = false;
@@ -126,6 +115,9 @@ public class SimpleAttributes extends SimpleAttributeSet {
 		if (customA) {
 			getPreferredAttributes();
 		}
+		
+		System.out.println("customA is "+customA);
+		
 		initiateAttributes();
 	}
  
@@ -141,7 +133,7 @@ public class SimpleAttributes extends SimpleAttributeSet {
 			StyleItem tmpStyle = (StyleItem)styles.elementAt(i);
 			
 			// sets temporary variables to store inside the styleItem.
-			Integer tmpColor = pref.getInt(colorPrefix+tmpStyle.getStyleName(), defaultColors[i].getRGB());
+			Integer tmpColor = pref.getInt(colorPrefix+tmpStyle.getStyleName(), defaultColors.getRGB());
 			String tmpFontName = pref.get(fontNamePrefix+tmpStyle.getStyleName(), null);
 			Integer tmpFontSize = pref.getInt(fontSizePrefix+tmpStyle.getStyleName(), 0);
 			
@@ -155,7 +147,7 @@ public class SimpleAttributes extends SimpleAttributeSet {
 			try {
 				tmpStyle.setColorType((Color) Color.getColor(null, tmpColor));
 			} catch (Exception e) {
-				tmpStyle.setColorType(defaultColors[i]);
+				tmpStyle.setColorType(defaultColors);
 			}
 		}
 	}
@@ -200,7 +192,17 @@ public class SimpleAttributes extends SimpleAttributeSet {
 		}
 		
 		//Declaring that custom colors have been set.
-		pref.put(customPrefix, "areSet");
+		pref.put(customPrefix, "true");
+	}
+	
+	/**
+	 * Function that "clears" the custom preferences.
+	 * What it really does is setting hte variable customPrefix to "false".
+	 * And when the next time preferences load, it says "false" instead of "true".
+	 */
+	public void clear() {
+		pref.put(customPrefix, "false");
+		defaultCheck();
 	}
 	
 	/*
@@ -216,7 +218,7 @@ public class SimpleAttributes extends SimpleAttributeSet {
 			
 			StyleItem tmpStyle = (StyleItem)styles.elementAt(i);
 			
-			Color tmpColor = (customA) ? tmpStyle.getColorType() : defaultColors[i];
+			Color tmpColor = (customA) ? tmpStyle.getColorType() : defaultColors;
 			// Add to attributes
 			attributes[i] = new SimpleAttributeSet();
 	//		StyleConstants.setForeground(attributes[i], tmpColor);

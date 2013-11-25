@@ -307,14 +307,17 @@ public class TabManager extends JPanel {
         
         for (int i = 0; i < chans; i++) {
             chanTab = (ChannelTab)channelTabs.elementAt(i);
+			
             // If the current tab has the corresponding channelname,
             // we can add the message to that channel.
             if (chanTab.getFilter().equals(chanName)) {
                 chanTab.addText(prefix, message, incoming, 1);
+				
                 //If message recipient is not the currently selected
                 // tab, the tab name changes color to red
                 int index = tabbedPane.indexOfTab(chanName);
-                if (tabbedPane.getSelectedIndex() != index ) {
+				
+                if (tabbedPane.getSelectedIndex() != index) {
                 	tabbedPane.setForegroundAt(index, Color.RED);
                 }
             }
@@ -393,7 +396,7 @@ public class TabManager extends JPanel {
         for (int i = 0; i < personalCount; ++i) {
             pTab = (PersonalTab)personalTabs.elementAt(i);
             if (pTab.getFilter().equals(tabName)) {
-                pTab.addText(sender, message, incoming, 2);
+                pTab.addText(sender, message, incoming, 0);
                 noFoundTab = false;
               //If message recipient is not the currently selected
                 // tab, the tab name changes color to red
@@ -410,7 +413,7 @@ public class TabManager extends JPanel {
             PersonalTab newPersonalTab = new PersonalTab(tabName, this, tabDimension);
             personalTabs.add(newPersonalTab);
             attachTab(tabName, newPersonalTab);
-            newPersonalTab.addText(sender, message, incoming, 2);
+            newPersonalTab.addText(sender, message, incoming, 0);
         }
     }    
     
@@ -426,7 +429,7 @@ public class TabManager extends JPanel {
         channelTabs.addElement(chanTab = new ChannelTab(chanName, this, tabDimension));
         tabbedPane.addTab(chanName, null, chanTab);
         tabbedPane.setSelectedIndex(tabbedPane.indexOfTab(chanName));
-        chanTab.addText(chanName, "Now talking in "+chanName+"\n", false, 1);
+        chanTab.addText(chanName, "Now talking in "+chanName+"\n", false, 2);
     }
     
     /**

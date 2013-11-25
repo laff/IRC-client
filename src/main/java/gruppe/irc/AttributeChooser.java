@@ -23,13 +23,13 @@ public class AttributeChooser extends JFrame {
 	
 	private DefaultListModel styleListModel;
 	private JList styleList;
-	private JButton changeFont, changeColor, apply;
+	private JButton changeFont, changeColor, apply, clear;
 	
 	private Integer selectedRow;
 	
 	private Integer listHeight;
 	private Integer elementHeight = 20;
-	private Integer frameSpace = 20;
+	private Integer frameSpace = 25;
 	
 	private Integer attrAmount;
 	
@@ -62,6 +62,7 @@ public class AttributeChooser extends JFrame {
 		changeFont = new JButton(IRCClient.messages.getString("attrC.changeFont"));
 		changeColor = new JButton(IRCClient.messages.getString("attrC.changeColor"));
 		apply = new JButton(IRCClient.messages.getString("attrC.apply"));
+		clear = new JButton(IRCClient.messages.getString("attrC.clear"));
 		
 		// Oh I know you did'nt.
 		fillList();
@@ -73,8 +74,8 @@ public class AttributeChooser extends JFrame {
 		add(styleList, BorderLayout.NORTH);
 		add(changeFont, BorderLayout.WEST);
 		add(changeColor, BorderLayout.CENTER);
-		add(apply, BorderLayout.EAST);
-		
+		add(clear, BorderLayout.EAST);
+		add(apply, BorderLayout.SOUTH);
 	}
 	/**
 	 * Grand function adding listeners to desverving items.
@@ -143,6 +144,13 @@ public class AttributeChooser extends JFrame {
 				
 				theAttributes.updateAttributes();
 				theAttributes.savePreferences();
+			}
+		});
+
+		clear.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				
+				theAttributes.clear();
 			}
 		});
 	}

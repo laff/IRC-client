@@ -109,7 +109,6 @@ public class GenericTab extends JPanel implements ActionListener {
 
 		try {	
             doc.insertString(pos, sender+": "+message, IRCClient.attrs.returnAttribute(style));
-			//text.getStyledDocument().insertString(pos, sender+": "+message, null);
 		} catch (BadLocationException ble) {};					
 		
         //When new messages appears in the window, it scrolls down automagically.
@@ -181,7 +180,7 @@ public class GenericTab extends JPanel implements ActionListener {
             
             // This is an outgoing message(from our user), therefore we send 'false'.
             } else {
-                addText(manager.getNick(), fromText+"\n", false, 0);
+                addText(manager.getNick(), fromText+"\n", false, 3);
                 writeToLn("PRIVMSG "+filter+" :"+fromText);
             }
             write.setText("");    

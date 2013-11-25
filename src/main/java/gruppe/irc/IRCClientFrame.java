@@ -26,9 +26,9 @@ import javax.swing.JMenuItem;
 public class IRCClientFrame extends JFrame implements ActionListener {
 	
 	// Variables for the menu.
-	private static JMenuBar menuBar;
-	private static JMenu moreMenu, serverMgmt;
-	private static JMenuItem showLogin, showAttrC, importServers, addServer;
+	private JMenuBar menuBar;
+	private JMenu moreMenu, serverMgmt;
+	private JMenuItem showLogin, showAttrC, importServers, addServer;
 	
 	public TabManager thisTab;
 	private String frameTitle;

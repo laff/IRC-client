@@ -37,12 +37,14 @@ public class ServerTab extends GenericTab {
     /**
      * Takes care of sending the text the user enters to the appropriate place,
      * which is the textarea in the servertab.
+	 * 
+	 * Uses the style with index 2 aka server when applying new text elements.
      */
     public void addText (String msg) {
         int pos = text.getStyledDocument().getEndPosition().getOffset();
 
         try {	
-            text.getStyledDocument().insertString(pos, msg, null);
+            doc.insertString(pos, msg, IRCClient.attrs.returnAttribute(2));
         } catch (BadLocationException ble) {};					
 
         //When new messages appears in the window, it scrolls down automagically.

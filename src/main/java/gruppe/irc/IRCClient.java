@@ -137,21 +137,6 @@ public class IRCClient {
 		}
 	}
 	
-/* THIS IS PRETTY LOGIC MADE BY OLAF. Used to work in TabManager, but has now emigrated over the seas.
-	public static void loginCheck() {
-		if (connection != null) {
-			
-			if (connection.getState() == IRCConnection.DISCONNECTED) {
-				loginMenu.setVisible(true);
-			} else if (connection.getState() == IRCConnection.CONNECTED) {
-				loginMenu.setVisible(false);
-			}
-			
-		} else {
-			loginMenu = new LoginMenu(null);
-		}
-	}
-*/
 	/**
 	 * 
 	 */
