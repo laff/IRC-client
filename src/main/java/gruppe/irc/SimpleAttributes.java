@@ -1,10 +1,8 @@
-
 package gruppe.irc;
 
 import java.awt.Color;
 import java.awt.Font;
 import java.util.Vector;
-import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
@@ -115,7 +113,6 @@ public class SimpleAttributes extends SimpleAttributeSet {
 		if (customA) {
 			getPreferredAttributes();
 		}
-		
 		System.out.println("customA is "+customA);
 		
 		initiateAttributes();
@@ -227,7 +224,6 @@ public class SimpleAttributes extends SimpleAttributeSet {
 			tmpStyle.setColorType(tmpColor);
 			
 		}
-		// Updating attributes
 		updateAttributes();
 	}
 	
@@ -251,7 +247,6 @@ public class SimpleAttributes extends SimpleAttributeSet {
 		
 		StyleItem tmpStyle = (StyleItem)styles.elementAt(index);
 		tmpStyle.setFontSpec(font);
-		
 	}
 	
 	/**
@@ -277,6 +272,5 @@ public class SimpleAttributes extends SimpleAttributeSet {
 		
 		StyleItem tmpStyle = (StyleItem)styles.elementAt(index);
 		return tmpStyle.getColorType();
-		
 	}
 }

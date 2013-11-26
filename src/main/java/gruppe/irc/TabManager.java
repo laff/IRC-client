@@ -39,8 +39,7 @@ import javax.swing.event.ChangeListener;
 
 /**
  *
- * @author HS Vikar
-
+ * @author Anders, Olaf, Christian
  */
 
 public class TabManager extends JPanel {
@@ -158,7 +157,7 @@ public class TabManager extends JPanel {
 					msg = message.substring(message.indexOf("#"), message.length());
 					chanName = msg.substring(0, msg.indexOf(" "));
 					channelVector.addElement(chanName);
-				} catch (StringIndexOutOfBoundsException sioobe) {};
+				} catch (StringIndexOutOfBoundsException sioobe) {}
 			
 			// This commands indicates the end of /list.
 			} else if (command.equals("323")) {
@@ -280,7 +279,6 @@ public class TabManager extends JPanel {
      * in multiple messages.
      * @param names A string containing users on a channel
      */
-	
 	public void createChannelNameString(String names) {
 		if (channelNames.length() > 0) {
 			channelNames = channelNames + " " + names;
@@ -469,7 +467,7 @@ public class TabManager extends JPanel {
 		try {
 			connection.close();
 		} catch (NullPointerException npe) {
-			System.out.println("TabManager::closeConnection: Error closing connection " + npe.getMessage());
+			System.out.println(IRCClient.messages.getString("errorClosing")+" "+npe.getMessage());
 		}
 		parent.setVisible(false);
 		parent.dispose();
@@ -590,6 +588,5 @@ public class TabManager extends JPanel {
 			tabbedPane.setForegroundAt(i, Color.BLACK);
 			
 		}
-    	
     }
 }

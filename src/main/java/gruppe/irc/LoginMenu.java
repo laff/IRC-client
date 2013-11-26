@@ -19,7 +19,7 @@ import java.util.prefs.Preferences;
 
 /**
  *
- * @author John
+ * @author Olaf
  */
 public class LoginMenu extends JFrame implements ItemListener {
 	
@@ -392,20 +392,7 @@ public class LoginMenu extends JFrame implements ItemListener {
             System.out.println(IRCClient.messages.getString("nullPointer")+": "+npe.getMessage());
         } 
 }
-	
-	/*
-	 * The magnificent function that logs in.
-	 * No arguments given, uses the variables set in main.
-	 * 
-	 * Variables that work like a charm:
-			"irc.homelien.no",      // server
-			6667,                   // port
-			"ourtestnick",			// nick
-			"ourtestnick",			// altnick
-			"ourtest",				// username
-			"ourtest nick"			// fullname
-	 * 
-	 */
+
 	public void login () {
 
 		putPrefs(true);

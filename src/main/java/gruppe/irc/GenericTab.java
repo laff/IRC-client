@@ -73,8 +73,6 @@ public class GenericTab extends JPanel implements ActionListener {
 		setVisible(true);
 		
 		setPreferredSize(dim);
-        
-        
 	}
 	
 	
@@ -109,7 +107,7 @@ public class GenericTab extends JPanel implements ActionListener {
 
 		try {	
             doc.insertString(pos, sender+": "+message, IRCClient.attrs.returnAttribute(style));
-		} catch (BadLocationException ble) {};					
+		} catch (BadLocationException ble) {}			
 		
         //When new messages appears in the window, it scrolls down automagically.
         //Borrowed from Oyvind`s example.
@@ -187,7 +185,7 @@ public class GenericTab extends JPanel implements ActionListener {
 		}
 	}
        
-       public void changeForeground(Component c, Color co) {
-           c.setForeground(co);
-       }
+    public void changeForeground(Component c, Color co) {
+        c.setForeground(co);
+    }
 }

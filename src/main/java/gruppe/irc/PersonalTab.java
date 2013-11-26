@@ -10,21 +10,23 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 /**
- *
- * @author HS Vikar
+ * Class for the personalTabs, basic functionality inherited from GenericTab.
+ * @author Olaf
  */
 public class PersonalTab extends GenericTab {
 
 	private JButton close, attach;
 	private PersonalTab self;
 	private JFrame newFrame;
+    private JPanel panel;
 	
 	public PersonalTab (String stringF, TabManager mng, Dimension dim) {
 	
 		super(stringF, mng, dim);
-		JPanel panel = new JPanel();
-		close = new JButton("Close private chat", null);
-		attach = new JButton("Detach tab", null);
+        
+		panel = new JPanel();
+		close = new JButton(IRCClient.messages.getString("pTab.close"), null);
+		attach = new JButton(IRCClient.messages.getString("pTab.detach"), null);
 		
 		close.addActionListener(new ButtonListener());
 		attach.addActionListener(new ButtonListener());
@@ -40,7 +42,6 @@ public class PersonalTab extends GenericTab {
 	 * ButtonListener is an action listener for the buttons
 	 * associated with PersonalTab
 	 * @author Anders
-	 *
 	 */
 	class ButtonListener implements ActionListener {
 
@@ -62,7 +63,7 @@ public class PersonalTab extends GenericTab {
 					newFrame.setMinimumSize(new Dimension(minDim, minDim));
 					newFrame.add(self);
 					newFrame.setVisible(true);
-					attach.setText("Attach window");
+					attach.setText(IRCClient.messages.getString("pTab.attach"));
 					
 					//Removes tab from tabManager
 					manager.releaseTab(filter);
@@ -71,12 +72,11 @@ public class PersonalTab extends GenericTab {
 					manager.attachTab(filter, self);
 					newFrame.remove(self);
 					newFrame.dispose();
-					attach.setText("Detach tab");
+					attach.setText(IRCClient.messages.getString("pTab.detach"));
 					
 					isAttached = true;
 				}
 			}		
 		}
-		
 	}
 }

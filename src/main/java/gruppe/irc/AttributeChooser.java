@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package gruppe.irc;
 
 import java.awt.BorderLayout;
@@ -10,12 +6,10 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 /**
  *
- * @author John
+ * @author Olaf
  */
 public class AttributeChooser extends JFrame {
 	
@@ -24,8 +18,6 @@ public class AttributeChooser extends JFrame {
 	private DefaultListModel styleListModel;
 	private JList styleList;
 	private JButton changeFont, changeColor, apply, clear;
-	
-	private Integer selectedRow;
 	
 	private Integer listHeight;
 	private Integer elementHeight = 20;

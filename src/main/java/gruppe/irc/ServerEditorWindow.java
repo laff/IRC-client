@@ -20,6 +20,9 @@ public class ServerEditorWindow extends JFrame {
    private JLabel srvNmL, grpNmL, prtRngL, srvAdrL;
    private JButton addItem, close;
   
+   /**
+    * Constructor that sets up the UI, and adds action-listeners.
+    */
     ServerEditorWindow() {
     
         super(IRCClient.messages.getString("srvEd.windTitle"));    
@@ -93,6 +96,7 @@ public class ServerEditorWindow extends JFrame {
         
         if (!serverName.getText().isEmpty() && !groupName.getText().isEmpty() && 
                 !servAddr.getText().isEmpty() && !portRange.getText().isEmpty()) {
+            
             s = new ServerListItem(LoginMenu.sli.size(), serverName.getText(), groupName.getText(),
                     servAddr.getText(), portRange.getText());
             LoginMenu.sli.addElement(s);

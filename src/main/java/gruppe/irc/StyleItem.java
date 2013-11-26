@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package gruppe.irc;
 
 import java.awt.Color;
@@ -11,7 +7,7 @@ import java.awt.Font;
  * This class contains information about each style.
  * This information is style name (based on the en_US.properties), 
  * color, the colors name and the font name.
- * @author John
+ * @author Olaf
  */
 public class StyleItem {
 	

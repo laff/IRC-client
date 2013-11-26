@@ -16,7 +16,7 @@ import javax.swing.JMenuItem;
 
 /**
  *
- * @author HS Vikar
+ * @author Olaf
  */
 public class IRCClientFrame extends JFrame implements ActionListener {
 	
@@ -34,7 +34,7 @@ public class IRCClientFrame extends JFrame implements ActionListener {
 		int initSize = 500;
 	
 		// Fantastic GUI settings.
-		setTitle("I was told this is the server");
+		setTitle(IRCClient.messages.getString("frame.Title"));
 		// Exit button should only close the program if it is the last IRC-Frame.
 		// Perhaps a popup check should be sent?
 		setDefaultCloseOperation( JFrame.DO_NOTHING_ON_CLOSE ); // ? ! Because we have listener instead
@@ -44,7 +44,7 @@ public class IRCClientFrame extends JFrame implements ActionListener {
 		setVisible(true);
         setLocationRelativeTo(null);
 		
-		// Creating some JMenus? login for starters..
+        
 		menuBar = new JMenuBar();
 		moreMenu = new JMenu(IRCClient.messages.getString("frame.more"));
 		showLogin = new JMenuItem(IRCClient.messages.getString("frame.login"));
@@ -151,6 +151,5 @@ public class IRCClientFrame extends JFrame implements ActionListener {
 			int newHeight = self.getHeight();
 			thisTab.resizeTabs(newHeight);
 		}
-
 	};
 }

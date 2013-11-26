@@ -12,23 +12,25 @@ import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;
 
 /**
- * Inherits properties from GenericTab
- * @author HS Vikar
+ * Inherits properties from GenericTab, and is the tab where the server-messages
+ * are displayed.
+ * @author Anders, Olaf, Christian
  */
 public class ServerTab extends GenericTab {
     
+    private JButton quit;
 	/**
 	 * Constructor for ServerTab
 	 * @param mng Pointer to parent TabManager
 	 * @param dim The dimension of the IRCClientFrame
 	 */
 	public ServerTab(TabManager mng, Dimension dim) {
-		super("Server", mng, dim);
+		super(IRCClient.messages.getString("srvTab.server"), mng, dim);
         		
 		text.setBackground(Color.LIGHT_GRAY);
 		text.setEditable(false);
 
-		JButton quit = new JButton("Close window");
+		quit = new JButton(IRCClient.messages.getString("srvTab.close"));
 		quit.addActionListener(new QuitListener());
 
 		add(quit, BorderLayout.NORTH);
@@ -45,7 +47,7 @@ public class ServerTab extends GenericTab {
 
         try {	
             doc.insertString(pos, msg, IRCClient.attrs.returnAttribute(2));
-        } catch (BadLocationException ble) {};					
+        } catch (BadLocationException ble) {}				
 
         //When new messages appears in the window, it scrolls down automagically.
         //Borrowed from Oyvind`s example.
@@ -59,7 +61,6 @@ public class ServerTab extends GenericTab {
             }
         });
     }
-    
 	
 	/**
 	 * ActionListener for the quit-button

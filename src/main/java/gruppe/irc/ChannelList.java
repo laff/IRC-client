@@ -1,14 +1,8 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package gruppe.irc;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 import javax.swing.*;
@@ -17,7 +11,7 @@ import javax.swing.event.DocumentListener;
 
 /**
  *
- * @author John
+ * @author Olaf, Christian
  */
 public class ChannelList extends JFrame implements DocumentListener {
 	
@@ -83,10 +77,8 @@ public class ChannelList extends JFrame implements DocumentListener {
 		add(listPane, BorderLayout.CENTER);	
 	}
 	
-	public void addChannels(Vector<String> kanels) {
-
-		channels = kanels;
-
+	public void addChannels(Vector<String> chans) {
+		channels = chans;
 	}
 	
 

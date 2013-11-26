@@ -110,7 +110,6 @@ public class ChannelTab extends GenericTab  {
 		namesSplitted = names.split(" ");
 		
 		sortedNames = sortNames(namesSplitted);
-		
 		updateNameList();
     }
     

@@ -56,6 +56,11 @@ public class ServerListItem {
         this.portRange = prt;
     } 
     
+    /**
+     * toString-method that adds serveritems to the file, with the same
+     * format as the original servers.ini
+     * @return a line that holds information about one server.
+     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
