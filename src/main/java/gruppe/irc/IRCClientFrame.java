@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package gruppe.irc;
 
 import java.awt.BorderLayout;
@@ -9,7 +5,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -27,8 +22,9 @@ public class IRCClientFrame extends JFrame implements ActionListener {
 	
 	// Variables for the menu.
 	private JMenuBar menuBar;
-	private JMenu moreMenu, serverMgmt;
-	private JMenuItem showLogin, showAttrC, importServers, addServer;
+	private JMenu moreMenu, serverMgmt, actions, help;
+	private JMenuItem showLogin, showAttrC, importServers, addServer, listUsers,
+                      about, helpContent;
 	
 	public TabManager thisTab;
 	private String frameTitle;
@@ -61,12 +57,28 @@ public class IRCClientFrame extends JFrame implements ActionListener {
         importServers.addActionListener(IRCClientFrame.this);
         addServer = new JMenuItem(IRCClient.messages.getString("frame.addServ"));
         addServer.addActionListener(IRCClientFrame.this);
+        
+        actions = new JMenu(IRCClient.messages.getString("frame.action"));
+        listUsers = new JMenuItem(IRCClient.messages.getString("frame.list"));
+        listUsers.addActionListener(IRCClientFrame.this);
+        
+        help = new JMenu(IRCClient.messages.getString("frame.help"));
+        about = new JMenuItem(IRCClient.messages.getString("frame.about"));
+        about.addActionListener(IRCClientFrame.this);
+        helpContent = new JMenuItem(IRCClient.messages.getString("frame.helpContent"));
+        helpContent.addActionListener(IRCClientFrame.this);
+        
         serverMgmt.add(importServers);
         serverMgmt.add(addServer);
 		moreMenu.add(showLogin);
 		moreMenu.add(showAttrC);
+        actions.add(listUsers);
+        help.add(about);
+        help.add(helpContent);
 		menuBar.add(moreMenu);
         menuBar.add(serverMgmt);
+        menuBar.add(actions);
+        menuBar.add(help);
 		add(menuBar, BorderLayout.NORTH);
 		
 		// Creating the TabManager panel.
@@ -110,8 +122,16 @@ public class IRCClientFrame extends JFrame implements ActionListener {
 			
 		} else if (ae.getSource() == importServers) {
             IRCClient.loginMenu.importServers();
+            
         } else if (ae.getSource() == addServer) {
             IRCClient.loginMenu.addServer();
+            
+        } else if (ae.getSource() == listUsers) {
+            thisTab.writeToLn("LIST");
+        } else if (ae.getSource() == helpContent) {
+        
+        } else if (ae.getSource() == about) {
+      
         }
         
 	}

@@ -113,7 +113,6 @@ public class MessageHandler {
 		} else {
 			manager.createChannelNameString(names);
 		}
-		
     }
 
     /**
@@ -131,7 +130,6 @@ public class MessageHandler {
      * enough permission.
      * @param message Error-message given by the server.
      */
-
     void handleNotOp(String message) {
         String temp = message.substring(message.indexOf("#"));
         
@@ -171,6 +169,7 @@ public class MessageHandler {
 		channelL.addChannels(listVector);
 		
 		Thread queryThread = new Thread() {
+            @Override
 			public void run() {
 				channelL.updateList();
 			}

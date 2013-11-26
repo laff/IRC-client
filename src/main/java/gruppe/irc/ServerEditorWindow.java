@@ -88,7 +88,7 @@ public class ServerEditorWindow extends JFrame {
      * Also writing the added server to the server-file, so it is saved for next
      * time the application is run.
      */
-    private void addServer() {
+    public void addServer() {
         ServerListItem s;
         
         if (!serverName.getText().isEmpty() && !groupName.getText().isEmpty() && 

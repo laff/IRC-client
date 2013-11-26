@@ -306,14 +306,7 @@ public class LoginMenu extends JFrame implements ItemListener {
     public void addServer() {
         ServerEditorWindow servEdit = new ServerEditorWindow();
     }
-    
-    
-    //OBS: The next three functions are made just for some easy testing on the
-    // functionality of "maintaining" the list of servers.
-    
-    public void editServerList() {
-        
-    }
+
     
     public static void writeFile() {
         BufferedWriter bw;
