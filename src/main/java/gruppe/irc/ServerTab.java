@@ -72,7 +72,7 @@ public class ServerTab extends GenericTab {
 			try {
 				writeToLn("QUIT");
 			} catch (Exception exc) {
-				// TODO: Exception handling
+                System.out.println(IRCClient.messages.getString("exception") + exc.getMessage());
 			}
 			manager.closeConnection();
 		}

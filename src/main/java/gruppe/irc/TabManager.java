@@ -34,7 +34,6 @@ import java.awt.*;
 import java.util.Vector;
 
 import javax.swing.*;
-import javax.swing.JInternalFrame.JDesktopIcon;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -46,7 +45,6 @@ import javax.swing.event.ChangeListener;
 
 public class TabManager extends JPanel {
 	
-	//private JPanel serverTab;
 	private Vector<GenericTab> channelTabs = new Vector<GenericTab>();
 	private Vector<GenericTab> personalTabs = new Vector<GenericTab>();
     private ServerTab serverTab;
@@ -69,9 +67,8 @@ public class TabManager extends JPanel {
 	 * While the maximum length is limited to nine characters, clients
 	 * SHOULD accept longer strings as they may become used in future
 	 * evolutions of the protocol.
-	 * 
-	 * PS! Should rather have this inside the loginmenu logic.
 	 */
+    
 	//The height offset between the IRCClientFrame and the tabs
 	private static int heightOffset = 80;
 	private Dimension tabDimension;
@@ -79,7 +76,7 @@ public class TabManager extends JPanel {
 	// The server name this TabManager is connected to.
 	private String serverName, nick, altNick, channelNames = "";
 	
-	// A Bunch of components
+    // Tabbedpane for organizing our tabs.
 	private JTabbedPane tabbedPane;
 	
 	public TabManager (IRCClientFrame prnt) {
@@ -94,11 +91,10 @@ public class TabManager extends JPanel {
 
         tabbedPane = new JTabbedPane();
         tabbedPane.addChangeListener( new tabChangeListener() );
-        tabbedPane.addTab("Server", serverTab);
+        tabbedPane.addTab(IRCClient.messages.getString("tabM.server"), serverTab);
         add(tabbedPane, BorderLayout.NORTH);
         tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
         mh = new MessageHandler(TabManager.this);
-        
 	}
 	
 	
@@ -124,11 +120,7 @@ public class TabManager extends JPanel {
 	public void distributeMessage (String prefix, String command, String alias, String server, String message) {
         String msg="", chanName;
 		if (server.equals(serverName) && alias.equals(nick)) {
-			/*
-                     System.out.println("I distributeMessage er message lik: "+message);
-                     System.out.println("I distributeMessage er command lik: "+command);
-                     System.out.println("I distributeMessage er prefix lik: "+prefix);
-*/
+
 			if (command.equals("PRIVMSG") && !message.startsWith("#")) {
                 mh.handlePriv(prefix, message);
                 
@@ -144,14 +136,14 @@ public class TabManager extends JPanel {
             } else if (command.equals("MODE")) {
                 mh.handleMode(prefix, message);
             
-                // Command: 353 means that the output of the NAMES-command comes now.
+            // 353 means that the output of the NAMES-command comes now.
             } else if (command.equals("353")) {       
 				mh.handleNames(message, false);
             
 			// Handles the end of /names list
 			} else if (command.equals("366")) {
 				mh.handleNames(message, true);
-				
+            // 482 is the command received when missing permission to do an action.
             } else if (command.equals("482")) {
                 mh.handleNotOp(message);
                 
@@ -277,12 +269,17 @@ public class TabManager extends JPanel {
             if (chanTab.getFilter().equals(chanName)) {
 				
 				chanTab.addNames(channelNames);
-				
 			}
         }
-		
 		channelNames = "";
     }
+    
+    /**
+     * Used for putting all occasions of the /names-command for one channel together.
+     * If it`s many users on the channel, the string including the names is splitted
+     * in multiple messages.
+     * @param names A string containing users on a channel
+     */
 	
 	public void createChannelNameString(String names) {
 		if (channelNames.length() > 0) {
@@ -429,7 +426,7 @@ public class TabManager extends JPanel {
         channelTabs.addElement(chanTab = new ChannelTab(chanName, this, tabDimension));
         tabbedPane.addTab(chanName, null, chanTab);
         tabbedPane.setSelectedIndex(tabbedPane.indexOfTab(chanName));
-        chanTab.addText(chanName, "Now talking in "+chanName+"\n", false, 2);
+        chanTab.addText(chanName, IRCClient.messages.getString("tabM.nowTalk")+" "+chanName+"\n", false, 2);
     }
     
     /**

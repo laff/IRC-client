@@ -3,7 +3,6 @@ package gruppe.irc;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -14,20 +13,25 @@ import java.util.Collections;
 import javax.swing.*;
 
 /**
- *
+ * The layout of a channeltab, it extends GenericTab to get some of the mutual
+ * functions for all tabs, but it also need some specificed functionality.
  * @author Christian
  */
 public class ChannelTab extends GenericTab  {
 	
 	private JButton close, attach;
-	private ChannelTab self;
+    private JPanel panel;
 	private JFrame newFrame;
     private JList list;
     private JMenuItem item;
     private JPopupMenu popUp;
     private JMenu modes;
+    private JSplitPane splitPane;
+    private JScrollPane usersScrollPane;
+    private ChannelTab self;
     private DefaultListModel listModel;
 	private ArrayList sortedNames;
+    
     
 	public ChannelTab (String chanName, TabManager mng, Dimension dim) {
 		super(chanName, mng, dim);
@@ -35,16 +39,16 @@ public class ChannelTab extends GenericTab  {
 		//Magic numbers
 		int width = 30;
 		double resizeWeight = 0.92;
-        // Adding some elements to the list, the hard way.
+
         listModel = new DefaultListModel();
    
         add(scrollPane, BorderLayout.WEST);
         list = new JList(listModel);
-        JScrollPane usersScrollPane = new JScrollPane(list);
+        usersScrollPane = new JScrollPane(list);
         add(usersScrollPane, BorderLayout.EAST);
         
         //Splits the users and text components.
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                     scrollPane, usersScrollPane);
         
         // Setting some values for our list.
@@ -54,14 +58,6 @@ public class ChannelTab extends GenericTab  {
         list.addMouseListener(new MouseClick());
         list.setSize(dim.height, width);
         list.setFixedCellWidth(width);
-                
-        
-        
-     //   ListSelectionModel listSelectionModel = list.getSelectionModel();
-      //  listSelectionModel.addListSelectionListener(new ListListener());
-        
-      //  list.setSelectionModel(listSelectionModel);
-
 
         //We want the textpane to be the left component, we also want the left
         //component to have the highest weighting when resizing the window.
@@ -71,9 +67,7 @@ public class ChannelTab extends GenericTab  {
 
         add(splitPane, BorderLayout.CENTER);
         
-        //TEMP: Background color set just to show the diff
-        
-		JPanel panel = new JPanel();
+		panel = new JPanel();
 		close = new JButton(IRCClient.messages.getString("chan.close"), null);
 		attach = new JButton(IRCClient.messages.getString("chan.detach"), null);
 		
@@ -120,11 +114,12 @@ public class ChannelTab extends GenericTab  {
 		updateNameList();
     }
     
+    /**
+     * The fully sorted 'sortedNames'-array is added to the list-model, one by one.
+     * Run as an own thread, to prevent issues when a lot of users to be added.
+     */
 	public void updateNameList() {
-	
-		// convert from the total name string to arraylist
-		// set the new arraylist to the global sorted
-		
+
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				
@@ -338,10 +333,21 @@ public class ChannelTab extends GenericTab  {
         writeToLn("MODE "+this.filter+mode+selectedUser);
     }
     
+    /**
+     * Part of the action when our user rightclicks, and choose 'Kick' on 
+     * the selected user.
+     * @param selectedUser Username of the selected user.
+     */
     private void kickUser(String selectedUser) {
         writeToLn("KICK "+this.filter+" "+selectedUser);
     }
 
+    /**
+     * If someone was kicked from the channel, the action is displayed, and also
+     * the list of names is updated.
+     * @param sender Who is kicking someone.
+     * @param target Who is being kicked.
+     */
     public void updateKick(String sender, String target) {
         addText(this.filter, target+" "+IRCClient.messages.getString("chan.kick")+" "+sender, false, 2);
         writeToLn("NAMES "+this.filter); 
@@ -373,7 +379,6 @@ public class ChannelTab extends GenericTab  {
                     setupItems();
                     popUp.show(list, e.getX(), e.getY());
                 }
-
 
                 //Test det her med flere brukere inne på chan:
                 if (!list.getCellBounds(list.getSelectedIndex(), list.getSelectedIndex()).contains(e.getPoint())){
