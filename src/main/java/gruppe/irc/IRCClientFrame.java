@@ -24,8 +24,13 @@ public class IRCClientFrame extends JFrame implements ActionListener {
 	// Variables for the menu.
 	private JMenuBar menuBar;
 	private JMenu moreMenu, serverMgmt, actions, help;
-	private JMenuItem showLogin, showAttrC, importServers, addServer, listUsers,
-                      about, helpContent;
+	private JMenuItem   showLogin, 
+                        showAttrC, 
+                        importServers, 
+                        addServer, 
+                        listUsers,
+                        about, 
+                        helpContent;
 	
 	public TabManager thisTab;
 	private String frameTitle;
@@ -105,6 +110,10 @@ public class IRCClientFrame extends JFrame implements ActionListener {
 		return (frameTitle == null) ? true : false;
 	}
 	
+    public String getServerName() {
+        return frameTitle;
+    }
+    
 	/**
 	 * Different actions for our menuitems.
 	 * @param ae 
@@ -122,7 +131,7 @@ public class IRCClientFrame extends JFrame implements ActionListener {
 			
 		} else if (ae.getSource() == showAttrC) {
 			try {
-				IRCClient.attrC.ShowFrame(true);
+				IRCClient.attrC.showFrame(true);
 			} catch (Exception e) {}
 			
 		} else if (ae.getSource() == importServers) {
@@ -138,8 +147,12 @@ public class IRCClientFrame extends JFrame implements ActionListener {
 			displayHelp();
 			
         } else if (ae.getSource() == about) {
-			JOptionPane.showMessageDialog(null, IRCClient.messages.getString("frame.aboutText"), IRCClient.messages.getString("frame.about"), JOptionPane.INFORMATION_MESSAGE);
-			
+			JOptionPane.showMessageDialog(
+                null, 
+                IRCClient.messages.getString("frame.aboutText"), 
+                IRCClient.messages.getString("frame.about"), 
+                JOptionPane.INFORMATION_MESSAGE
+            );
         }
 	}
 	
@@ -152,7 +165,6 @@ public class IRCClientFrame extends JFrame implements ActionListener {
 	};
 	
 	private ComponentAdapter resizeListener = new ComponentAdapter() {
-		
 		@Override
 		public void componentResized(ComponentEvent e) {
 			int newHeight = self.getHeight();
@@ -171,6 +183,11 @@ public class IRCClientFrame extends JFrame implements ActionListener {
 			
 			helpOutput = helpOutput+i+": "+IRCClient.messages.getString("frame.helpText"+i)+"\n";
 		}
-		JOptionPane.showMessageDialog(null, helpOutput, IRCClient.messages.getString("frame.help"), JOptionPane.PLAIN_MESSAGE);
+		JOptionPane.showMessageDialog(
+            null, 
+            helpOutput, 
+            IRCClient.messages.getString("frame.help"), 
+            JOptionPane.PLAIN_MESSAGE
+        );
 	}
 }

@@ -539,7 +539,7 @@ public class TabManager extends JPanel {
 		// check that the tab is actually in the tabbedPane
 		int tabIndex = tabbedPane.indexOfTab(tabName);
 		if (tabIndex != -1) {
-			tabbedPane.remove( tabIndex );
+			tabbedPane.remove(tabIndex);
 		}
 	}
 	
@@ -556,6 +556,10 @@ public class TabManager extends JPanel {
     
     public String getNick() {
         return nick;
+    }
+    
+    public String getServer() {
+        return serverName;
     }
     
     /**

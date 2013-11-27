@@ -401,7 +401,10 @@ public class ChannelTab extends GenericTab  {
 	 *
 	 */
 	class ButtonListener implements ActionListener {
-
+        //Magic numbers
+        int width = 500;
+        int height = 500;
+        
 		public void actionPerformed(ActionEvent e) {
 			if (e.getSource() == close) {
 				manager.closeTab(filter);
@@ -410,14 +413,10 @@ public class ChannelTab extends GenericTab  {
 				}
 			} else if (e.getSource() == attach) {
 				if (isAttached == true) {
-					//Magic numbers
-					int width = 400;
-					int height = 500;
-					int minDim = 300;
-					
+
 					newFrame = new JFrame();
-					newFrame.setPreferredSize(new Dimension(width, height));
-					newFrame.setMinimumSize(new Dimension(minDim, minDim));
+					newFrame.setSize(width, height);
+                    newFrame.setTitle(manager.getServer() + " : "+ filter);
 					newFrame.add(self);
 					newFrame.setVisible(true);
 					attach.setText(IRCClient.messages.getString("chan.attach"));

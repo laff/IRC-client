@@ -9,8 +9,6 @@ import javax.swing.text.StyleConstants;
 
 /**
  * This is the class where our color and font options are stored.
- * 
- * 
  * @author Ch
  */
 public class SimpleAttributes extends SimpleAttributeSet {
@@ -22,7 +20,7 @@ public class SimpleAttributes extends SimpleAttributeSet {
 	private Vector<StyleItem> styles = new Vector<StyleItem>();
 	
 	// This is the amount of attributeSets available.
-    private final static Integer attributeAmount = 10;
+    private final static Integer attributeAmount = 4;
 	
 	// Declaring preferences variable.
 	private Preferences pref;
@@ -40,14 +38,7 @@ public class SimpleAttributes extends SimpleAttributeSet {
 		IRCClient.messages.getString("styleN.private"),
 		IRCClient.messages.getString("styleN.channel"),
 		IRCClient.messages.getString("styleN.server"),
-		IRCClient.messages.getString("styleN.personal"),
-		IRCClient.messages.getString("styleN.random2"),
-		IRCClient.messages.getString("styleN.random3"),
-		IRCClient.messages.getString("styleN.random4"),
-		IRCClient.messages.getString("styleN.random5"),
-		IRCClient.messages.getString("styleN.random6"),
-		IRCClient.messages.getString("styleN.random7")
-		
+		IRCClient.messages.getString("styleN.personal")		
 	};
 	
 	// Prefixes used to store preferences.
@@ -155,7 +146,7 @@ public class SimpleAttributes extends SimpleAttributeSet {
 			StyleConstants.setForeground(attributes[i], tmpStyle.getColorType());
 			
 			// Updating Font attributes.
-			if (tmpStyle.areFont()) {
+			if (tmpStyle.areFont() && customA) {
 
 				StyleConstants.setFontFamily(attributes[i], tmpStyle.getFontName());
 				StyleConstants.setFontSize(attributes[i], tmpStyle.getFontSize());

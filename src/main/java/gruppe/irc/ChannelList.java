@@ -1,6 +1,7 @@
 package gruppe.irc;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
@@ -66,6 +67,7 @@ public class ChannelList extends JFrame implements DocumentListener {
 		channelList = new JList(channelListModel);
 		channelList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		channelList.setFixedCellWidth(50);
+        channelList.setBackground(Color.GRAY);
 		channelList.addMouseListener(new MouseClick());
 		
 		listPane = new JScrollPane(channelList);

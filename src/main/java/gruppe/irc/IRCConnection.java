@@ -1,5 +1,6 @@
 package gruppe.irc;
 
+import static gruppe.irc.IRCClient.loginMenu;
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -34,6 +35,7 @@ public class IRCConnection extends IRCClient implements Runnable {
   public static final int ABORTED = 4;
 
   private int       state = DISCONNECTED;
+  private boolean   added;
   private String    server;
   private int       port;
   private String    nick; 
@@ -67,8 +69,15 @@ public class IRCConnection extends IRCClient implements Runnable {
     this.altNick    = altNick; 
     this.username   = username; 
     this.fullname   = fullname;
+    added           = false;
 	
-	newConnection(this, server);
+    // Functionality that checks if there already is a connection to a server with this nick
+    if (checkIfExists(server, nick)) {
+        close();
+    } else {
+        newConnection(this, server, nick);
+        connect();
+    }
   }
 
   /**
@@ -152,6 +161,12 @@ public class IRCConnection extends IRCClient implements Runnable {
 
 		addMessageListener (new LoggedOnDetector ());
 		state = CONNECTING;
+        
+        if (!added) {
+            loginMenu.addConnection();
+            added = true;
+        }
+        
 
 		try {
 			socket = new Socket(server,port); 
@@ -217,7 +232,10 @@ public class IRCConnection extends IRCClient implements Runnable {
 
 		state = DISCONNECTED;
 		
-		loginMenu.subConnection();
+    }
+    if (added) {
+        loginMenu.subConnection();
+        added = false;
     }
   }
 
@@ -251,7 +269,6 @@ public class IRCConnection extends IRCClient implements Runnable {
         state = CONNECTED;
 		
 		// letting the loginmenu know there is a new connectio in town.
-		loginMenu.addConnection();
 		
         removeMessageListener (this);
       }

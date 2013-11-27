@@ -3,6 +3,7 @@ package gruppe.irc;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Vector;
+import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -67,7 +68,6 @@ public class IRCClient {
 	
 	public static void newServer() {
 		try {
-			System.out.println("newserver called once");
 			ircFrames.add(new IRCClientFrame());
 		} catch (NullPointerException ohno) {
 			System.out.println("newserver called once more i guess");
@@ -86,12 +86,37 @@ public class IRCClient {
 		}
 	}
 
+    public Boolean checkIfExists(String serverName, String alias) {
+        Integer frameCount = ircFrames.size();
+        String frameTitle = serverName + " : " + alias;
+        Boolean exists  = false;
+        IRCClientFrame tmpFrame;
+        
+        for (int i = 0; i < frameCount; i++) {
+            tmpFrame = ((IRCClientFrame)ircFrames.elementAt (i));
+            exists = (frameTitle.equals(tmpFrame.getServerName()));
+        }
+
+        // If there is already an ircclient frame with the same 
+        if (exists) {
+            JOptionPane.showMessageDialog(
+                    null, 
+                    messages.getString("connectionExist"), 
+                    messages.getString("error"), 
+                    JOptionPane.ERROR_MESSAGE
+            );
+        }
+        return exists;
+    }
+    
 	/**
 	 * Method that receives connections from IRCConnection,
 	 * and gives them to TabManagers.. ?
 	 */
-	public void newConnection(IRCConnection newConnection, String serverName) {
+	public void newConnection(IRCConnection newConnection, String serverName, String alias) {
 	
+        String frameTitle = serverName + " : " + alias;
+        
 		try {
 			// count up how many frames in the ircFrames vector.
 			Integer frameCount = ircFrames.size();
@@ -104,7 +129,7 @@ public class IRCClient {
 			for (int i = 0; i < frameCount; i++) {
 
 				tmpFrame = ((IRCClientFrame)ircFrames.elementAt (i));
-				needsServerName = tmpFrame.noServerName();
+				needsServerName = tmpFrame.noServerName();     
 
 				// Set the "empty frame" variable with the index of the
 				// ircFrame with no title.
@@ -113,18 +138,17 @@ public class IRCClient {
 				}
 			}
 
-			// If an "empty frame" was not found, create a new frame.
-			// Then set the "empty frame" index to the last one created.
-			if (changeFrame == null) {
-				newServer();
-				changeFrame = ((IRCClientFrame)ircFrames.elementAt (frameCount));
-			}
+            // If an "empty frame" was not found, create a new frame.
+            // Then set the "empty frame" index to the last one created.
+            if (changeFrame == null) {
+                newServer();
+                changeFrame = ((IRCClientFrame)ircFrames.elementAt (frameCount));
+            }
 
-			// Give connection to the tab inside the frame
-			// And give the servername to the frame.
-			changeFrame.thisTab.setConnection(newConnection);
-			changeFrame.updateTitle(serverName);
-			System.out.println("newframes function sucess!");
+            // Give connection to the tab inside the frame
+            // And give the servername to the frame.
+            changeFrame.thisTab.setConnection(newConnection);
+            changeFrame.updateTitle(frameTitle);
 
 		} catch (NullPointerException npe) {
 			System.out.println("New frames function didnt get to run properly it seems");

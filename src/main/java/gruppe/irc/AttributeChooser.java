@@ -21,7 +21,7 @@ public class AttributeChooser extends JFrame {
 	
 	private Integer listHeight;
 	private Integer elementHeight = 20;
-	private Integer frameSpace = 25;
+	private Integer frameSpace = 35;
 	
 	private Integer attrAmount;
 	
@@ -48,6 +48,7 @@ public class AttributeChooser extends JFrame {
 		// The list
 		styleListModel = new DefaultListModel();
 		styleList = new JList(styleListModel);
+        styleList.setBackground(Color.GRAY);
 		styleList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 		// The buttons
@@ -136,6 +137,7 @@ public class AttributeChooser extends JFrame {
 				
 				theAttributes.updateAttributes();
 				theAttributes.savePreferences();
+                showFrame(false);
 			}
 		});
 
@@ -151,7 +153,7 @@ public class AttributeChooser extends JFrame {
 	 * 
 	 * @param really 
 	 */
-	public void ShowFrame(Boolean really) {
+	public void showFrame(Boolean really) {
 		setVisible(really);
 	}
 	

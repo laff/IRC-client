@@ -381,7 +381,7 @@ public class LoginMenu extends JFrame implements ItemListener {
 	public void login () {
 		long timeStart = System.currentTimeMillis();
 		long timeUsed = 0;
-		long maxTime = 50000;
+		long maxTime = 40000;
 		
 		putPrefs();
 	  
@@ -394,10 +394,10 @@ public class LoginMenu extends JFrame implements ItemListener {
 			  usernameVar,		// username
 			  fullnameVar		// fullname
 			  
-			  );
+        );
 
 		connection.addMessageListener (new GlobalMessageListener ());
-		connection.connect();
+		//connection.connect();
 		connection.addMessageListener (new PingListener ());
 		
 		
@@ -407,11 +407,11 @@ public class LoginMenu extends JFrame implements ItemListener {
 		  try {
 				Thread.currentThread().sleep (1000);
 				timeUsed = System.currentTimeMillis() - timeStart;
-
 		  } catch (Exception e) { }
 		}
 		//In case connection failed
-		if (connection.getState() != IRCConnection.CONNECTED || timeUsed > maxTime) {
+		if (connection.getState() != IRCConnection.CONNECTED || timeUsed >= maxTime) {
+            JOptionPane.showMessageDialog(null, IRCClient.messages.getString("loginM.timeout"));
 			connection.abortLogin();
 		}
 	}
