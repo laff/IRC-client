@@ -76,7 +76,7 @@ public class StyleItem {
 	 * @return 
 	 */
 	public Boolean areFont() {
-		return (fontName == "") ? false : true;
+		return (fontName.equals("")) ? false : true;
 	}
 	
 	/**

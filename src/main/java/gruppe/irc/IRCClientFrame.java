@@ -13,6 +13,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -34,11 +35,10 @@ public class IRCClientFrame extends JFrame implements ActionListener {
 		int initSize = 500;
 	
 		// Fantastic GUI settings.
-		setTitle(IRCClient.messages.getString("frame.Title"));
+		setTitle(IRCClient.messages.getString("frame.title"));
 		// Exit button should only close the program if it is the last IRC-Frame.
 		// Perhaps a popup check should be sent?
-		setDefaultCloseOperation( JFrame.DO_NOTHING_ON_CLOSE ); // ? ! Because we have listener instead
-        //setDefaultCloseOperation((EXIT_ON_CLOSE));
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		self = IRCClientFrame.this;
 		setSize(initSize, initSize);
 		setVisible(true);
@@ -104,6 +104,11 @@ public class IRCClientFrame extends JFrame implements ActionListener {
 	public Boolean noServerName() {
 		return (frameTitle == null) ? true : false;
 	}
+	
+	/**
+	 * Different actions for our menuitems.
+	 * @param ae 
+	 */
 
 	public void actionPerformed(ActionEvent ae) {
 		
@@ -128,12 +133,14 @@ public class IRCClientFrame extends JFrame implements ActionListener {
             
         } else if (ae.getSource() == listUsers) {
             thisTab.writeToLn("LIST");
+			
         } else if (ae.getSource() == helpContent) {
-        
+			displayHelp();
+			
         } else if (ae.getSource() == about) {
-      
+			JOptionPane.showMessageDialog(null, IRCClient.messages.getString("frame.aboutText"), IRCClient.messages.getString("frame.about"), JOptionPane.INFORMATION_MESSAGE);
+			
         }
-        
 	}
 	
 	private WindowListener exitListener = new WindowAdapter() {
@@ -152,4 +159,18 @@ public class IRCClientFrame extends JFrame implements ActionListener {
 			thisTab.resizeTabs(newHeight);
 		}
 	};
+	
+	/**
+	 * Function that displays some guidelines for how to use the application.
+	 * Hardcoded, and very simple.
+	 */
+	private void displayHelp() {
+		String helpOutput = "";
+		
+		for (int i = 1; i < 8; i++) {
+			
+			helpOutput = helpOutput+i+": "+IRCClient.messages.getString("frame.helpText"+i)+"\n";
+		}
+		JOptionPane.showMessageDialog(null, helpOutput, IRCClient.messages.getString("frame.help"), JOptionPane.PLAIN_MESSAGE);
+	}
 }

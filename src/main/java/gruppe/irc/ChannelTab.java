@@ -379,10 +379,15 @@ public class ChannelTab extends GenericTab  {
                     popUp.show(list, e.getX(), e.getY());
                 }
 
-                //Test det her med flere brukere inne på chan:
-                if (!list.getCellBounds(list.getSelectedIndex(), list.getSelectedIndex()).contains(e.getPoint())){
-                        list.removeSelectionInterval(list.getSelectedIndex(),list.getSelectedIndex());
-                }      
+                // A go at unselecting an item in the user list in the channel.
+				try {
+					if (!list.getCellBounds(list.getSelectedIndex(), list.getSelectedIndex()).contains(e.getPoint())){
+							list.removeSelectionInterval(list.getSelectedIndex(),list.getSelectedIndex());
+					}    
+				} catch (NullPointerException npe) {
+					System.out.println(IRCClient.messages.getString("nullPointer")+": "+npe.getMessage());
+				}
+  
            } catch (NullPointerException npe) {
                 System.out.println(IRCClient.messages.getString("nullPointer")+": "+npe.getMessage());
            }

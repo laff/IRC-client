@@ -120,10 +120,6 @@ public class IRCConnection extends IRCClient implements Runnable {
   // This method is used internally to parse an incoming message into its separate parts.
   private void message (String message) {
     String prefix="", command="";
-  
-	
-	// Sending prefix, command and message to IRCClient.java
-	
 	
     if (message.startsWith (":")) {
         prefix = message.substring (1, message.indexOf(" "));
@@ -147,109 +143,84 @@ public class IRCConnection extends IRCClient implements Runnable {
     }
   }
 
-  /**
-   * Method not to be called directly. 
-   * This method contains the code that actually connects to the server and handles the client server interaction. Contains a loop
-   * that continually listens to transmissions from the server.
-   */
-  public void run() {
+	/**
+	 * Method not to be called directly. 
+	 * This method contains the code that actually connects to the server and handles the client server interaction. Contains a loop
+	 * that continually listens to transmissions from the server.
+	 */
+	public void run() {
 
-    addMessageListener (new LoggedOnDetector ());
-    state = CONNECTING;
+		addMessageListener (new LoggedOnDetector ());
+		state = CONNECTING;
 
-    try {
-      socket = new Socket(server,port); 
-	    localHost = socket.getLocalAddress().getHostName();
-    } catch (Exception e) { // UnknownHostException or IOException
-      close();
-      return;
-    }
+		try {
+			socket = new Socket(server,port); 
+			localHost = socket.getLocalAddress().getHostName();
+		} catch (Exception e) { // UnknownHostException or IOException
+			close();
+			return;
+		}
 
-    // Contact with server established
+		// Contact with server established
 
-    try {
-      logging.fine ("Opening connection to server");
+		try {
+			logging.fine ("Opening connection to server");
 
-      input = new BufferedReader(new InputStreamReader(new DataInputStream(socket.getInputStream())));
-      output = new DataOutputStream(socket.getOutputStream());
+			input = new BufferedReader(new InputStreamReader(new DataInputStream(socket.getInputStream())));
+			output = new DataOutputStream(socket.getOutputStream());
 
-      logging.fine ("Sending nick to server");
-      writeln( "NICK "+nick+"\r\n"); 
+			logging.fine ("Sending nick to server");
+			writeln("NICK "+nick+"\r\n"); 
 
-      logging.fine ("Sending username to server");
-      writeln( "USER "+username+" "+localHost+" "+server+" :"+fullname+"\r\n");
-    } catch (Exception e) { // IOException
-      close();
-      return;
-    }
+			logging.fine ("Sending username to server");
+			writeln("USER "+username+" "+localHost+" "+server+" :"+fullname+"\r\n");
+		} catch (Exception e) { // IOException
+			close();
+			return;
+		}
 
-    try {
-      String message;  
-      while ((message = input.readLine()) != null) {
-        message(message);
-      } 
-    } catch (Exception e) {
-		  if (state != DISCONNECTING) {
-	      e.printStackTrace();
+		try {
+			String message;
+			while ((message = input.readLine()) != null) {
+				message(message);
+			} 
+		} catch (Exception e) {
+			if (state != DISCONNECTING) {
+				e.printStackTrace();
 			}
-    }
-    close();
-  }
+		}
+		close();
+		}
 
   // Method used internally to try to perform a clean shutdown of the client/server communication if something "bad" happens.
-  //
-  // Making this public so that I can play with it while developing - Olaf.
   public void close() {
-	  System.out.println("close function ran once.");
+	System.out.println("close function ran once.");
     logging.fine ("Closing connection to server");
+	
     if (state == CONNECTED) {
 		System.out.println("close function ran once while connected");
 		state = DISCONNECTING;
 
 		try { 
 		  output.writeBytes("QUIT"); 
-			  } catch (Exception e) {}
+		} catch (Exception e) {}
 
 		try { 
-		  socket.close(); 
+			socket.close(); 
 		} catch (Exception e) {}
 		socket = null;
 
 		try {
-		  messageThread.join();
+			messageThread.join();
 		} catch (InterruptedException e) {
 		}
 
 		state = DISCONNECTED;
 		
-		// Trying to call a logincheck each time Disconnected is set.
-		// !!!
-		// This function no longer works, but should be replaced in some way.
-		// content of loginCheck moved to IRCClient.java.
-		// !!!
-		//TabManager.loginCheck();
-		
+		loginMenu.subConnection();
     }
   }
 
-  /**
-   * Method that checks if connected.
-   */
-  /*
-  public boolean connectionStatus () {
-	  
-	while (state != CONNECTED) {
-	  try {
-			System.out.println("Please wait...");
-			Thread.currentThread().sleep (100);
-
-	  } catch (Exception e) { }
-	}
-	TabManager.setConnection(this);
-	return (state == CONNECTED) ? true : false;
-  }
-  */
-  
   /**
    * Method that returns the state of the connection
    * @returns an integer telling the state of this connection object. IRCConection.CONNECTED, IRCConnection.CONNECTING, IRCCOnnection.DISCONNECTING, IRCConnection.DISCONNECTED.
@@ -279,8 +250,8 @@ public class IRCConnection extends IRCClient implements Runnable {
       if (me.getCommand().equals ("375") || me.getCommand().equals("001")) {
         state = CONNECTED;
 		
-		// letting the loginmenu know it should be shown.
-		loginMenu.showem(false);
+		// letting the loginmenu know there is a new connectio in town.
+		loginMenu.addConnection();
 		
         removeMessageListener (this);
       }

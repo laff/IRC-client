@@ -23,14 +23,6 @@ import java.util.prefs.Preferences;
  */
 public class LoginMenu extends JFrame implements ItemListener {
 	
-	/**
-	 * Overrides the overlying default close operation to 
-	 * EXIT_ON_CLOSE
-	 */
-	@Override
-	public void setDefaultCloseOperation(int operation) {
-		super.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	}
     
     private static final Logger logging = Logger.getLogger (LoginMenu.class.getName());
 
@@ -52,6 +44,9 @@ public class LoginMenu extends JFrame implements ItemListener {
 	// Buttons for login and clear all fields.
     private JButton login, clear;
 	private JCheckBox autologin;
+	
+	// Integer counting how many connections we have.
+	private Integer nOfConnections;
 
 	/**
 	 * Constructor for our initial login window.
@@ -62,6 +57,8 @@ public class LoginMenu extends JFrame implements ItemListener {
         
 		super(IRCClient.messages.getString("loginM.header"));
 		setSize(330,280);
+		
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		
 		// Sets location based on passed variable.
 		try {	
@@ -90,6 +87,8 @@ public class LoginMenu extends JFrame implements ItemListener {
         login = new JButton(IRCClient.messages.getString("loginM.loginButton"));
         clear = new JButton(IRCClient.messages.getString("loginM.clearButton"));
         autologin = new JCheckBox();
+		
+		nOfConnections = 0;
         
 
         //Create a ComboBox, and add the server-names to it. And
@@ -151,6 +150,8 @@ public class LoginMenu extends JFrame implements ItemListener {
 		panel.add(clear);
 		panel.add(autologin);
 
+		this.addWindowListener(exitListener);
+		
 		getContentPane().add(panel);
 		setVisible(true);
 
@@ -200,31 +201,17 @@ public class LoginMenu extends JFrame implements ItemListener {
 	 * Method that either (true) saves the current preferences, 
 	 * or (false) clears the preferences.
 	 */
-	private void putPrefs(Boolean choice) {
+	private void putPrefs() {
 		Preferences pref = Preferences.userNodeForPackage(this.getClass());
 
-		if (choice) {
-			
 			pref.put("server", serverVar);
 			pref.putInt("port", portVar);
 			pref.put("nick", nickVar);
 			pref.put("altNick", altnickVar); 
 			pref.put("username", usernameVar);
 			pref.put("fullname", fullnameVar);
-			
 			pref.put("serverfilePath", serverfilePath);
-			
-			
-		} else {
-			
-			pref.put("server", "");
-			pref.putInt("port", 6667);
-			pref.put("nick", "");
-			pref.put("altNick", ""); 
-			pref.put("username", "");
-			pref.put("fullname", "");
-			
-		}
+
 	}
 	
 	/**
@@ -258,7 +245,9 @@ public class LoginMenu extends JFrame implements ItemListener {
                 //*CREATE*A*//
                 //*FAILSAFE*//
                 //**********//
-
+				
+				showem(false);
+				
                 Thread queryThread = new Thread() {
                     @Override
                     public void run() {
@@ -270,16 +259,12 @@ public class LoginMenu extends JFrame implements ItemListener {
             }
         });
 	
-        // Action for Clear button. Add "remove last prefs" aswell?
+        // Action for Clear button. Clears textfields, but does not clear the preferences.
         clear.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent ae) {
 
-                // Clear preferences
-                putPrefs(false);
-
                 // Clear textfields.
-    //			server.setText("");
                 port.setText("");
                 nick.setText("");
                 altnick.setText("");
@@ -394,8 +379,11 @@ public class LoginMenu extends JFrame implements ItemListener {
 }
 
 	public void login () {
-
-		putPrefs(true);
+		long timeStart = System.currentTimeMillis();
+		long timeUsed = 0;
+		long maxTime = 50000;
+		
+		putPrefs();
 	  
 		IRCConnection connection = new IRCConnection (
 			  
@@ -410,29 +398,51 @@ public class LoginMenu extends JFrame implements ItemListener {
 
 		connection.addMessageListener (new GlobalMessageListener ());
 		connection.connect();
-		
-		// Opens the server dialogue window, sends the location of loginmenu.
-		//connection.connectedDialogue(getLocation());
-		
 		connection.addMessageListener (new PingListener ());
 		
-		long timeStart = System.currentTimeMillis();
-		long timeUsed = 0;
-        
-		while (connection.getState() != IRCConnection.CONNECTED && timeUsed < 50000) {
+		
+
+		// Timeout functionality.
+		while (connection.getState() != IRCConnection.CONNECTED && timeUsed < maxTime) {
 		  try {
-				System.out.println("Please wait...");
 				Thread.currentThread().sleep (1000);
 				timeUsed = System.currentTimeMillis() - timeStart;
 
 		  } catch (Exception e) { }
 		}
 		//In case connection failed
-		if (connection.getState() != IRCConnection.CONNECTED) {
+		if (connection.getState() != IRCConnection.CONNECTED || timeUsed > maxTime) {
 			connection.abortLogin();
 		}
-
-		//TabManager.setConnection(connection);
-		
 	}
+	
+	
+	public void addConnection() {
+		nOfConnections++;
+	}
+	
+	public void subConnection() {
+		nOfConnections--;
+		showem(true);
+	}
+	
+	public void checkQuit() {
+		
+		// If connections are less than one, quit system.
+		if (nOfConnections < 1) {
+			System.exit(0);
+		
+		// else, hide the frame.
+		} else {
+			showem(false);
+		}
+	}
+	
+	private WindowListener exitListener = new WindowAdapter() {
+		@Override
+		public void windowClosing(WindowEvent e) {
+			checkQuit();
+		}
+	};
+	
 }

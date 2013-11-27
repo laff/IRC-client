@@ -151,16 +151,22 @@ public class GenericTab extends JPanel implements ActionListener {
                     command = fromText.substring(fromText.indexOf("/")+1, fromText.indexOf(" "));
                     receiver = temp.substring(0, temp.indexOf(" "));
                     message = temp.substring(temp.indexOf(" ")+1, temp.length());
-                } catch (StringIndexOutOfBoundsException sioobe) {}
                 
-                if (receiver.startsWith("#")) {
-                    manager.distributeChannel(manager.getNick(), receiver, message+"\n", false);
-                } else {
-                    manager.checkPersonalTabs(receiver, message+"\n", false);
-                }
-                writeToLn(command.toUpperCase()+" "+receiver+" :"+message);
                 
-            } else if (fromText.startsWith("/")) {
+					if (receiver.startsWith("#")) {
+						manager.distributeChannel(manager.getNick(), receiver, message+"\n", false);
+					} else {
+						manager.checkPersonalTabs(receiver, message+"\n", false);
+					}
+
+					writeToLn(command.toUpperCase()+" "+receiver+" :"+message);
+					
+				} catch (StringIndexOutOfBoundsException sioobe) {
+					
+					addText(manager.getNick(), IRCClient.messages.getString("gen.noText")+"\n", false, 3);
+				} 
+				
+			} else if (fromText.startsWith("/")) {
                 
                 try {
                     command = fromText.substring(fromText.indexOf("/")+1, fromText.indexOf(" "));

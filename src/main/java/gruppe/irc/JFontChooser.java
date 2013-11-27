@@ -84,23 +84,6 @@ public class JFontChooser extends JComponent
 	// instance variables
 	protected int dialogResultValue = ERROR_OPTION;
 	
-	// Removed this part as we are using our own messages
-	//
-	//private ResourceBundle messageCatalog = ResourceBundle.getBundle(JFontChooser.class.getName() + "Messages", getLocale());
-	/*
-	protected String _(String key)
-	{
-		String value = key;
-		try
-		{
-			value = messageCatalog.getString(key);
-		}
-		catch (MissingResourceException e)
-		{
-		}
-		return value;
-	}
-	*/
 	private String[] fontStyleNames = null;
 	private String[] fontFamilyNames = null;
 	private String[] fontSizeStrings = null;

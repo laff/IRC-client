@@ -58,13 +58,7 @@ public class SimpleAttributes extends SimpleAttributeSet {
 	
 	/*
 	 * This is the constructor that initiates all Attribute action
-	 * 
-	 * Notes:
-	 * - This is an example of how font and color are set:
-	 *
-	 *		StyleConstants.setFontFamily(attrs[0], "SansSerif");
-	 *		StyleConstants.setForeground(attrs[0], Color.black);
-	 *		 
+	 * 	 
 	**/
     public SimpleAttributes() {
 		
@@ -78,7 +72,6 @@ public class SimpleAttributes extends SimpleAttributeSet {
 		pref = Preferences.userNodeForPackage(this.getClass());
 		
 		defaultCheck();
-		
     }
 	
     /**
@@ -113,7 +106,6 @@ public class SimpleAttributes extends SimpleAttributeSet {
 		if (customA) {
 			getPreferredAttributes();
 		}
-		System.out.println("customA is "+customA);
 		
 		initiateAttributes();
 	}
@@ -194,7 +186,7 @@ public class SimpleAttributes extends SimpleAttributeSet {
 	
 	/**
 	 * Function that "clears" the custom preferences.
-	 * What it really does is setting hte variable customPrefix to "false".
+	 * What it really does is setting the variable customPrefix to "false".
 	 * And when the next time preferences load, it says "false" instead of "true".
 	 */
 	public void clear() {
@@ -205,8 +197,6 @@ public class SimpleAttributes extends SimpleAttributeSet {
 	/*
 	 * Function that either initiates the default or custom attributes to the attributeSet.
 	 * Fonts are not set by default.
-	 * 
-	 * OBS! This function should only insert colors into the attributes, while rather calling updateAttributes after.
 	 */
 	private void initiateAttributes() {
 
@@ -218,7 +208,6 @@ public class SimpleAttributes extends SimpleAttributeSet {
 			Color tmpColor = (customA) ? tmpStyle.getColorType() : defaultColors;
 			// Add to attributes
 			attributes[i] = new SimpleAttributeSet();
-	//		StyleConstants.setForeground(attributes[i], tmpColor);
 			
 			// Add color to styleitem
 			tmpStyle.setColorType(tmpColor);
