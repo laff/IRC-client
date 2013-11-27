@@ -32,6 +32,8 @@ package gruppe.irc;
 
 import java.awt.*;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -43,6 +45,8 @@ import javax.swing.event.ChangeListener;
  */
 
 public class TabManager extends JPanel {
+    
+    private static final Logger logging = Logger.getLogger (TabManager.class.getName());
 	
 	private Vector<GenericTab> channelTabs = new Vector<GenericTab>();
 	private Vector<GenericTab> personalTabs = new Vector<GenericTab>();
@@ -467,7 +471,7 @@ public class TabManager extends JPanel {
 		try {
 			connection.close();
 		} catch (NullPointerException npe) {
-			System.out.println(IRCClient.messages.getString("errorClosing")+" "+npe.getMessage());
+            logging.log(Level.SEVERE, IRCClient.messages.getString("errorClosing"+": "+npe.getMessage()));
 		}
 		parent.setVisible(false);
 		parent.dispose();
@@ -501,8 +505,7 @@ public class TabManager extends JPanel {
 					try {
 						writeToLn("PART "+filter);
 					} catch (Exception exc) {
-						//TODO: Exception handling
-						//This did ugly things when closing a connection that had timed out
+                        logging.log(Level.SEVERE, IRCClient.messages.getString("tabM.closeChan"+": "+exc.getMessage()));
 					}
                     channelTabs.remove(i);
                     break;
@@ -590,7 +593,6 @@ public class TabManager extends JPanel {
 		public void stateChanged(ChangeEvent arg0) {
 			int i = tabbedPane.getSelectedIndex();
 			tabbedPane.setForegroundAt(i, Color.BLACK);
-			
 		}
     }
 }

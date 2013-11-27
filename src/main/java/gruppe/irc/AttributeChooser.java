@@ -22,7 +22,6 @@ public class AttributeChooser extends JFrame {
 	private Integer listHeight;
 	private Integer elementHeight = 20;
 	private Integer frameSpace = 35;
-	
 	private Integer attrAmount;
 	
 	private Color selectedColor;

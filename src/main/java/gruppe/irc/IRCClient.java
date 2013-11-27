@@ -3,6 +3,8 @@ package gruppe.irc;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -12,6 +14,8 @@ import javax.swing.UnsupportedLookAndFeelException;
  * @author Olaf, Anders
  */
 public class IRCClient {
+    
+    private static final Logger logging = Logger.getLogger (IRCClient.class.getName());
 	
 	// Vector to store the tab managers.
 	private static Vector<IRCClientFrame> ircFrames =  new Vector<IRCClientFrame>();
@@ -38,23 +42,17 @@ public class IRCClient {
 		
 		//Sets look and feel to system default
 		try {
-			UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (ClassNotFoundException f) {
-			//System.out.println(messages.getString("ircClient.lookAndFeelError "));
-            System.out.println("Could not find system look and feel. Error: ");
-			f.printStackTrace();
+            logging.log(Level.SEVERE, IRCClient.messages.getString("ircClient.lookAndFeelError"+": "+f.getMessage()));
 		} catch (InstantiationException f) {
-			System.out.println("Could not use system look and feel. Error: ");
-			f.printStackTrace();
+            logging.log(Level.SEVERE, IRCClient.messages.getString("ircClient.lookAndFeel2"+": "+f.getMessage()));
 		} catch (IllegalAccessException f) {
-			System.out.println("Could not access system look and feel. Error: ");
-			f.printStackTrace();
+            logging.log(Level.SEVERE, IRCClient.messages.getString("ircClient.lookAndFeel3"+": "+f.getMessage()));
 		} catch (UnsupportedLookAndFeelException f) {
-			System.out.println("Unsupported look and feel. Error: ");
-			f.printStackTrace();
+            logging.log(Level.SEVERE, IRCClient.messages.getString("ircClient.lookAndFeel3"+": "+f.getMessage()));
 		}
-		
-		
+
 		// Initiate the first server.
 		newServer();
 		
@@ -63,14 +61,16 @@ public class IRCClient {
 		
 		// Initate the AttributeChooser.
 		attrC = new AttributeChooser();
-		
     }
 	
+    /**
+     * Creates the frame containing the first server.
+     */
 	public static void newServer() {
-		try {
+        try {
 			ircFrames.add(new IRCClientFrame());
-		} catch (NullPointerException ohno) {
-			System.out.println("newserver called once more i guess");
+		} catch (NullPointerException npe) {
+			logging.log(Level.SEVERE, IRCClient.messages.getString("nullPointer"+": "+npe.getMessage()));
 		}
 	}
 	/**
@@ -82,10 +82,17 @@ public class IRCClient {
 	 */
 	public void sendInfo(String prefix, String command, String alias, String serverName, String message) {
 		for (int i = 0; i < ircFrames.size(); i++) {
-			((IRCClientFrame)ircFrames.elementAt (i)).thisTab.distributeMessage(prefix, command, alias, serverName, message);
+			((IRCClientFrame)ircFrames.elementAt(i)).thisTab.distributeMessage(prefix, command, alias, serverName, message);
 		}
 	}
-
+    
+    /**
+     * Checks if we are already connected to a server with this name, using this nick.
+     * A message-dialog pops up if this is the case.
+     * @param serverName - The name of the server to check.
+     * @param alias - The nick to check
+     * @return true if server and nick exists.
+     */
     public Boolean checkIfExists(String serverName, String alias) {
         Integer frameCount = ircFrames.size();
         String frameTitle = serverName + " : " + alias;
@@ -93,17 +100,17 @@ public class IRCClient {
         IRCClientFrame tmpFrame;
         
         for (int i = 0; i < frameCount; i++) {
-            tmpFrame = ((IRCClientFrame)ircFrames.elementAt (i));
+            tmpFrame = ((IRCClientFrame)ircFrames.elementAt(i));
             exists = (frameTitle.equals(tmpFrame.getServerName()));
         }
 
-        // If there is already an ircclient frame with the same 
+        // If there is already an ircclient frame with the same server AND nickname.
         if (exists) {
             JOptionPane.showMessageDialog(
-                    null, 
-                    messages.getString("connectionExist"), 
-                    messages.getString("error"), 
-                    JOptionPane.ERROR_MESSAGE
+                null, 
+                messages.getString("connectionExist"), 
+                messages.getString("error"), 
+                JOptionPane.ERROR_MESSAGE
             );
         }
         return exists;
@@ -151,26 +158,27 @@ public class IRCClient {
             changeFrame.updateTitle(frameTitle);
 
 		} catch (NullPointerException npe) {
-			System.out.println("New frames function didnt get to run properly it seems");
+			logging.log(Level.SEVERE, IRCClient.messages.getString("nullPointer"+": "+npe.getMessage()));
 		}
 	}
 	
 	/**
-	 * 
+	 * Checks if a connection is in aborted state, if it is, the window is closed
 	 */
 	protected void checkAborted() {
 		int count = 0;
 		IRCClientFrame thisFrame = null;
+        
 		try {
 			count = ircFrames.size();
 		} catch (NullPointerException e) {
-			System.out.println("IRCClient::checkAborted:  Vector not initialized");
+            logging.log(Level.SEVERE, IRCClient.messages.getString("ircClient.nullVector"+": "+e.getMessage()));
 		}
 		for (int i = 0; i < count; ++i) {
 			try {
-				thisFrame = ((IRCClientFrame) ircFrames.elementAt(i));
+				thisFrame = ((IRCClientFrame)ircFrames.elementAt(i));
 			} catch (Exception e) {
-				System.out.println("IRCClient::checkAborted:  Could not retrieve vector member\n");
+				logging.log(Level.SEVERE, IRCClient.messages.getString("ircClient.noVectorMember"+": "+e.getMessage()));
 			}
 			//If the IRCframe does exist and the connection is in aborted state -> close window
 			if (thisFrame != null && thisFrame.thisTab.getConnectionState() == IRCConnection.ABORTED) {

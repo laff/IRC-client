@@ -9,6 +9,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.*;
 
@@ -18,6 +20,8 @@ import javax.swing.*;
  * @author Christian
  */
 public class ChannelTab extends GenericTab  {
+    
+    private static final Logger logging = Logger.getLogger (ChannelTab.class.getName());
 	
 	private JButton close, attach;
     private JPanel panel;
@@ -121,7 +125,6 @@ public class ChannelTab extends GenericTab  {
 
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				
 				listModel.removeAllElements();
 
 				for(int i = 0; i < sortedNames.size(); i++) {
@@ -385,11 +388,11 @@ public class ChannelTab extends GenericTab  {
 							list.removeSelectionInterval(list.getSelectedIndex(),list.getSelectedIndex());
 					}    
 				} catch (NullPointerException npe) {
-					System.out.println(IRCClient.messages.getString("nullPointer")+": "+npe.getMessage());
+					logging.log(Level.SEVERE, IRCClient.messages.getString("nullPointer"+": "+npe.getMessage()));
 				}
   
            } catch (NullPointerException npe) {
-                System.out.println(IRCClient.messages.getString("nullPointer")+": "+npe.getMessage());
+                logging.log(Level.SEVERE, IRCClient.messages.getString("ioException"+": "+npe.getMessage()));
            }
         }
    };

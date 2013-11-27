@@ -8,6 +8,8 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -21,6 +23,7 @@ import javax.swing.JOptionPane;
  */
 public class IRCClientFrame extends JFrame implements ActionListener {
 	
+    private static final Logger logging = Logger.getLogger(IRCClient.class.getName());
 	// Variables for the menu.
 	private JMenuBar menuBar;
 	private JMenu moreMenu, serverMgmt, actions, help;
@@ -41,15 +44,12 @@ public class IRCClientFrame extends JFrame implements ActionListener {
 	
 		// Fantastic GUI settings.
 		setTitle(IRCClient.messages.getString("frame.title"));
-		// Exit button should only close the program if it is the last IRC-Frame.
-		// Perhaps a popup check should be sent?
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		self = IRCClientFrame.this;
 		setSize(initSize, initSize);
 		setVisible(true);
         setLocationRelativeTo(null);
 		
-        
 		menuBar = new JMenuBar();
 		moreMenu = new JMenu(IRCClient.messages.getString("frame.more"));
 		showLogin = new JMenuItem(IRCClient.messages.getString("frame.login"));
@@ -93,12 +93,10 @@ public class IRCClientFrame extends JFrame implements ActionListener {
         this.addComponentListener(resizeListener);
         pack();
 	}
+    
 	/**
 	 * Method that picks the name of this frame's connection
 	 * And changes the title of this frame.
-	 * 
-	 * OBS! I dont know where to call this yet. - Olaf.
-	 * 
 	 * @param serverName : A string.
 	 */
 	public void updateTitle(String serverName) {
@@ -116,9 +114,8 @@ public class IRCClientFrame extends JFrame implements ActionListener {
     
 	/**
 	 * Different actions for our menuitems.
-	 * @param ae 
+	 * @param ae An action-event when a menu-item is clicked.
 	 */
-
 	public void actionPerformed(ActionEvent ae) {
 		
 		if (ae.getSource() == showLogin) {
@@ -126,13 +123,15 @@ public class IRCClientFrame extends JFrame implements ActionListener {
 			try {
 				IRCClient.loginMenu.showem(true);
 			} catch (NullPointerException npe) {
-				System.out.println("couldnt even try to show");
+                logging.log(Level.SEVERE, IRCClient.messages.getString("frame.show"+": "+npe.getMessage()));
 			}
 			
 		} else if (ae.getSource() == showAttrC) {
 			try {
 				IRCClient.attrC.showFrame(true);
-			} catch (Exception e) {}
+			} catch (Exception e) {
+                logging.log(Level.SEVERE, IRCClient.messages.getString("frame.show2"+": "+e.getMessage()));
+            }
 			
 		} else if (ae.getSource() == importServers) {
             IRCClient.loginMenu.importServers();

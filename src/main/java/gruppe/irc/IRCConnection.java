@@ -279,5 +279,4 @@ public class IRCConnection extends IRCClient implements Runnable {
 	  state = ABORTED;
 	  checkAborted();
   }
-  
 }

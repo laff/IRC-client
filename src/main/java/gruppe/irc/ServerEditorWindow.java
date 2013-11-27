@@ -11,7 +11,7 @@ import javax.swing.JTextField;
 
 /**
  * Simple window used for adding a server to the 'servers.ini'-file.
- * @author Ch
+ * @author Christian
  */
 public class ServerEditorWindow extends JFrame {
 

@@ -9,7 +9,7 @@ import javax.swing.text.StyleConstants;
 
 /**
  * This is the class where our color and font options are stored.
- * @author Ch
+ * @author Ch, Olaf
  */
 public class SimpleAttributes extends SimpleAttributeSet {
     
@@ -134,13 +134,12 @@ public class SimpleAttributes extends SimpleAttributeSet {
 
 	/**
 	 * Function that updates the attributes by going through the styleItem vector
-	 * 
 	 */
 	public void updateAttributes() {
-		
+		StyleItem tmpStyle;
 		for (int i = 0; i < attributeAmount; i++) {
 			
-			StyleItem tmpStyle = (StyleItem)styles.elementAt(i);
+			tmpStyle = (StyleItem)styles.elementAt(i);
 			
 			// Update Colors
 			StyleConstants.setForeground(attributes[i], tmpStyle.getColorType());
@@ -190,11 +189,12 @@ public class SimpleAttributes extends SimpleAttributeSet {
 	 * Fonts are not set by default.
 	 */
 	private void initiateAttributes() {
+        StyleItem tmpStyle;
 
 		// Currently only goes through eventual colors set
 		for (int i = 0; i < attributeAmount; i++) {
 			
-			StyleItem tmpStyle = (StyleItem)styles.elementAt(i);
+			tmpStyle = (StyleItem)styles.elementAt(i);
 			
 			Color tmpColor = (customA) ? tmpStyle.getColorType() : defaultColors;
 			// Add to attributes
@@ -202,7 +202,6 @@ public class SimpleAttributes extends SimpleAttributeSet {
 			
 			// Add color to styleitem
 			tmpStyle.setColorType(tmpColor);
-			
 		}
 		updateAttributes();
 	}

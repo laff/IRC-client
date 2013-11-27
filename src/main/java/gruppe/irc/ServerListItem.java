@@ -2,7 +2,7 @@ package gruppe.irc;
 
 /**
  * A class that holds information about one line in the servers.ini file.
- * @author Ch
+ * @author Christian
  */
 public class ServerListItem {
     String serverName, group, address, portRange;

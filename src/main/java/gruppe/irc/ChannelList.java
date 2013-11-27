@@ -6,6 +6,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -16,6 +18,7 @@ import javax.swing.event.DocumentListener;
  */
 public class ChannelList extends JFrame implements DocumentListener {
 	
+    private static final Logger logging = Logger.getLogger (ChannelList.class.getName());
 	private TabManager manager;
 	
 	private DefaultListModel channelListModel;
@@ -34,7 +37,6 @@ public class ChannelList extends JFrame implements DocumentListener {
 			
 		titleName = server;
 		manager = mng;
-		
 	}
 	
 	/**
@@ -48,7 +50,6 @@ public class ChannelList extends JFrame implements DocumentListener {
 				
 				createUI();
 				assembleList("");
-				
 			}
 		});
 	}
@@ -82,9 +83,7 @@ public class ChannelList extends JFrame implements DocumentListener {
 	public void addChannels(Vector<String> chans) {
 		channels = chans;
 	}
-	
 
-	
     public void insertUpdate(DocumentEvent ev) {
         search();
     }
@@ -94,7 +93,7 @@ public class ChannelList extends JFrame implements DocumentListener {
     }
 
 	public void changedUpdate(DocumentEvent de) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 	
 	/**
@@ -102,9 +101,6 @@ public class ChannelList extends JFrame implements DocumentListener {
 	 * and sends it with # as prefix.
 	 */
     public void search() {
-       
-		// Action to deselect list item?
-         
         String s = searchField.getText();
 
 		assembleList(s);
@@ -137,7 +133,8 @@ public class ChannelList extends JFrame implements DocumentListener {
 	}
 	
 	/**
-	 * 
+	 * Mouseaction for the channellist. Doubleclick on a channel will join this
+     * chan.
 	 */
    private class MouseClick extends MouseAdapter {
         
@@ -152,7 +149,7 @@ public class ChannelList extends JFrame implements DocumentListener {
                  }
      
            } catch (NullPointerException npe) {
-                System.out.println(IRCClient.messages.getString("nullPointer")+": "+npe.getMessage());
+                logging.log(Level.SEVERE, IRCClient.messages.getString("nullPointer"+": "+npe.getMessage()));
            }
         }
    };

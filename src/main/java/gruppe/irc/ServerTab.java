@@ -5,6 +5,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JScrollBar;
@@ -17,7 +19,7 @@ import javax.swing.text.BadLocationException;
  * @author Anders, Olaf, Christian
  */
 public class ServerTab extends GenericTab {
-    
+    private static final Logger logging = Logger.getLogger (ServerTab.class.getName());
     private JButton quit;
 	/**
 	 * Constructor for ServerTab
@@ -47,7 +49,9 @@ public class ServerTab extends GenericTab {
 
         try {	
             doc.insertString(pos, msg, IRCClient.attrs.returnAttribute(2));
-        } catch (BadLocationException ble) {}				
+        } catch (BadLocationException ble) {
+            logging.log(Level.SEVERE, IRCClient.messages.getString("badLoc"+": "+ble.getMessage()));
+        }				
 
         //When new messages appears in the window, it scrolls down automagically.
         //Borrowed from Oyvind`s example.
@@ -73,7 +77,7 @@ public class ServerTab extends GenericTab {
 			try {
 				writeToLn("QUIT");
 			} catch (Exception exc) {
-                System.out.println(IRCClient.messages.getString("exception") + exc.getMessage());
+                logging.log(Level.SEVERE, IRCClient.messages.getString("srvTab.quitExc"+": "+exc.getMessage()));
 			}
 			manager.closeConnection();
 		}

@@ -22,8 +22,7 @@ import java.util.prefs.Preferences;
  * @author Olaf
  */
 public class LoginMenu extends JFrame implements ItemListener {
-	
-    
+
     private static final Logger logging = Logger.getLogger (LoginMenu.class.getName());
 
 	// The variables for logging in.
@@ -339,7 +338,7 @@ public class LoginMenu extends JFrame implements ItemListener {
 			bReader = new BufferedReader(f);
 
 		} catch (FileNotFoundException fnfe) {
-			System.out.println(IRCClient.messages.getString("fileNotFound")+": "+fnfe.getMessage());
+			logging.log(Level.SEVERE, IRCClient.messages.getString("fileNotFound"+": "+fnfe.getMessage()));
 		}
 		
         try { 
@@ -372,9 +371,9 @@ public class LoginMenu extends JFrame implements ItemListener {
             bReader.close();
             
         }  catch (IOException ioe) {
-            System.err.println(IRCClient.messages.getString("ioException")+": "+ioe.getMessage());
+            logging.log(Level.SEVERE, IRCClient.messages.getString("ioException"+": "+ioe.getMessage()));
         } catch (NullPointerException npe) {
-            System.out.println(IRCClient.messages.getString("nullPointer")+": "+npe.getMessage());
+            logging.log(Level.SEVERE, IRCClient.messages.getString("nullPointer"+": "+npe.getMessage()));
         } 
 }
 
@@ -444,5 +443,4 @@ public class LoginMenu extends JFrame implements ItemListener {
 			checkQuit();
 		}
 	};
-	
 }

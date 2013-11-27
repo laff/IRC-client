@@ -34,10 +34,8 @@ public class GenericTab extends JPanel implements ActionListener {
 	protected JTextPane text;
 	protected JTextField write;
 	protected boolean isAttached;
-    
     protected AbstractDocument doc;
     protected StyledDocument styledDoc;
-    
     
     
 	public GenericTab (String tabFilter, TabManager mng, Dimension dim) {
@@ -52,7 +50,6 @@ public class GenericTab extends JPanel implements ActionListener {
 		text = new JTextPane();
 		text.setEditable(false);
 		text.setBackground(Color.LIGHT_GRAY);
-        
         
         
         styledDoc = text.getStyledDocument();
