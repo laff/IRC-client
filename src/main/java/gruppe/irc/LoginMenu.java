@@ -190,7 +190,17 @@ public class LoginMenu extends JFrame implements ItemListener {
 		username.setText(pref.get("username", ""));
 		fullname.setText(pref.get("fullname", ""));
 		
+		// First finds the serferfilepath.
+		// If the serverfilePath is not null, we check if the file exist.
+		// If the file does not exist, serverfilePath is set to null.
 		serverfilePath = pref.get("serverfilePath", null);
+		if (serverfilePath != null) {
+			File f = new File(serverfilePath);
+			if(!f.exists()) {
+				serverfilePath = null;
+			}
+		}
+
 	}
  
 	/**
@@ -206,8 +216,10 @@ public class LoginMenu extends JFrame implements ItemListener {
 			pref.put("altNick", altnickVar); 
 			pref.put("username", usernameVar);
 			pref.put("fullname", fullnameVar);
-			pref.put("serverfilePath", serverfilePath);
-
+			
+			if (serverfilePath != null) {
+				pref.put("serverfilePath", serverfilePath);
+			}
 	}
 	
 	/**
@@ -334,53 +346,57 @@ public class LoginMenu extends JFrame implements ItemListener {
         BufferedReader bReader = null;
 		FileReader f;
         
-		try {
-			if (serverfilePath == null) {
-                importServers();
-            }
-            
-			f  = new FileReader(serverfilePath);
-			bReader = new BufferedReader(f);
-
-		} catch (FileNotFoundException fnfe) {
-			logging.log(Level.SEVERE, IRCClient.messages.getString("fileNotFound"+": "+fnfe.getMessage()));
-		}
 		
-        try { 
-            while ((temp = bReader.readLine()) != null) {
-                if (temp.equals("[servers]")) {
-                    while((temp = bReader.readLine()) != null) {
-                        int start, end;
-                        String name, group, prtRange, srv;
-                        //Parsing to find the strings we are looking for in the
-                        // servers.ini file. Name of the server, address of the
-                        // server, port-range, and group-name.
-                        name = temp.substring(temp.indexOf("=")+1, temp.indexOf("SERVER"));
-                        start = temp.indexOf(":")+1;
-                        end = temp.indexOf(":", start);
-                        srv = temp.substring(start, end);
-                        //Add the servername to the serverList.
-                        serverList.add(srv);
-                        prtRange = temp.substring(end+1, temp.indexOf("GROUP"));
-                        group = temp.substring(temp.indexOf("GROUP")+6, temp.length());
-                        //Add the server to a list of server-objects.
-                        sli.add(new ServerListItem(sli.size(), name, group, srv, prtRange));
-                        
-                        //If the group not already exists, create it!
-                        if(!groups.contains(group)) {
-                            groups.addElement(group);
-                        }
-                    }
-                }
-            }
-            bReader.close();
-            
-        }  catch (IOException ioe) {
-            logging.log(Level.SEVERE, IRCClient.messages.getString("ioException"+": "+ioe.getMessage()));
-        } catch (NullPointerException npe) {
-            logging.log(Level.SEVERE, IRCClient.messages.getString("nullPointer"+": "+npe.getMessage()));
-        } 
-}
+		if (serverfilePath == null) {
+			importServers();
+		}
+
+		if (serverfilePath != null) {
+
+		try {
+				f  = new FileReader(serverfilePath);
+				bReader = new BufferedReader(f);
+
+			} catch (FileNotFoundException fnfe) {
+				logging.log(Level.SEVERE, IRCClient.messages.getString("fileNotFound"+": "+fnfe.getMessage()));
+			}
+
+			try { 
+				while ((temp = bReader.readLine()) != null) {
+					if (temp.equals("[servers]")) {
+						while((temp = bReader.readLine()) != null) {
+							int start, end;
+							String name, group, prtRange, srv;
+							//Parsing to find the strings we are looking for in the
+							// servers.ini file. Name of the server, address of the
+							// server, port-range, and group-name.
+							name = temp.substring(temp.indexOf("=")+1, temp.indexOf("SERVER"));
+							start = temp.indexOf(":")+1;
+							end = temp.indexOf(":", start);
+							srv = temp.substring(start, end);
+							//Add the servername to the serverList.
+							serverList.add(srv);
+							prtRange = temp.substring(end+1, temp.indexOf("GROUP"));
+							group = temp.substring(temp.indexOf("GROUP")+6, temp.length());
+							//Add the server to a list of server-objects.
+							sli.add(new ServerListItem(sli.size(), name, group, srv, prtRange));
+
+							//If the group not already exists, create it!
+							if(!groups.contains(group)) {
+								groups.addElement(group);
+							}
+						}
+					}
+				}
+				bReader.close();
+
+			}  catch (IOException ioe) {
+				logging.log(Level.SEVERE, IRCClient.messages.getString("ioException"+": "+ioe.getMessage()));
+			} catch (NullPointerException npe) {
+				logging.log(Level.SEVERE, IRCClient.messages.getString("nullPointer"+": "+npe.getMessage()));
+			} 
+		}
+	}
 	/**
 	 * Function that creates a new IRCConnection based on the variables set.
 	 * Adds listeners and waits for it to connect.

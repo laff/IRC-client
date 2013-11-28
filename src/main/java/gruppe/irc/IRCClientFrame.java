@@ -146,7 +146,11 @@ public class IRCClientFrame extends JFrame implements ActionListener {
             IRCClient.loginMenu.addServer();
             
         } else if (ae.getSource() == listUsers) {
-            thisTab.writeToLn("LIST");
+			try {
+				thisTab.writeToLn("LIST");
+			} catch (NullPointerException npe) {
+				logging.log(Level.SEVERE, IRCClient.messages.getString("frame.show3"+": "+npe.getMessage()));
+			}
 			
         } else if (ae.getSource() == helpContent) {
 			displayHelp();
