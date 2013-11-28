@@ -18,8 +18,9 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 /**
- *
- * @author Olaf
+ * This class is a simple loginmenu
+ * 
+ * @author Anders, Christian and Olaf.
  */
 public class LoginMenu extends JFrame implements ItemListener {
 
@@ -29,6 +30,9 @@ public class LoginMenu extends JFrame implements ItemListener {
     private static String serverfilePath;
 	private String serverVar, nickVar, altnickVar, usernameVar, fullnameVar;
 	private Integer	portVar;
+	
+	// Max length of nick
+	private final Integer maxNick = 8;
 	
     private Vector<String> serverList = new Vector<String>(); 
     private Vector<String> groups = new Vector<String>();
@@ -52,20 +56,13 @@ public class LoginMenu extends JFrame implements ItemListener {
 	 * Currently receives an object that is either null or the point of a window.
 	 * That is probably not a good idea though. Suggestions?
 	 */
-	LoginMenu(Object location) {
+	LoginMenu() {
         
 		super(IRCClient.messages.getString("loginM.header"));
 		setSize(330,280);
-		
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        setLocationRelativeTo(null);
 		
-		// Sets location based on passed variable.
-		try {	
-			setLocation((Point) location);
-		} catch (NullPointerException npel) {
-			setLocationRelativeTo(null);
-		}
-        
         panel = new JPanel();
         
         networkL = new JLabel(IRCClient.messages.getString("loginM.nwLabel"));
@@ -78,8 +75,8 @@ public class LoginMenu extends JFrame implements ItemListener {
         autologL = new JLabel(IRCClient.messages.getString("loginM.autoLogLabel"));
 
         port = new JTextField(4);
-        nick = new JTextField(32);
-        altnick = new JTextField(32);
+        nick = new JTextField(9);
+        altnick = new JTextField(9);
         username = new JTextField(32);
         fullname = new JTextField(32);
 
@@ -230,15 +227,23 @@ public class LoginMenu extends JFrame implements ItemListener {
             public void actionPerformed(ActionEvent ae) {
 
                 serverVar = (String)server.getSelectedItem();
-
-                // Going to make a check for you little man.
                 portVar = Integer.parseInt(port.getText());
-
-                nickVar = nick.getText();
-                altnickVar = altnick.getText();
+				
+				// Ensuring that nick set is not longer than 9 (maxlength).
+				if (nick.getText().length() > maxNick) {
+					nickVar = nick.getText().substring(0, maxNick);
+				} else {
+					nickVar = nick.getText();
+				}
+				
+                if (altnick.getText().length() > maxNick) {
+					altnickVar = altnick.getText().substring(0, maxNick);
+				} else {
+					altnickVar = altnick.getText();
+				}
+                
                 usernameVar = username.getText();
                 fullnameVar = fullname.getText();
-
 
                 //**********//
                 //*CREATE*A*//
@@ -376,7 +381,11 @@ public class LoginMenu extends JFrame implements ItemListener {
             logging.log(Level.SEVERE, IRCClient.messages.getString("nullPointer"+": "+npe.getMessage()));
         } 
 }
-
+	/**
+	 * Function that creates a new IRCConnection based on the variables set.
+	 * Adds listeners and waits for it to connect.
+	 * If connection is unsuccessful or has timed out an error is shown.
+	 */
 	public void login () {
 		long timeStart = System.currentTimeMillis();
 		long timeUsed = 0;
@@ -396,7 +405,6 @@ public class LoginMenu extends JFrame implements ItemListener {
         );
 
 		connection.addMessageListener (new GlobalMessageListener ());
-		//connection.connect();
 		connection.addMessageListener (new PingListener ());
 		
 		
@@ -415,16 +423,27 @@ public class LoginMenu extends JFrame implements ItemListener {
 		}
 	}
 	
-	
+	/**
+	 * Tells the loginmenu there is one new connection.
+	 */
 	public void addConnection() {
 		nOfConnections++;
 	}
 	
+	/**
+	 * Tells the loginmenu a connection is "removed".
+	 * Also shows the loginmenu.
+	 */
 	public void subConnection() {
 		nOfConnections--;
 		showem(true);
 	}
 	
+	/**
+	 * This function is called when closing the loginmenu.
+	 * It closes the program if there are no connections.
+	 * If there are still connections, loginmenu is hidden.
+	 */
 	public void checkQuit() {
 		
 		// If connections are less than one, quit system.
@@ -437,6 +456,10 @@ public class LoginMenu extends JFrame implements ItemListener {
 		}
 	}
 	
+	/**
+	 * Function over riding the default action when closing window.
+	 * Calling the checkQuit() function.
+	 */
 	private WindowListener exitListener = new WindowAdapter() {
 		@Override
 		public void windowClosing(WindowEvent e) {

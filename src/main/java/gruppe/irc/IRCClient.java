@@ -10,8 +10,10 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 /**
- *
- * @author Olaf, Anders
+ * This class is the main class of the IRC - Client.
+ * It contains all the vital parts of the program and keeps track of everything.
+ * 
+ * @author Anders, Christian and Olaf.
  */
 public class IRCClient {
     
@@ -57,7 +59,7 @@ public class IRCClient {
 		newServer();
 		
 		// Initiate the g'old loginMenu.
-		loginMenu = new LoginMenu(null);
+		loginMenu = new LoginMenu();
 		
 		// Initate the AttributeChooser.
 		attrC = new AttributeChooser();
@@ -73,6 +75,32 @@ public class IRCClient {
 			logging.log(Level.SEVERE, IRCClient.messages.getString("nullPointer"+": "+npe.getMessage()));
 		}
 	}
+	
+	/**
+	 * Function that removes the IRCCFrame when close() has been called in IRCCOnnection.
+	 * This ensures that it is possible to log into a server multiple times without 
+	 * being stopped by the checkExists() function.
+	 */
+	public static void destroyServer(String serverName, String alias) {
+		Integer frameCount = ircFrames.size();
+		String frameTitle = serverName + " : " + alias;
+		IRCClientFrame tmpFrame;
+		
+		for (int i = 0; i < frameCount; i++) {
+			tmpFrame = ((IRCClientFrame)ircFrames.elementAt(i));
+			
+			if (frameTitle.equals(tmpFrame.getFrameTitle())) {
+				try {
+					ircFrames.remove(i);
+				} catch (NullPointerException npe) {
+					logging.log(Level.SEVERE, IRCClient.messages.getString("nullPointer"+": "+npe.getMessage()));
+				}
+			}
+		}
+		
+
+	}
+	
 	/**
 	 * Method that receives all info from the IRCConnections. 
 	 * Then sends it to all the TabManagers via their frames.
@@ -101,7 +129,7 @@ public class IRCClient {
         
         for (int i = 0; i < frameCount; i++) {
             tmpFrame = ((IRCClientFrame)ircFrames.elementAt(i));
-            exists = (frameTitle.equals(tmpFrame.getServerName()));
+            exists = (frameTitle.equals(tmpFrame.getFrameTitle()));
         }
 
         // If there is already an ircclient frame with the same server AND nickname.
@@ -118,7 +146,9 @@ public class IRCClient {
     
 	/**
 	 * Method that receives connections from IRCConnection,
-	 * and gives them to TabManagers.. ?
+	 *
+	 * First checking if there are any empty frames (like the ones when starting the ircclient).
+	 * If there are no empty frames, a new one is created.
 	 */
 	public void newConnection(IRCConnection newConnection, String serverName, String alias) {
 	

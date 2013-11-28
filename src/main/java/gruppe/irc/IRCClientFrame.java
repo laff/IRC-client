@@ -19,7 +19,7 @@ import javax.swing.JOptionPane;
 
 /**
  *
- * @author Olaf
+ * @author Anders, Christian and Olaf.
  */
 public class IRCClientFrame extends JFrame implements ActionListener {
 	
@@ -104,11 +104,17 @@ public class IRCClientFrame extends JFrame implements ActionListener {
 		setTitle("IRC-Client : "+frameTitle);
 	}
 	
+	/**
+	 * @return true if servername is null, false if servername is set. 
+	 */
 	public Boolean noServerName() {
 		return (frameTitle == null) ? true : false;
 	}
 	
-    public String getServerName() {
+	/**
+	 * @return this frames title.
+	 */
+    public String getFrameTitle() {
         return frameTitle;
     }
     
@@ -155,11 +161,15 @@ public class IRCClientFrame extends JFrame implements ActionListener {
         }
 	}
 	
+	/**
+	 * Over rides the event when closing window.
+	 * Ensures that the frame is disposed. 
+	 * 
+	 */
 	private WindowListener exitListener = new WindowAdapter() {
 		@Override
 		public void windowClosing(WindowEvent e) {
 			thisTab.closeConnection();
-			self.dispose();
 		}
 	};
 	

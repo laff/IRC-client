@@ -1,5 +1,6 @@
 package gruppe.irc;
 
+import static gruppe.irc.IRCClient.destroyServer;
 import static gruppe.irc.IRCClient.loginMenu;
 import java.io.*;
 import java.net.*;
@@ -11,6 +12,12 @@ import gruppe.irc.messageListeners.*;
  * This class controls the connection to a IRC server. 
  * Use this class to represent the connection, then add the listeners needed to receive those events you feel you should receive
  * from this connection. Use the classes writeln method to send commands back to the server. 
+ * 
+ * @author : Kolloen.
+ * 
+ * This is a class made and commented by our teacher in IMT3281. 
+ * Some additional functionality are added by us, including its extension of IRCClient.
+ * 
  */
 public class IRCConnection extends IRCClient implements Runnable {
   /**
@@ -71,7 +78,7 @@ public class IRCConnection extends IRCClient implements Runnable {
     this.fullname   = fullname;
     added           = false;
 	
-    // Functionality that checks if there already is a connection to a server with this nick
+    // Added functionality that checks if there already is a connection to a server with this nick
     if (checkIfExists(server, nick)) {
         close();
     } else {
@@ -137,6 +144,7 @@ public class IRCConnection extends IRCClient implements Runnable {
         command = message.substring (0, message.indexOf(" "));
         message = message.substring (message.indexOf(" ")+1);
 
+	// Added functionality that uses a function in IRCClient to distrobute messages.
     sendInfo(prefix, command, nick, server, message + "\n");
     logging.finest ("New message arriver : "+command+" | "+message);
 
@@ -162,6 +170,7 @@ public class IRCConnection extends IRCClient implements Runnable {
 		addMessageListener (new LoggedOnDetector ());
 		state = CONNECTING;
         
+		// Checks if this connection already is added to the counter in loginMenu.
         if (!added) {
             loginMenu.addConnection();
             added = true;
@@ -209,11 +218,9 @@ public class IRCConnection extends IRCClient implements Runnable {
 
   // Method used internally to try to perform a clean shutdown of the client/server communication if something "bad" happens.
   public void close() {
-	System.out.println("close function ran once.");
     logging.fine ("Closing connection to server");
 	
     if (state == CONNECTED) {
-		System.out.println("close function ran once while connected");
 		state = DISCONNECTING;
 
 		try { 
@@ -236,26 +243,36 @@ public class IRCConnection extends IRCClient implements Runnable {
     if (added) {
         loginMenu.subConnection();
         added = false;
+		destroyServer(server, nick);
     }
   }
 
-  /**
-   * Method that returns the state of the connection
-   * @returns an integer telling the state of this connection object. IRCConection.CONNECTED, IRCConnection.CONNECTING, IRCCOnnection.DISCONNECTING, IRCConnection.DISCONNECTED.
-   */
-  public int getState() {
-	  return state;
-  }
-
-	String getNick() {
-		return nick;
+	/**
+	 * Method that returns the state of the connection
+	 * @returns an integer telling the state of this connection object. 
+	 */
+	public int getState() {
+		return state;
 	}
 
-	String getAltNick() {
+	/**
+	 * @return : The nick set in constructor. 
+	 */
+	public String getNick() {
+		return nick;
+	}
+	
+	/**
+	 * @return : The alternative nick in set in constructor. 
+	 */
+	public String getAltNick() {
 		return altNick;
 	}
 
-	String getServerName() {
+	/**
+	 * @return : The name of server set in constructor.
+	 */
+	public String getServerName() {
 		return server;
 	}
   
@@ -267,14 +284,14 @@ public class IRCConnection extends IRCClient implements Runnable {
       logging.fine ("Message arrived from server, we have a connection");
       if (me.getCommand().equals ("375") || me.getCommand().equals("001")) {
         state = CONNECTED;
-		
-		// letting the loginmenu know there is a new connectio in town.
-		
         removeMessageListener (this);
       }
     }
   }
-  
+  /**
+   * This function sets the sate to "ABORTED".
+   * Also tells the IRCCLient to clean up frames and such created.
+   */
   public void abortLogin() {
 	  state = ABORTED;
 	  checkAborted();

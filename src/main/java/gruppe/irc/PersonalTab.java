@@ -11,7 +11,7 @@ import javax.swing.JPanel;
 
 /**
  * Class for the personalTabs, basic functionality inherited from GenericTab.
- * @author Olaf
+ * @author Anders, Christian and Olaf.
  */
 public class PersonalTab extends GenericTab {
 

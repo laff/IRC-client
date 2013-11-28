@@ -18,10 +18,11 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 
 /**
- * @author Anders
  * 
  * Greetings. This is the GenericTab class, and here is a list of commands:
  * http://en.wikipedia.org/wiki/List_of_Internet_Relay_Chat_commands
+ * 
+ * @author Anders, Christian and Olaf.
  *
  */
 public class GenericTab extends JPanel implements ActionListener {
@@ -37,7 +38,12 @@ public class GenericTab extends JPanel implements ActionListener {
     protected AbstractDocument doc;
     protected StyledDocument styledDoc;
     
-    
+    /**
+	 * Constructor that contains functionality and variables that the personal, channel and server tabs use.
+	 * @param tabFilter : A string that decides if mesages are to be shown here.
+	 * @param mng : The tabmanager that contains the tab.
+	 * @param dim : D
+	 */
 	public GenericTab (String tabFilter, TabManager mng, Dimension dim) {
 		filter = tabFilter;
 		manager = mng;
@@ -134,7 +140,6 @@ public class GenericTab extends JPanel implements ActionListener {
      * together with the written message, and the message is also sent to the server.
      * @param e The actual event.
      */
-  //     @Override
 	public void actionPerformed(ActionEvent e) {
 		String fromText, command ="", message="", receiver="", temp="";
     
@@ -187,7 +192,12 @@ public class GenericTab extends JPanel implements ActionListener {
             write.setText("");    
 		}
 	}
-       
+    
+	/**
+	 * Function that changes the foreground of the tab (not the frame).
+	 * @param c
+	 * @param co 
+	 */
     public void changeForeground(Component c, Color co) {
         c.setForeground(co);
     }

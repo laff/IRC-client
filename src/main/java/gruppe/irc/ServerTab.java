@@ -16,7 +16,7 @@ import javax.swing.text.BadLocationException;
 /**
  * Inherits properties from GenericTab, and is the tab where the server-messages
  * are displayed.
- * @author Anders, Olaf, Christian
+ * @author Anders, Christian and Olaf.
  */
 public class ServerTab extends GenericTab {
     private static final Logger logging = Logger.getLogger (ServerTab.class.getName());

@@ -13,8 +13,11 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 /**
- *
- * @author Olaf, Christian
+ * This class is for the listing of  channels.
+ * It recieves channels from /list and shows them based on
+ * what you put in the searchField.
+ * 
+ * @author Anders, Christian and Olaf.
  */
 public class ChannelList extends JFrame implements DocumentListener {
 	
@@ -33,6 +36,11 @@ public class ChannelList extends JFrame implements DocumentListener {
 	
 	private String titleName;
 
+	/**
+	 * Constructor.
+	 * @param server : this it the title name shown in the frame.
+	 * @param mng  : the tab manager in charge of this listing.
+	 */
 	public ChannelList(String server, TabManager mng) {
 			
 		titleName = server;
@@ -80,18 +88,35 @@ public class ChannelList extends JFrame implements DocumentListener {
 		add(listPane, BorderLayout.CENTER);	
 	}
 	
+	/**
+	 * Function that adds the vector of channels to the List Channels.
+	 * @param chans : Vector of channels.
+	 */
 	public void addChannels(Vector<String> chans) {
 		channels = chans;
 	}
 
+	/**
+	 * action for when entering a new character in searchField.
+	 * @param ev 
+	 */
     public void insertUpdate(DocumentEvent ev) {
         search();
     }
-     
+    
+	/**
+	 * Action for when removing a character in searchField.
+	 * @param ev 
+	 */
     public void removeUpdate(DocumentEvent ev) {
         search();
     }
 
+	/**
+	 * Functionality required as default by DocumentListener.
+	 * Not implemented.
+	 * @param de 
+	 */
 	public void changedUpdate(DocumentEvent de) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
@@ -106,6 +131,10 @@ public class ChannelList extends JFrame implements DocumentListener {
 		assembleList(s);
     }
 	
+	/**
+	 * Function that creates a list to be shown based on the parameter given.
+	 * @param s : the text from the searchField.
+	 */
 	private void assembleList(String s) {
 		
 		String searchString = "#"+s;

@@ -4,6 +4,8 @@ package gruppe.irc;
  * Class used to pass information about a message between the IRCConnection class and its listeners.
  * Objects of this class contains information about the message and also whether or not the message 
  * has been consumed by any of the listeners it has been passed trough.
+ * 
+ * @author Anders, Christian and Olaf.
  */
 public class MessageEvent {
   private String prefix, command, message;

@@ -4,6 +4,9 @@
  * This code is not made by Christian, Anders or Olaf.
  * It has however been edited for use with our IRC-Client.
  * 
+ * We recognize that this code is poorly commented.
+ * Commenting pre made code like this is not a priority.
+ * 
  ************************************************************/
 package gruppe.irc;
 

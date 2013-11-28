@@ -9,7 +9,8 @@ import javax.swing.text.StyleConstants;
 
 /**
  * This is the class where our color and font options are stored.
- * @author Ch, Olaf
+ * 
+ * @author Anders, Christian and Olaf.
  */
 public class SimpleAttributes extends SimpleAttributeSet {
     
@@ -78,7 +79,6 @@ public class SimpleAttributes extends SimpleAttributeSet {
 	
 	/**
 	 * Function that figures out if defaults or preferred are to be set.
-	 * 
 	 */
 	private void defaultCheck() {
 		
@@ -133,7 +133,9 @@ public class SimpleAttributes extends SimpleAttributeSet {
 	}
 
 	/**
-	 * Function that updates the attributes by going through the styleItem vector
+	 * Function that updates the attributes by going through the styleItem vector.
+	 * ensures that font family and size only loads if customA is true,
+	 * and there actually are fonts set.
 	 */
 	public void updateAttributes() {
 		StyleItem tmpStyle;
@@ -229,24 +231,34 @@ public class SimpleAttributes extends SimpleAttributeSet {
 	}
 	
 	/**
-	 * Below are multiple functions that return useful information to mostly other classes.
-	 * 
-	 * @return 
+	 * @param index : The index of the attribute to return.
+	 * @return : the value if the key index from the attributes array.
 	 */
     public SimpleAttributeSet returnAttribute(Integer index) {
         return attributes[index];
     }
     
+	/**
+	 * @return ; the ammount of attributes. 
+	 */
 	public Integer returnAttributeAmount() {
 		return attributeAmount;
 	}
 	
+	/**
+	 * 
+	 * @param index : the index of a styleItem vector.
+	 * @return : style name.
+	 */
 	public String returnAttributeStyleName (Integer index) {
-		
 		StyleItem tmpStyle = (StyleItem)styles.elementAt(index);
 		return tmpStyle.getStyleName();
 	}
 	
+	/**
+	 * @param index : the index of a styleItem vector.
+	 * @return returns the color of styleItem.
+	 */
 	public Color returnAttributeColor (Integer index) {
 		
 		StyleItem tmpStyle = (StyleItem)styles.elementAt(index);

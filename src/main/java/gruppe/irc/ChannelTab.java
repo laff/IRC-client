@@ -17,7 +17,7 @@ import javax.swing.*;
 /**
  * The layout of a channeltab, it extends GenericTab to get some of the mutual
  * functions for all tabs, but it also need some specificed functionality.
- * @author Christian
+ * @author Anders, Christian and Olaf.
  */
 public class ChannelTab extends GenericTab  {
     

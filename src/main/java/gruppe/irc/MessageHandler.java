@@ -4,7 +4,7 @@ import java.util.Vector;
 
 /**
  * Class made for handling all message-events that occurs in our client
- * @author Christian
+ * @author Anders, Christian and Olaf.
  */
 public class MessageHandler {
     private String pref;

@@ -7,7 +7,8 @@ import java.awt.Font;
  * This class contains information about each style.
  * This information is style name (based on the en_US.properties), 
  * color, the colors name and the font name.
- * @author Olaf
+ * 
+ * @author Anders, Christian and Olaf.
  */
 public class StyleItem {
 	
@@ -18,7 +19,7 @@ public class StyleItem {
 	private Font fontSpec;
 	
 	/**
-	 * Constructor
+	 * Constructor setting variables.
 	 */
 	public StyleItem () {
 		styleName = "";

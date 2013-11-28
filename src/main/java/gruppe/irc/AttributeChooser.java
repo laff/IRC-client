@@ -8,8 +8,8 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 
 /**
- *
- * @author Olaf
+ * This class is taking care of all the attribute action.
+ * @author Anders, Christian and Olaf.
  */
 public class AttributeChooser extends JFrame {
 	
@@ -31,6 +31,7 @@ public class AttributeChooser extends JFrame {
 	 * Constructor.
 	 * 
 	 * This frame is created in IRCClient, but is set to visibility false.
+	 * Are shown when clicking "Style Items" in the drop down menu.
 	 */
 	public AttributeChooser() {
 	
@@ -73,7 +74,9 @@ public class AttributeChooser extends JFrame {
 	 * Grand function adding listeners to desverving items.
 	 */
 	private void listenUp() {
-		
+		/**
+		 * Lets the user change Font options for the selected style in list.
+		 */
 		changeFont.addActionListener(new ActionListener() {
 			
 			public void actionPerformed(ActionEvent ae) {
@@ -100,7 +103,9 @@ public class AttributeChooser extends JFrame {
 			}
 			
 		});
-		
+		/**
+		 * Action that lets the user change options regarding color of the selected style in list.
+		 */
 		changeColor.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				
@@ -130,6 +135,7 @@ public class AttributeChooser extends JFrame {
 		 * 
 		 * First updates the attributes (so that they are immediately used).
 		 * Then saves these attributes to preferences.
+		 * Also tells the attribute chooser frame to hide.
 		 */
 		apply.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
@@ -140,6 +146,9 @@ public class AttributeChooser extends JFrame {
 			}
 		});
 
+		/**
+		 * Lets the user use all "system" default attributes.
+		 */
 		clear.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				
@@ -149,7 +158,7 @@ public class AttributeChooser extends JFrame {
 	}
 	
 	/**
-	 * 
+	 * Function that shows or hides frame.
 	 * @param really 
 	 */
 	public void showFrame(Boolean really) {
@@ -157,7 +166,7 @@ public class AttributeChooser extends JFrame {
 	}
 	
 	/**
-	 * 
+	 * Function that adds the different styles to the list.
 	 */
 	private void fillList() {
 		for (int i = 0; i < attrAmount; i++) {
@@ -166,9 +175,9 @@ public class AttributeChooser extends JFrame {
 	}
 	
 	/**
-	 * 
-	 * @param index
-	 * @return 
+	 * Finds the stylename based on index.
+	 * @param index : index of a certain style name available.
+	 * @return : style name of specified style based on index.
 	 */
 	private String findStyleName(Integer index) {
 		return theAttributes.returnAttributeStyleName(index);

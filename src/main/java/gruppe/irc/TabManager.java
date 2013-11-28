@@ -41,7 +41,7 @@ import javax.swing.event.ChangeListener;
 
 /**
  *
- * @author Anders, Olaf, Christian
+ * @author Anders, Christian and Olaf.
  */
 
 public class TabManager extends JPanel {
@@ -61,27 +61,22 @@ public class TabManager extends JPanel {
 	private IRCConnection connection;
 	// This TabManagers IRCClientFrame parent
 	private IRCClientFrame parent;
-	
-	/*
-	 * Each user is distinguished from other users by a unique nickname
-	 * having a maximum length of nine (9) characters.  See the protocol
-	 * grammar rules (section 2.3.1) for what may and may not be used in a
-	 * nickname.
-	 * While the maximum length is limited to nine characters, clients
-	 * SHOULD accept longer strings as they may become used in future
-	 * evolutions of the protocol.
-	 */
     
 	//The height offset between the IRCClientFrame and the tabs
 	private static int heightOffset = 80;
 	private Dimension tabDimension;
     
 	// The server name this TabManager is connected to.
-	private String serverName, nick, altNick, channelNames = "";
+	private String serverName, nick, channelNames = "";
 	
     // Tabbedpane for organizing our tabs.
 	private JTabbedPane tabbedPane;
 	
+	/**
+	 * Constructor for the Tabmanager.
+	 * creates GUI and adds the initial tab for server communication.
+	 * @param prnt 
+	 */
 	public TabManager (IRCClientFrame prnt) {
 	
         setLayout(new BorderLayout());
@@ -100,7 +95,11 @@ public class TabManager extends JPanel {
         mh = new MessageHandler(TabManager.this);
 	}
 	
-	
+	/**
+	 * Sets connection.
+	 * Uses the connection to set name of server and nick.
+	 * @param ourConnection 
+	 */
 	public void setConnection (IRCConnection ourConnection) {
 		connection = ourConnection;
 		serverName = connection.getServerName();
@@ -108,6 +107,9 @@ public class TabManager extends JPanel {
 		//altNick = connection.getAltNick();
 	}
     
+	/**
+	 * @return connection associated with this tab manager. 
+	 */
     public IRCConnection getConnection () {
         return connection;
     }
@@ -465,9 +467,10 @@ public class TabManager extends JPanel {
 	}
     
 	/**
-	 * Method closes connection and the parent window
+	 * Method closes connection and the parent window.
 	 */
 	public void closeConnection() {
+		
 		try {
 			connection.close();
 		} catch (NullPointerException npe) {
@@ -585,8 +588,6 @@ public class TabManager extends JPanel {
     /**
      * ChangeListener for the tabbed pane, used to sense when
      * a tab change occurs and set the color of that tab to default.
-     * @author Anders
-     *
      */
     class tabChangeListener implements ChangeListener {
 
