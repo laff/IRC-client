@@ -41,6 +41,8 @@ public class IRCClient {
         messages = ResourceBundle.getBundle("MessagesBundle", currentLocale);
 		
 		attrs = new SimpleAttributes();
+		// Initate the AttributeChooser.
+		attrC = new AttributeChooser();
 		
 		//Sets look and feel to system default
 		try {
@@ -61,8 +63,7 @@ public class IRCClient {
 		// Initiate the g'old loginMenu.
 		loginMenu = new LoginMenu();
 		
-		// Initate the AttributeChooser.
-		attrC = new AttributeChooser();
+
     }
 	
     /**

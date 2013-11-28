@@ -168,12 +168,15 @@ public class IRCClientFrame extends JFrame implements ActionListener {
 	/**
 	 * Over rides the event when closing window.
 	 * Ensures that the frame is disposed. 
+	 * If the frame is not initiated, do nothing.
 	 * 
 	 */
 	private WindowListener exitListener = new WindowAdapter() {
 		@Override
 		public void windowClosing(WindowEvent e) {
-			thisTab.closeConnection();
+			if(!noServerName()) {
+				thisTab.closeConnection();
+			}
 		}
 	};
 	

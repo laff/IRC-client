@@ -467,17 +467,27 @@ public class TabManager extends JPanel {
 	}
     
 	/**
+	 * Function that checks if this is a tabManager that has not been initiated.
+	 */
+	public Boolean isInit() {
+		return !parent.noServerName();
+	}
+	
+	/**
 	 * Method closes connection and the parent window.
+	 * only allows closing of the window if it has been initated.
 	 */
 	public void closeConnection() {
 		
-		try {
-			connection.close();
-		} catch (NullPointerException npe) {
-            logging.log(Level.SEVERE, IRCClient.messages.getString("errorClosing"+": "+npe.getMessage()));
+		if (isInit()) {
+			try {
+				connection.close();
+			} catch (NullPointerException npe) {
+				logging.log(Level.SEVERE, IRCClient.messages.getString("errorClosing"+": "+npe.getMessage()));
+			}
+			parent.setVisible(false);
+			parent.dispose();
 		}
-		parent.setVisible(false);
-		parent.dispose();
 	}
 
 	/**

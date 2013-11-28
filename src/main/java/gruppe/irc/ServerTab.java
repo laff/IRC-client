@@ -74,12 +74,15 @@ public class ServerTab extends GenericTab {
 	class QuitListener implements ActionListener {
 
 		public void actionPerformed(ActionEvent e) {
-			try {
-				writeToLn("QUIT");
-			} catch (Exception exc) {
-                logging.log(Level.SEVERE, IRCClient.messages.getString("srvTab.quitExc"+": "+exc.getMessage()));
+			if (manager.isInit()) {
+				try {
+					writeToLn("QUIT");
+				} catch (Exception exc) {
+					logging.log(Level.SEVERE, IRCClient.messages.getString("srvTab.quitExc"+": "+exc.getMessage()));
+				}
+				manager.closeConnection();
 			}
-			manager.closeConnection();
+
 		}
 	}
 }
