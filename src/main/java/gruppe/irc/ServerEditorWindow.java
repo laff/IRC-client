@@ -102,8 +102,13 @@ public class ServerEditorWindow extends JFrame {
             LoginMenu.sli.addElement(s);
             LoginMenu.writeFile();
             
-        } else
-            JOptionPane.showMessageDialog(ServerEditorWindow.this, IRCClient.messages.getString("srvEd.empty"), 
-                    null, JOptionPane.ERROR_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(
+    			ServerEditorWindow.this, 
+    			IRCClient.messages.getString("srvEd.empty"), 
+                null,
+                JOptionPane.ERROR_MESSAGE 
+            );
+        }
     }
 }

@@ -6,6 +6,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
@@ -26,6 +28,8 @@ import javax.swing.text.StyledDocument;
  *
  */
 public class GenericTab extends JPanel implements ActionListener {
+	
+	private static final Logger genericlogging = Logger.getLogger (GenericTab.class.getName());
 	
 	protected TabManager manager;
 	protected String filter;
@@ -62,7 +66,7 @@ public class GenericTab extends JPanel implements ActionListener {
         if (styledDoc instanceof AbstractDocument) {
             doc = (AbstractDocument)styledDoc;
         } else {
-            System.err.println("Text pane's document isn't an AbstractDocument!");
+        	genericlogging.log(Level.FINE, IRCClient.messages.getString("gen.noStyle"));
         }
 		
 		scrollPane = new JScrollPane(text);
@@ -81,7 +85,7 @@ public class GenericTab extends JPanel implements ActionListener {
 	
 	/**
 	 * Function returns the filter text for the tab
-	 * @return 
+	 * @return Name of the tab
 	 */
 	public String getFilter () {
 		return filter;
@@ -110,7 +114,9 @@ public class GenericTab extends JPanel implements ActionListener {
 
 		try {	
             doc.insertString(pos, sender+": "+message, IRCClient.attrs.returnAttribute(style));
-		} catch (BadLocationException ble) {}			
+		} catch (BadLocationException ble) {
+			genericlogging.log(Level.SEVERE, IRCClient.messages.getString("BadLocation")+": "+ble.getMessage());
+		}			
 		
         //When new messages appears in the window, it scrolls down automagically.
         //Borrowed from Oyvind`s example.
@@ -173,14 +179,18 @@ public class GenericTab extends JPanel implements ActionListener {
                 try {
                     command = fromText.substring(fromText.indexOf("/")+1, fromText.indexOf(" "));
                     message = fromText.substring(fromText.indexOf(" ")+1, fromText.length());
-                } catch (StringIndexOutOfBoundsException sioobe) {}
+                } catch (StringIndexOutOfBoundsException sioobe) {
+                	genericlogging.log(Level.SEVERE, IRCClient.messages.getString("exception")+": "+sioobe.getMessage());
+                }
                 
                 // A special case if the user types only /part into a channel-textfield.
                 if (command.equals("")) {
                     try {
                         command = fromText.substring(fromText.indexOf("/")+1, fromText.length());
                         message = this.getFilter();
-                    } catch (StringIndexOutOfBoundsException sioobe) {}
+                    } catch (StringIndexOutOfBoundsException sioobe) {
+                    	genericlogging.log(Level.SEVERE, IRCClient.messages.getString("exception")+": "+sioobe.getMessage());
+                    }
                 }
                 writeToLn(command.toUpperCase()+" "+message);
             

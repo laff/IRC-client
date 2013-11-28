@@ -50,7 +50,7 @@ public class ServerTab extends GenericTab {
         try {	
             doc.insertString(pos, msg, IRCClient.attrs.returnAttribute(2));
         } catch (BadLocationException ble) {
-            logging.log(Level.SEVERE, IRCClient.messages.getString("badLoc"+": "+ble.getMessage()));
+            logging.log(Level.SEVERE, IRCClient.messages.getString("badLoc")+": "+ble.getMessage());
         }				
 
         //When new messages appears in the window, it scrolls down automagically.
@@ -78,7 +78,7 @@ public class ServerTab extends GenericTab {
 				try {
 					writeToLn("QUIT");
 				} catch (Exception exc) {
-					logging.log(Level.SEVERE, IRCClient.messages.getString("srvTab.quitExc"+": "+exc.getMessage()));
+					logging.log(Level.SEVERE, IRCClient.messages.getString("srvTab.quitExc")+": "+exc.getMessage());
 				}
 				manager.closeConnection();
 			}

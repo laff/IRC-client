@@ -222,7 +222,9 @@ public class ChannelTab extends GenericTab  {
                 try {
                     String temp =  list.getSelectedValue().toString();
                     whois(temp);
-                } catch (NullPointerException npe) {}
+                } catch (NullPointerException npe) {
+                	logging.log(Level.SEVERE, IRCClient.messages.getString("nullPointer")+": "+npe.getMessage());
+                }
             }
         });
         
@@ -237,7 +239,9 @@ public class ChannelTab extends GenericTab  {
                     selected = selected.substring(1);
                 }
                 manager.createPersonalTab(selected);
-                } catch (NullPointerException npe) {}
+                } catch (NullPointerException npe) {
+                	logging.log(Level.SEVERE, IRCClient.messages.getString("nullPointer")+": "+npe.getMessage());
+                }
             }
         });
         
@@ -299,7 +303,8 @@ public class ChannelTab extends GenericTab  {
             }
         });
         
-        modes.add(item = new JMenuItem(IRCClient.messages.getString("popUp.kick")));
+        item = new JMenuItem(IRCClient.messages.getString("popUp.kick"));
+        modes.add(item);
         
         item.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
@@ -377,7 +382,6 @@ public class ChannelTab extends GenericTab  {
                  }
                 else if (e.isMetaDown()) {
                     list.setSelectedIndex(list.locationToIndex(e.getPoint()));
-                    System.out.println(list.getSelectedValue() +" selected" );
                     setupItems();
                     popUp.show(list, e.getX(), e.getY());
                 }
@@ -388,11 +392,11 @@ public class ChannelTab extends GenericTab  {
 							list.removeSelectionInterval(list.getSelectedIndex(),list.getSelectedIndex());
 					}    
 				} catch (NullPointerException npe) {
-					logging.log(Level.SEVERE, IRCClient.messages.getString("nullPointer"+": "+npe.getMessage()));
+					logging.log(Level.SEVERE, IRCClient.messages.getString("nullPointer")+": "+npe.getMessage());
 				}
   
            } catch (NullPointerException npe) {
-                logging.log(Level.SEVERE, IRCClient.messages.getString("ioException"+": "+npe.getMessage()));
+                logging.log(Level.SEVERE, IRCClient.messages.getString("ioException")+": "+npe.getMessage());
            }
         }
    };
@@ -405,8 +409,8 @@ public class ChannelTab extends GenericTab  {
 	 */
 	class ButtonListener implements ActionListener {
         //Magic numbers
-        int width = 500;
-        int height = 500;
+        private int width = 500;
+        private int height = 500;
         
 		public void actionPerformed(ActionEvent e) {
 			if (e.getSource() == close) {

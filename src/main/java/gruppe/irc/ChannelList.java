@@ -178,7 +178,7 @@ public class ChannelList extends JFrame implements DocumentListener {
                  }
      
            } catch (NullPointerException npe) {
-                logging.log(Level.SEVERE, IRCClient.messages.getString("nullPointer"+": "+npe.getMessage()));
+                logging.log(Level.SEVERE, IRCClient.messages.getString("nullPointer")+": "+npe.getMessage());
            }
         }
    };

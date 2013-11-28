@@ -88,7 +88,7 @@ public class TabManager extends JPanel {
         serverTab = new ServerTab(TabManager.this, tabDimension);
 
         tabbedPane = new JTabbedPane();
-        tabbedPane.addChangeListener( new tabChangeListener() );
+        tabbedPane.addChangeListener( new TabChangeListener() );
         tabbedPane.addTab(IRCClient.messages.getString("tabM.server"), serverTab);
         add(tabbedPane, BorderLayout.NORTH);
         tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
@@ -104,7 +104,6 @@ public class TabManager extends JPanel {
 		connection = ourConnection;
 		serverName = connection.getServerName();
 		nick = connection.getNick();
-		//altNick = connection.getAltNick();
 	}
     
 	/**
@@ -116,11 +115,11 @@ public class TabManager extends JPanel {
 		
 	/**
 	 * Function that distributes messages to appropriate tabs.
-	 * @param : message containing a message.
-	 * @param : command containing a code.
-     * @param : alias 
-	 * @param : prefix containing the servername 
-	 * @param : server The servername as received by the message
+	 * @param  message containing a message.
+	 * @param  command containing a code.
+     * @param  alias 
+	 * @param  prefix containing the servername 
+	 * @param  server The servername as received by the message
 	 */
 	public void distributeMessage (String prefix, String command, String alias, String server, String message) {
         String msg="", chanName;
@@ -163,7 +162,9 @@ public class TabManager extends JPanel {
 					msg = message.substring(message.indexOf("#"), message.length());
 					chanName = msg.substring(0, msg.indexOf(" "));
 					channelVector.addElement(chanName);
-				} catch (StringIndexOutOfBoundsException sioobe) {}
+				} catch (StringIndexOutOfBoundsException sioobe) {
+					logging.log(Level.SEVERE, IRCClient.messages.getString("exception")+": "+sioobe.getMessage());
+				}
 			
 			// This commands indicates the end of /list.
 			} else if (command.equals("323")) {
@@ -224,7 +225,9 @@ public class TabManager extends JPanel {
         
         try {
             newUser = prefix.substring(0, prefix.indexOf("!"));
-        } catch (StringIndexOutOfBoundsException sioobe) {}
+        } catch (StringIndexOutOfBoundsException sioobe) {
+        	logging.log(Level.SEVERE, IRCClient.messages.getString("exception")+": "+sioobe.getMessage());
+        }
         
         for (int i = 0; i < chans; i++) {
             chanTab = (ChannelTab)channelTabs.elementAt(i);
@@ -261,7 +264,6 @@ public class TabManager extends JPanel {
     /**
      * Used to send the result of the NAMES-command to a specific tab.
      * @param chanName - The name of the channel this NAMES-command belongs to.
-     * @param names - String including all users on the channel.
      */
     public void setChannelNames(String chanName) {
         int chans = channelTabs.size();
@@ -330,7 +332,7 @@ public class TabManager extends JPanel {
      * we send the text to his place, to check if a tab with that channelname already
      * exists. If it does, we set this channel to focus, if it doesn`t exists, 
      * we create a tab with that name.
-     * @param outText a message, starting with 'JOIN #'.
+     * @param message Message, starting with 'JOIN #'.
      */
     public void checkForNewChannel(String message) {
         String chanName = message.substring(message.indexOf("#"), message.length()-1);
@@ -427,7 +429,8 @@ public class TabManager extends JPanel {
     private void createChannelTab(String chanName) {
         ChannelTab chanTab;
         
-        channelTabs.addElement(chanTab = new ChannelTab(chanName, this, tabDimension));
+        chanTab = new ChannelTab(chanName, this, tabDimension);
+        channelTabs.addElement(chanTab);
         tabbedPane.addTab(chanName, null, chanTab);
         tabbedPane.setSelectedIndex(tabbedPane.indexOfTab(chanName));
         chanTab.addText(chanName, IRCClient.messages.getString("tabM.nowTalk")+" "+chanName+"\n", false, 2);
@@ -483,7 +486,7 @@ public class TabManager extends JPanel {
 			try {
 				connection.close();
 			} catch (NullPointerException npe) {
-				logging.log(Level.SEVERE, IRCClient.messages.getString("errorClosing"+": "+npe.getMessage()));
+				logging.log(Level.SEVERE, IRCClient.messages.getString("errorClosing")+": "+npe.getMessage());
 			}
 			parent.setVisible(false);
 			parent.dispose();
@@ -492,7 +495,7 @@ public class TabManager extends JPanel {
 
 	/**
 	 * Return state variable of IRCConnection
-	 * @returns connection state
+	 * @return connection state
 	 */
 	public int getConnectionState() {
 		return connection.getState();
@@ -518,7 +521,7 @@ public class TabManager extends JPanel {
 					try {
 						writeToLn("PART "+filter);
 					} catch (Exception exc) {
-                        logging.log(Level.SEVERE, IRCClient.messages.getString("tabM.closeChan"+": "+exc.getMessage()));
+                        logging.log(Level.SEVERE, IRCClient.messages.getString("tabM.closeChan")+": "+exc.getMessage());
 					}
                     channelTabs.remove(i);
                     break;
@@ -548,7 +551,7 @@ public class TabManager extends JPanel {
 	
 	/**
 	 * Removes tab from the tabManager. Does not delete content of tab.
-	 * @param filter: Filter text of tab to be removed.
+	 * @param tabName Filter text of tab to be removed.
 	 */
 	public void releaseTab(String tabName) {
 		//This function might be called from different places, so we must
@@ -562,7 +565,7 @@ public class TabManager extends JPanel {
 	/**
 	 * Method attaches a tab to the tabManager and sets focus on 
 	 *  the added tab
-	 * @param prefix Filter text for the new tab
+	 * @param tabName Filter text for the new tab
 	 * @param newTab The tab to be attached to the tabManager
 	 */
 	public void attachTab(String tabName, GenericTab newTab) {
@@ -599,7 +602,7 @@ public class TabManager extends JPanel {
      * ChangeListener for the tabbed pane, used to sense when
      * a tab change occurs and set the color of that tab to default.
      */
-    class tabChangeListener implements ChangeListener {
+    class TabChangeListener implements ChangeListener {
 
 		public void stateChanged(ChangeEvent arg0) {
 			int i = tabbedPane.getSelectedIndex();

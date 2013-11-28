@@ -5,8 +5,8 @@ package gruppe.irc;
  * @author Anders, Christian and Olaf.
  */
 public class ServerListItem {
-    String serverName, group, address, portRange;
-    int index;
+    private String serverName, group, address, portRange;
+    private int index;
 
 	/**
 	 * Constructor receiving variables used in this list item.

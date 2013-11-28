@@ -129,14 +129,14 @@ public class IRCClientFrame extends JFrame implements ActionListener {
 			try {
 				IRCClient.loginMenu.showem(true);
 			} catch (NullPointerException npe) {
-                logging.log(Level.SEVERE, IRCClient.messages.getString("frame.show"+": "+npe.getMessage()));
+                logging.log(Level.SEVERE, IRCClient.messages.getString("frame.show")+": "+npe.getMessage());
 			}
 			
 		} else if (ae.getSource() == showAttrC) {
 			try {
 				IRCClient.attrC.showFrame(true);
 			} catch (Exception e) {
-                logging.log(Level.SEVERE, IRCClient.messages.getString("frame.show2"+": "+e.getMessage()));
+                logging.log(Level.SEVERE, IRCClient.messages.getString("frame.show2")+": "+e.getMessage());
             }
 			
 		} else if (ae.getSource() == importServers) {
@@ -149,7 +149,7 @@ public class IRCClientFrame extends JFrame implements ActionListener {
 			try {
 				thisTab.writeToLn("LIST");
 			} catch (NullPointerException npe) {
-				logging.log(Level.SEVERE, IRCClient.messages.getString("frame.show3"+": "+npe.getMessage()));
+				logging.log(Level.SEVERE, IRCClient.messages.getString("frame.show3")+": "+npe.getMessage());
 			}
 			
         } else if (ae.getSource() == helpContent) {

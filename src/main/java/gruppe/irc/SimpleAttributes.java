@@ -121,9 +121,10 @@ public class SimpleAttributes extends SimpleAttributeSet {
 			if (tmpFontName != null && tmpFontSize != 0) {
 				tmpStyle.setFont(tmpFontSize, tmpFontName);
 			}
-				
-			// Tries to find a color whos names equals tmpColor, and sets it to Style.colorName;
-			// If it fails, customColor[i] stil is set with our default color.
+			/*	
+			 Tries to find a color whose names equals tmpColor, and sets it to Style.colorName;
+			 If it fails, customColor[i] stil is set with our default color.
+			 */
 			try {
 				tmpStyle.setColorType((Color) Color.getColor(null, tmpColor));
 			} catch (Exception e) {
@@ -211,7 +212,7 @@ public class SimpleAttributes extends SimpleAttributeSet {
 	/**
 	 * Function that sets the Color type of a specific style item.
 	 * @param index
-	 * @param font 
+	 * @param type 
 	 */
 	public void setAttributeColor (Integer index, Color type) {
 		

@@ -2,7 +2,9 @@ package gruppe.irc;
 
 import gruppe.irc.messageListeners.GlobalMessageListener;
 import gruppe.irc.messageListeners.PingListener;
+
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.io.BufferedReader;
@@ -25,6 +27,8 @@ import java.util.prefs.Preferences;
 public class LoginMenu extends JFrame implements ItemListener {
 
     private static final Logger logging = Logger.getLogger (LoginMenu.class.getName());
+    
+    private Preferences pref;
 
 	// The variables for logging in.
     private static String serverfilePath;
@@ -63,6 +67,8 @@ public class LoginMenu extends JFrame implements ItemListener {
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setLocationRelativeTo(null);
 		
+        pref = Preferences.userNodeForPackage(this.getClass());
+        
         panel = new JPanel();
         
         networkL = new JLabel(IRCClient.messages.getString("loginM.nwLabel"));
@@ -180,8 +186,6 @@ public class LoginMenu extends JFrame implements ItemListener {
 	* The port number is set to 6667 as default, unless a value is saved earlier.
 	*/
 	private void getPrefs() {
-		
-		Preferences pref = Preferences.userNodeForPackage(this.getClass());
       
         server.setSelectedItem(pref.get("server", ""));
 		port.setText(Integer.toString(pref.getInt("port", 6667)));
@@ -208,7 +212,6 @@ public class LoginMenu extends JFrame implements ItemListener {
 	 * or (false) clears the preferences.
 	 */
 	private void putPrefs() {
-		Preferences pref = Preferences.userNodeForPackage(this.getClass());
 
 			pref.put("server", serverVar);
 			pref.putInt("port", portVar);
@@ -217,9 +220,6 @@ public class LoginMenu extends JFrame implements ItemListener {
 			pref.put("username", usernameVar);
 			pref.put("fullname", fullnameVar);
 			
-			if (serverfilePath != null) {
-				pref.put("serverfilePath", serverfilePath);
-			}
 	}
 	
 	/**
@@ -257,11 +257,6 @@ public class LoginMenu extends JFrame implements ItemListener {
                 usernameVar = username.getText();
                 fullnameVar = fullname.getText();
 
-                //**********//
-                //*CREATE*A*//
-                //*FAILSAFE*//
-                //**********//
-				
 				showem(false);
 				
                 Thread queryThread = new Thread() {
@@ -299,14 +294,21 @@ public class LoginMenu extends JFrame implements ItemListener {
      */
     public void importServers() {
         JFileChooser chooser;
+        
  
         chooser = new JFileChooser(new File("."));
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
          // The user can cancel if he wants to, no action then!
-         if (chooser.showOpenDialog(LoginMenu.this) == JFileChooser.CANCEL_OPTION)
+         if (chooser.showOpenDialog(LoginMenu.this) == JFileChooser.CANCEL_OPTION) {
              return;
+         }
 
          serverfilePath = chooser.getSelectedFile().getPath();
+         if (serverfilePath != null) {
+				pref.put("serverfilePath", serverfilePath);
+			}
+         
+         readFile();
     }
     
     /**
@@ -332,7 +334,7 @@ public class LoginMenu extends JFrame implements ItemListener {
             bw.newLine();
             bw.close();
         } catch (IOException e) {
-            logging.log(Level.SEVERE, IRCClient.messages.getString("ioException"+": "+e.getMessage()));
+            logging.log(Level.SEVERE, IRCClient.messages.getString("ioException")+": "+e.getMessage());
           }
     }
     
@@ -358,7 +360,7 @@ public class LoginMenu extends JFrame implements ItemListener {
 				bReader = new BufferedReader(f);
 
 			} catch (FileNotFoundException fnfe) {
-				logging.log(Level.SEVERE, IRCClient.messages.getString("fileNotFound"+": "+fnfe.getMessage()));
+				logging.log(Level.SEVERE, IRCClient.messages.getString("fileNotFound")+": "+fnfe.getMessage());
 			}
 
 			try { 
@@ -391,9 +393,9 @@ public class LoginMenu extends JFrame implements ItemListener {
 				bReader.close();
 
 			}  catch (IOException ioe) {
-				logging.log(Level.SEVERE, IRCClient.messages.getString("ioException"+": "+ioe.getMessage()));
+				logging.log(Level.SEVERE, IRCClient.messages.getString("ioException")+": "+ioe.getMessage());
 			} catch (NullPointerException npe) {
-				logging.log(Level.SEVERE, IRCClient.messages.getString("nullPointer"+": "+npe.getMessage()));
+				logging.log(Level.SEVERE, IRCClient.messages.getString("nullPointer")+": "+npe.getMessage());
 			} 
 		}
 	}
@@ -411,12 +413,12 @@ public class LoginMenu extends JFrame implements ItemListener {
 	  
 		IRCConnection connection = new IRCConnection (
 			  
-			  serverVar,		// server
-			  portVar,			// port
-			  nickVar,			// nick
-			  altnickVar,		// altnick
-			  usernameVar,		// username
-			  fullnameVar		// fullname
+			  serverVar,
+			  portVar,			
+			  nickVar,			
+			  altnickVar,		
+			  usernameVar,		
+			  fullnameVar		
 			  
         );
 
@@ -430,7 +432,9 @@ public class LoginMenu extends JFrame implements ItemListener {
 		  try {
 				Thread.currentThread().sleep (1000);
 				timeUsed = System.currentTimeMillis() - timeStart;
-		  } catch (Exception e) { }
+		  } catch (Exception e) {
+			  logging.log(Level.SEVERE, IRCClient.messages.getString("exception")+": "+e.getMessage());
+		  }
 		}
 		//In case connection failed
 		if (connection.getState() != IRCConnection.CONNECTED || timeUsed >= maxTime) {

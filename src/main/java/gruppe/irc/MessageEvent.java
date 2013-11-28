@@ -40,7 +40,7 @@ public class MessageEvent {
   /**
    * Method to check wheter this event has been consumed or not.
    *
-   * @returns boolean true if the event has been consumed, false otherwise
+   * @return boolean true if the event has been consumed, false otherwise
    */
   public boolean isConsumed () {
     return consumed;
@@ -49,7 +49,7 @@ public class MessageEvent {
   /**
    * Method returns the prefix of the command for this event
    * 
-   * @returns the prefix of the command for this event
+   * @return the prefix of the command for this event
    */
   public String getPrefix () {
     return prefix;
@@ -58,7 +58,7 @@ public class MessageEvent {
   /**
    * Method returns the command generating this event
    * 
-   * @returns the command that generated this event
+   * @return the command that generated this event
    */
   public String getCommand () {
     return command;
@@ -67,7 +67,7 @@ public class MessageEvent {
   /**
    * Method returns the string attached to the command generating this event
    * 
-   * @returns the string attached to the command generating this event
+   * @return the string attached to the command generating this event
    */
   public String getMessage () {
     return message;
@@ -76,7 +76,7 @@ public class MessageEvent {
   /**
    * Method returns the source object for this event
    *
-   * @returns the object which generated this event
+   * @return the object which generated this event
    */
   public Object getSource () {
     return source;
@@ -85,7 +85,7 @@ public class MessageEvent {
   /**
    * Method returns a simplified string representation of this event
    *
-   * @returns a simplified string representing this event
+   * @return A simplified string representing this event
    */
   public String toString () {
     return prefix+"*"+command+"*"+message;

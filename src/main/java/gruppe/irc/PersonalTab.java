@@ -45,8 +45,8 @@ public class PersonalTab extends GenericTab {
 	 */
 	class ButtonListener implements ActionListener {
         //Magic numbers
-        int width = 500;
-        int height = 500;
+        private int width = 500;
+        private int height = 500;
         
 		public void actionPerformed(ActionEvent e) {
 			if (e.getSource() == close) {

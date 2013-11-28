@@ -249,7 +249,7 @@ public class IRCConnection extends IRCClient implements Runnable {
 
 	/**
 	 * Method that returns the state of the connection
-	 * @returns an integer telling the state of this connection object. 
+	 * @return an integer telling the state of this connection object. 
 	 */
 	public int getState() {
 		return state;

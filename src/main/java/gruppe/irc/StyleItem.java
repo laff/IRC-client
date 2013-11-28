@@ -74,7 +74,7 @@ public class StyleItem {
 	
 	/**
 	 * Boolean that checks if fontSpec is set.
-	 * @return 
+	 * @return True if font name exists, false if not
 	 */
 	public Boolean areFont() {
 		return (fontName.equals("")) ? false : true;
@@ -82,7 +82,7 @@ public class StyleItem {
 	
 	/**
 	 * Returns the font size.
-	 * @return 
+	 * @return Font size
 	 */
 	public Integer getFontSize() {
 		return fontSize;
@@ -90,7 +90,7 @@ public class StyleItem {
 	
 	/**
 	 * Returns the family name of font.
-	 * @return 
+	 * @return Family name of font
 	 */
 	public String getFontName() {
 		return fontName;
@@ -109,7 +109,7 @@ public class StyleItem {
 	
 	/**
 	 * Returns the color.
-	 * @return 
+	 * @return Color 
 	 */
 	public Color getColorType () {
 		return colorType;
@@ -126,7 +126,7 @@ public class StyleItem {
 	
 	/**
 	 * Returns the name of this items color.
-	 * @return 
+	 * @return Name of color
 	 */
 	public Integer getColorName() {
 		return colorName;

@@ -48,13 +48,13 @@ public class IRCClient {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (ClassNotFoundException f) {
-            logging.log(Level.SEVERE, IRCClient.messages.getString("ircClient.lookAndFeelError"+": "+f.getMessage()));
+            logging.log(Level.SEVERE, IRCClient.messages.getString("ircClient.lookAndFeelError")+": "+f.getMessage());
 		} catch (InstantiationException f) {
-            logging.log(Level.SEVERE, IRCClient.messages.getString("ircClient.lookAndFeel2"+": "+f.getMessage()));
+            logging.log(Level.SEVERE, IRCClient.messages.getString("ircClient.lookAndFeel2")+": "+f.getMessage());
 		} catch (IllegalAccessException f) {
-            logging.log(Level.SEVERE, IRCClient.messages.getString("ircClient.lookAndFeel3"+": "+f.getMessage()));
+            logging.log(Level.SEVERE, IRCClient.messages.getString("ircClient.lookAndFeel3")+": "+f.getMessage());
 		} catch (UnsupportedLookAndFeelException f) {
-            logging.log(Level.SEVERE, IRCClient.messages.getString("ircClient.lookAndFeel3"+": "+f.getMessage()));
+            logging.log(Level.SEVERE, IRCClient.messages.getString("ircClient.lookAndFeel3")+": "+f.getMessage());
 		}
 
 		// Initiate the first server.
@@ -73,7 +73,7 @@ public class IRCClient {
         try {
 			ircFrames.add(new IRCClientFrame());
 		} catch (NullPointerException npe) {
-			logging.log(Level.SEVERE, IRCClient.messages.getString("nullPointer"+": "+npe.getMessage()));
+			logging.log(Level.SEVERE, IRCClient.messages.getString("nullPointer")+": "+npe.getMessage());
 		}
 	}
 	
@@ -94,7 +94,7 @@ public class IRCClient {
 				try {
 					ircFrames.remove(i);
 				} catch (NullPointerException npe) {
-					logging.log(Level.SEVERE, IRCClient.messages.getString("nullPointer"+": "+npe.getMessage()));
+					logging.log(Level.SEVERE, IRCClient.messages.getString("nullPointer")+": "+npe.getMessage());
 				}
 			}
 		}
@@ -189,7 +189,7 @@ public class IRCClient {
             changeFrame.updateTitle(frameTitle);
 
 		} catch (NullPointerException npe) {
-			logging.log(Level.SEVERE, IRCClient.messages.getString("nullPointer"+": "+npe.getMessage()));
+			logging.log(Level.SEVERE, IRCClient.messages.getString("nullPointer")+": "+npe.getMessage());
 		}
 	}
 	
@@ -203,13 +203,13 @@ public class IRCClient {
 		try {
 			count = ircFrames.size();
 		} catch (NullPointerException e) {
-            logging.log(Level.SEVERE, IRCClient.messages.getString("ircClient.nullVector"+": "+e.getMessage()));
+            logging.log(Level.SEVERE, IRCClient.messages.getString("ircClient.nullVector")+": "+e.getMessage());
 		}
 		for (int i = 0; i < count; ++i) {
 			try {
 				thisFrame = ((IRCClientFrame)ircFrames.elementAt(i));
 			} catch (Exception e) {
-				logging.log(Level.SEVERE, IRCClient.messages.getString("ircClient.noVectorMember"+": "+e.getMessage()));
+				logging.log(Level.SEVERE, IRCClient.messages.getString("ircClient.noVectorMember")+": "+e.getMessage());
 			}
 			//If the IRCframe does exist and the connection is in aborted state -> close window
 			if (thisFrame != null && thisFrame.thisTab.getConnectionState() == IRCConnection.ABORTED) {
