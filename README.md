@@ -6,4 +6,3 @@ IRC-client
 * Source code is far inside the folder structure. Otherwise clear signs of being our first born.
 * Features: Multiple connections, windows, tabs... But does not really work as most networks does not approve the client.
 * Developed by Anders Bodung, Christian Simensen and Olaf Berge.
-* Graded A.
